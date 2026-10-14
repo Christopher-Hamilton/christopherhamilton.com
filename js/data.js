@@ -171,7 +171,7 @@ const media = [
 {o:"Universe Today, 2024",t:"Comparing Two Proposed NASA Missions to Io",h:"https://www.universetoday.com/168166/comparing-two-proposed-nasa-missions-to-jupiters-moon-io",img:"images/thumbs/io.webp"},
 {o:"Netflix, 2022",t:"Earthstorm: Volcano",h:"https://www.netflix.com/title/81346975",img:"images/media-earthstorm.webp"},
 {o:"CBS 60 Minutes, 2022",t:"Iceland Volcano and Mars Exploration",h:"https://www.cbsnews.com/news/iceland-volcano-mars-geldingadalir-60-minutes-2021-08-22",img:"images/thumbs/active.webp"},
-{o:"CNN, 2021",t:"How Iceland's Volcano Surprised an Expert",h:"https://www.cnn.com/videos/weather/2021/03/25/iceland-volcano-volcanologist-christopher-hamilton-full-episode-acfc-vpx.cnn",img:"images/media-cnn.webp"},
+{o:"CNN, 2021",t:"How Iceland's Volcano Surprised an Expert",h:"https://www.cnn.com/videos/weather/2021/03/25/iceland-volcano-volcanologist-christopher-hamilton-full-episode-acfc-vpx.cnn",img:"images/media-cnn.webp",pos:"center 10%"},
 {o:"BBC Click, 2021",t:"Drones for Mars Tested in Iceland",h:"https://www.youtube.com/watch?v=6SIgFPhhRPE",img:"images/media-bbc.webp"},
 {o:"Atlas Obscura, 2021",t:"Testing Drones for Mars Exploration in Iceland",h:"https://www.atlasobscura.com/articles/iceland-mars-drone-exploration"},
 {o:"UA Alumni Magazine, 2021",t:"Iceland: The Wildcat Testing Ground",h:"https://alumni.arizona.edu/arizona-magazine/spring-2021/iceland-wildcat-testing-ground",img:"images/thumbs/embassy.webp"},
