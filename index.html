@@ -508,20 +508,12 @@
     <div class="data-tabs" id="data-tabs">
       <button class="data-tab active" data-tab="datasets">Datasets</button>
       <button class="data-tab" data-tab="whitepapers">White Papers</button>
-      <button class="data-tab" data-tab="analytics">Analytics</button>
     </div>
     <div id="tab-datasets" class="data-tab-panel active">
       <div id="datasets-list"></div>
     </div>
     <div id="tab-whitepapers" class="data-tab-panel">
       <div id="whitepapers-list"></div>
-    </div>
-    <div id="tab-analytics" class="data-tab-panel">
-      <p class="section-sub" style="margin-bottom:16px">Website visitor statistics.</p>
-      <p style="color:var(--dim);font-size:16px;margin-bottom:20px">Visitor analytics for christopherhamilton.com. Data is collected using privacy-friendly, cookie-free tracking.</p>
-      <div id="analytics-embed" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:24px;min-height:200px;display:flex;align-items:center;justify-content:center">
-        <p style="color:var(--muted);font-size:14px;font-family:var(--mono);text-align:center">Analytics dashboard will appear here once tracking is configured.<br>Recommended: <a href="https://www.goatcounter.com" target="_blank" rel="noopener noreferrer" style="color:var(--accent-light)">GoatCounter</a> (free, no cookies, GDPR-friendly)</p>
-      </div>
     </div>
   </div>
 </div> 
@@ -1160,5 +1152,17 @@ document.addEventListener('DOMContentLoaded', () => {
   sizeRavenLogo(); window.addEventListener('resize', sizeRavenLogo, { passive: true });
 });
 </script>
+<script>
+  window.goatcounter = {no_onload: true}
+  function gcCount() {
+    if (window.goatcounter && window.goatcounter.count)
+      window.goatcounter.count({path: location.pathname + location.search + location.hash})
+  }
+  window.addEventListener('hashchange', gcCount)
+  var gcWait = setInterval(function() {
+    if (window.goatcounter && window.goatcounter.count) { clearInterval(gcWait); gcCount() }
+  }, 100)
+</script>
+<script data-goatcounter="https://christopherhamilton.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
