@@ -569,7 +569,7 @@
     </div>
     <div>
       <h4 class="footer-heading">Contact</h4>
-      <p class="footer-contact">chamilton@arizona.edu</p>
+      <p class="footer-contact"><a href="mailto:chamilton@arizona.edu?subject=Hamilton%20Lab%20Inquiry" class="footer-link" style="display:inline;margin:0">chamilton@arizona.edu</a></p>
       <p class="footer-contact-addr">Lunar and Planetary Laboratory<br>University of Arizona<br>1629 E. University Blvd.<br>Tucson, AZ 85721 USA</p>
     </div>
     <div>
@@ -640,6 +640,8 @@ function navigate(page) {
   document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
   const target = document.getElementById('page-' + page);
   if (target) target.style.display = 'block';
+  const navLink = document.querySelector('.nav-links a[data-page="' + page + '"]');
+  document.title = navLink && page !== 'home' ? navLink.textContent + ' — Christopher W. Hamilton' : 'Christopher W. Hamilton — Planetary Volcanism and Exploration';
   document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(a => {
     a.classList.toggle('active', a.dataset.page === page);
   });
@@ -1070,6 +1072,19 @@ function initOppChips() {
     });
   });
 }
+
+// ARIA roles for all tab groups
+function initTabAria() {
+  document.querySelectorAll('.data-tabs').forEach(list => {
+    list.setAttribute('role', 'tablist');
+    const tabs = list.querySelectorAll('.data-tab');
+    const sync = () => tabs.forEach(t => t.setAttribute('aria-selected', t.classList.contains('active')));
+    tabs.forEach(t => t.setAttribute('role', 'tab'));
+    sync();
+    new MutationObserver(sync).observe(list, { subtree: true, attributeFilter: ['class'] });
+  });
+}
+initTabAria();
 
 // PROFILE PHOTO ROTATION - handles all portrait circles
 function initProfileRotation() {
