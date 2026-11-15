@@ -1,0 +1,161 @@
+/* Public CV of Christopher W. Hamilton: print-first stylesheet.
+   Rendered to PDF by cv/build.sh (headless Chrome, which supports @page margin boxes). */
+
+:root {
+  --red: #8a1c17;
+  --rule: #e3cfcc;
+  --ink: #1a1a1a;
+  --grey: #6b6b6b;
+  --sans: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --serif: Charter, "Charter BT", "Bitstream Charter", Georgia, "Times New Roman", serif;
+  --date-col: 1.22in;
+}
+
+@page {
+  size: letter;
+  margin: 0.72in 0.85in 0.8in 0.85in;
+  @bottom-right {
+    content: "C. W. Hamilton  \00B7  Curriculum Vitae  \00B7  " counter(page);
+    font-family: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+    font-size: 7.5pt;
+    color: #6b6b6b;
+    vertical-align: top;
+    padding-top: 0.22in;
+    white-space: pre;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { background: #fff; }
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: #fff;
+  font-family: var(--serif);
+  font-size: 9.4pt;
+  line-height: 1.36;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  font-kerning: normal;
+  hyphens: manual;
+}
+
+a { color: var(--red); text-decoration: none; }
+
+/* ---------- Header ---------- */
+header.masthead {
+  border-bottom: 1.6pt solid var(--red);
+  padding-bottom: 12pt;
+  margin-bottom: 4pt;
+}
+header.masthead h1 {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 25pt;
+  line-height: 1.05;
+  letter-spacing: -0.2pt;
+  margin: 0 0 3pt;
+}
+header.masthead .tagline {
+  font-family: var(--sans);
+  color: var(--red);
+  text-transform: uppercase;
+  letter-spacing: 2.4pt;
+  font-size: 8.6pt;
+  font-weight: 600;
+  margin: 0 0 7pt;
+}
+header.masthead p { margin: 0; font-family: var(--sans); }
+header.masthead .title { font-size: 9.8pt; line-height: 1.38; }
+header.masthead .address { font-size: 8.4pt; color: var(--grey); margin-top: 3pt; }
+header.masthead .contact { font-size: 8.4pt; margin-top: 3pt; }
+header.masthead .contact .sep { color: var(--grey); padding: 0 3pt; }
+
+/* ---------- Section headings ---------- */
+section { margin-top: 15pt; }
+h2 {
+  font-family: var(--sans);
+  font-weight: 700;
+  color: var(--red);
+  text-transform: uppercase;
+  letter-spacing: 3pt;
+  font-size: 10pt;
+  margin: 0 0 7pt;
+  padding-bottom: 3pt;
+  border-bottom: 0.6pt solid var(--rule);
+  break-after: avoid;
+  page-break-after: avoid;
+}
+h3 {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 9.6pt;
+  margin: 10pt 0 5pt;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+h2 + h3 { margin-top: 4pt; }
+h3.year {
+  color: var(--red);
+  font-weight: 700;
+  font-size: 9.2pt;
+  margin: 9pt 0 3pt;
+}
+
+p { margin: 0 0 5pt; }
+.statement { margin-bottom: 7pt; }
+.themes p { margin: 0 0 4pt; }
+
+/* Keep a heading with the first entry that follows it. Chrome honours
+   break-after: avoid on the heading only when the next box can follow, so
+   headings and first entries are also wrapped in .keep blocks where needed. */
+.keep { break-inside: avoid; page-break-inside: avoid; }
+
+/* ---------- Date + entry rows ---------- */
+.entries { margin: 0; padding: 0; list-style: none; }
+.entry {
+  display: grid;
+  grid-template-columns: var(--date-col) 1fr;
+  column-gap: 0;
+  margin: 0 0 3.6pt;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.entry > .date {
+  font-family: var(--sans);
+  font-size: 8pt;
+  color: var(--grey);
+  padding-top: 1.2pt;
+  white-space: nowrap;
+}
+.entry > .what { min-width: 0; }
+.entry b { font-weight: 700; }
+
+/* ---------- Citations (hanging indent) ---------- */
+.cites { margin: 0; padding: 0; list-style: none; }
+.cites > li {
+  padding-left: 0.26in;
+  text-indent: -0.26in;
+  margin: 0 0 4.2pt;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.cites i { font-style: italic; }
+.cites .note { color: var(--ink); }
+.legend { margin: 0 0 4pt; }
+
+/* Wrap long DOIs and URLs instead of overflowing the measure. */
+.cites a, .entry a { overflow-wrap: anywhere; }
+
+/* ---------- Screen view (the HTML is also readable on the website) ---------- */
+@media screen {
+  body {
+    max-width: 8.5in;
+    margin: 0 auto;
+    padding: 0.6in 0.85in 0.8in;
+    background: #fff;
+  }
+  html { background: #f2efec; }
+}

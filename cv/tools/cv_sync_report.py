@@ -1,0 +1,309 @@
+#!/usr/bin/env python3
+"""Report what changed in the master (private) Word CV since the last sync, so the
+public CV (cv/cv.html) and the website (js/data.js, index.html) can be updated.
+
+Stdlib only. The master CV and its snapshots never enter the repository: snapshots
+live in ~/.hamilton-cv-sync/ (outside the repo, which is public).
+
+Usage:
+    python3 cv/tools/cv_sync_report.py [path/to/master.docx] [--mark-synced] [--full]
+
+With no path, the master is the Hamilton_CV_<Month>_<day>_<year>.docx with the latest
+date in its name, found in ~/Documents/CV, ~/Documents, ~/Desktop or ~/Downloads.
+Tailored variants (Abridged, Fulbright, Imera, ...) and names containing "Public" are
+skipped. Set HAMILTON_CV_MASTER=/path/to/file.docx to override.
+
+Sections of the report:
+  A. Lines added/removed in the master since the last --mark-synced snapshot,
+     grouped by CV section (first run: no snapshot, so only a section summary).
+  B. DOI cross-check: master vs cv/cv.html vs js/data.js.
+  C. Lines in the master that look private (phone numbers, $ amounts, budgets,
+     enrollment counts, private notes). Values are masked in this report.
+       Never copy these into the public CV or the website.
+
+--mark-synced  save the current master text as the new baseline (run this only
+               after the public CV and the website have been updated and built).
+--full         on a first run (no snapshot), list every master line by section.
+"""
+import argparse
+import datetime as dt
+import difflib
+import hashlib
+import json
+import os
+import re
+import sys
+from collections import OrderedDict
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+REPO = HERE.parent.parent
+sys.path.insert(0, str(HERE))
+from docx_text import docx_to_text  # noqa: E402
+
+STATE_DIR = Path.home() / ".hamilton-cv-sync"
+SNAPSHOT = STATE_DIR / "master-snapshot.txt"
+META = STATE_DIR / "master-snapshot.json"
+SEARCH_DIRS = [Path.home() / "Documents" / "CV", Path.home() / "Documents",
+               Path.home() / "Desktop", Path.home() / "Downloads"]
+
+# Top-level headings of the master CV (prefix match, case-insensitive).
+TOP_HEADINGS = [
+    "Education", "Chronology of Employment", "Honors, Awards", "Scientific Publications",
+    "Research Support", "Management, Service", "Mentoring Experience", "Teaching Experience",
+    "Other Teaching Experience", "Communication:", "Field Experience", "Certifications",
+]
+
+DOI_RE = re.compile(r"10\.\d{4,9}/[^\s\"'<>]+", re.I)
+PHONE_RE = re.compile(r"(?:\+?\d{1,3}[\s.-]?)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}\b")
+MONEY_RE = re.compile(r"(?:\$\s?\d[\d,]*(?:\.\d+)?|\b\d[\d,]*\s?(?:USD|NZD|EUR|CAD|GBP)\b)")
+PRIVATE_WORDS = re.compile(r"\b(undisclosed|redacted|disclosed funding|budget)\b", re.I)
+ENROLL_RE = re.compile(r"\b\d+\s+students\b", re.I)
+NOTE_RE = re.compile(r"\[(?![A-Z]{3,4}\s?\d)[^\]]{25,}\]")  # bracketed private notes, not "[PTYS 554 ...]"
+
+
+# ---------------------------------------------------------------- helpers
+
+def norm(line: str) -> str:
+    return re.sub(r"\s+", " ", line.replace(" ", " ")).strip()
+
+
+def is_top_heading(raw: str) -> bool:
+    s = norm(raw)
+    if not s or len(s) > 110 or s.startswith(("•", "-")):
+        return False
+    if any(s.lower().startswith(h.lower()) for h in TOP_HEADINGS):
+        # A real heading line is short and usually padded with trailing tabs in the master.
+        return len(s) < 110 and (raw.rstrip("\n").endswith("\t") or len(s) < 60)
+    return False
+
+
+def is_sub_heading(raw: str) -> bool:
+    s = norm(raw)
+    return bool(s) and len(s) < 110 and s.endswith(":") and not s.startswith("•")
+
+
+def sectioned(text: str):
+    """Return [(section_label, line)] for non-empty, normalised lines."""
+    top, sub, out = "Header", "", []
+    for raw in text.splitlines():
+        s = norm(raw)
+        if not s:
+            continue
+        if is_top_heading(raw):
+            top, sub = re.sub(r"\s*\(.*$", "", s).rstrip(":"), ""
+            continue
+        if is_sub_heading(raw):
+            sub = s.rstrip(":")
+            continue
+        out.append((f"{top} › {sub}" if sub else top, s))
+    return out
+
+
+def mask(s: str) -> str:
+    s = PHONE_RE.sub("[phone]", s)
+    s = MONEY_RE.sub("[$]", s)
+    return s
+
+
+def private_reasons(s: str):
+    r = []
+    if PHONE_RE.search(s) and re.search(r"tel|phone|mobile|cell|\+\d", s, re.I):
+        r.append("phone number")
+    if MONEY_RE.search(s):
+        r.append("dollar amount")
+    if PRIVATE_WORDS.search(s):
+        r.append("budget/disclosure wording")
+    if ENROLL_RE.search(s):
+        r.append("enrollment count")
+    if NOTE_RE.search(s):
+        r.append("bracketed private note")
+    return r
+
+
+def doi_set(text: str):
+    found = {}
+    for m in DOI_RE.finditer(text):
+        d = m.group(0).rstrip(".,;:)]}»”’").replace("&amp;", "&")
+        key = re.sub(r"\.v\d+$", "", d.lower())  # repository version suffixes (.v1) compare equal
+        found.setdefault(key, d)
+    return found
+
+
+MASTER_NAME = re.compile(r"^Hamilton_CV_([A-Za-z]+)_(\d{1,2})_(\d{4})(?:\(\d+\))?\.docx$")
+MONTHS = {m: i for i, m in enumerate(
+    ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], 1)}
+
+
+def name_date(p: Path):
+    """Date stamped in a master file name such as Hamilton_CV_October_14_2026.docx."""
+    m = MASTER_NAME.match(p.name)
+    if not m or m.group(1)[:3].lower() not in MONTHS:
+        return None
+    try:
+        return dt.date(int(m.group(3)), MONTHS[m.group(1)[:3].lower()], int(m.group(2)))
+    except ValueError:
+        return None
+
+
+def find_master() -> Path:
+    """Newest date-stamped master (Hamilton_CV_<Month>_<day>_<year>.docx).
+
+    Tailored variants (Abridged, Fulbright, Imera, Trimmed, TrackedChanges, ...) and
+    anything containing "Public" are ignored. Set HAMILTON_CV_MASTER to override.
+    """
+    env = os.environ.get("HAMILTON_CV_MASTER")
+    if env:
+        return Path(env).expanduser().resolve()
+    dated, other = [], []
+    for d in SEARCH_DIRS:
+        if d.is_dir():
+            for p in d.glob("Hamilton_CV*.docx"):
+                if "public" in p.name.lower() or p.name.startswith("~$"):
+                    continue
+                nd = name_date(p)
+                (dated if nd else other).append((nd, p))
+    if dated:
+        return max(dated, key=lambda t: (t[0], t[1].stat().st_mtime))[1]
+    if other:
+        p = max(other, key=lambda t: t[1].stat().st_mtime)[1]
+        print(f"warning: no date-stamped Hamilton_CV_<Month>_<day>_<year>.docx found; using newest {p.name}",
+              file=sys.stderr)
+        return p
+    sys.exit("cv_sync_report: no Hamilton_CV*.docx found in " + ", ".join(map(str, SEARCH_DIRS)))
+
+
+def hr(title: str):
+    print()
+    print(title)
+    print("=" * len(title))
+
+
+# ---------------------------------------------------------------- report
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(description="Master CV → public CV/website sync report")
+    ap.add_argument("master", nargs="?", help="path to the master .docx")
+    ap.add_argument("--mark-synced", action="store_true", help="save the master text as the new baseline")
+    ap.add_argument("--full", action="store_true", help="first run: list every master line by section")
+    args = ap.parse_args(argv)
+
+    master = Path(args.master).expanduser().resolve() if args.master else find_master()
+    if not master.is_file():
+        sys.exit(f"cv_sync_report: not a file: {master}")
+    text = docx_to_text(str(master))
+    sha = hashlib.sha256(text.encode("utf-8")).hexdigest()
+    mtime = dt.datetime.fromtimestamp(master.stat().st_mtime).strftime("%Y-%m-%d %H:%M")
+
+    STATE_DIR.mkdir(mode=0o700, exist_ok=True)
+    meta = json.loads(META.read_text()) if META.exists() else None
+
+    print("CV sync report")
+    print(f"  master:    {master}  (modified {mtime})")
+    print(f"  public CV: {REPO / 'cv' / 'cv.html'}")
+    print(f"  website:   {REPO / 'js' / 'data.js'}")
+    if meta:
+        print(f"  baseline:  {SNAPSHOT}  (marked synced {meta.get('synced_at')}, from {Path(meta.get('source', '?')).name})")
+    else:
+        print(f"  baseline:  none yet ({SNAPSHOT} will be written by --mark-synced)")
+
+    # ---- A. changes since the last sync
+    hr("A. Master changes since last sync")
+    new = sectioned(text)
+    if meta and SNAPSHOT.exists():
+        if meta.get("sha256") == sha:
+            print("No changes: the master text is identical to the synced baseline.")
+        else:
+            old = sectioned(SNAPSHOT.read_text(encoding="utf-8"))
+            sm = difflib.SequenceMatcher(a=[l for _, l in old], b=[l for _, l in new], autojunk=False)
+            by_sec = OrderedDict()
+            for tag, i1, i2, j1, j2 in sm.get_opcodes():
+                if tag == "equal":
+                    continue
+                for sec, line in old[i1:i2]:
+                    by_sec.setdefault(sec, []).append(("-", line))
+                for sec, line in new[j1:j2]:
+                    by_sec.setdefault(sec, []).append(("+", line))
+            n_add = sum(1 for v in by_sec.values() for s, _ in v if s == "+")
+            n_del = sum(1 for v in by_sec.values() for s, _ in v if s == "-")
+            print(f"{n_add} line(s) added, {n_del} removed, in {len(by_sec)} section(s).")
+            for sec, items in by_sec.items():
+                print(f"\n[{sec}]")
+                for sign, line in items:
+                    flag = private_reasons(line)
+                    note = f"   <-- PRIVATE ({', '.join(flag)}): do not publish" if flag else ""
+                    print(f"  {sign} {mask(line)}{note}")
+    else:
+        counts = OrderedDict()
+        for sec, _ in new:
+            counts[sec] = counts.get(sec, 0) + 1
+        print("No baseline yet, so there is nothing to diff against. Master sections (lines):")
+        for sec, n in counts.items():
+            print(f"  {n:4d}  {sec}")
+        print("After the public CV and the website match this master, run with --mark-synced.")
+        if args.full:
+            cur = None
+            for sec, line in new:
+                if sec != cur:
+                    print(f"\n[{sec}]")
+                    cur = sec
+                print(f"  + {mask(line)}")
+
+    # ---- B. DOI cross-check
+    hr("B. DOI cross-check")
+    cv_path, js_path = REPO / "cv" / "cv.html", REPO / "js" / "data.js"
+    m_dois = doi_set(text)
+    cv_dois = doi_set(cv_path.read_text(encoding="utf-8")) if cv_path.exists() else {}
+    js_dois = doi_set(js_path.read_text(encoding="utf-8")) if js_path.exists() else {}
+    print(f"DOIs found: master {len(m_dois)}, cv/cv.html {len(cv_dois)}, js/data.js {len(js_dois)}"
+          " (repository version suffixes such as .v1 are ignored when comparing)")
+
+    def show(title, keys, src):
+        print(f"\n{title}: {len(keys)}")
+        for k in sorted(keys):
+            print(f"  {src[k]}")
+
+    show("In the master but missing from cv/cv.html", set(m_dois) - set(cv_dois), m_dois)
+    show("In the master but missing from js/data.js", set(m_dois) - set(js_dois), m_dois)
+    show("In js/data.js but missing from cv/cv.html", set(js_dois) - set(cv_dois), js_dois)
+    show("In cv/cv.html but not in the master (add to the master)", set(cv_dois) - set(m_dois), cv_dois)
+
+    # ---- C. private-looking lines
+    hr("C. Private-looking lines in the master (never copy these)")
+    flagged = []
+    for n, raw in enumerate(text.splitlines(), 1):
+        s = norm(raw)
+        r = private_reasons(s) if s else []
+        if r:
+            flagged.append((n, r, s))
+    by_reason = OrderedDict()
+    for n, r, s in flagged:
+        for reason in r:
+            by_reason.setdefault(reason, []).append((n, s))
+    print(f"{len(flagged)} line(s) flagged. Values are masked below.")
+    for reason, items in by_reason.items():
+        print(f"\n[{reason}] {len(items)}")
+        for n, s in items:
+            short = mask(s)
+            print(f"  line {n}: {short[:150]}{'…' if len(short) > 150 else ''}")
+
+    # ---- snapshot
+    if args.mark_synced:
+        SNAPSHOT.write_text(text, encoding="utf-8")
+        META.write_text(json.dumps({
+            "synced_at": dt.datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "source": str(master),
+            "source_modified": mtime,
+            "sha256": sha,
+        }, indent=2))
+        os.chmod(SNAPSHOT, 0o600)
+        os.chmod(META, 0o600)
+        hr("Baseline saved")
+        print(f"{SNAPSHOT} now holds this master. The next run diffs against it.")
+    else:
+        print("\n(Baseline not changed. Re-run with --mark-synced once the public CV and website are updated.)")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
