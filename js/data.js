@@ -57,8 +57,9 @@ const completedProjects = [
 
 const pubs = [
 {y:2026,a:"Carrasco-Herrera, R., J.A. Noble, G. Danger, F. Duvernay, N. Park, E.L. Shock, K.E. Miller, C.R. Glein, J.H. Waite, and C.W. Hamilton",t:"Electron bombardment of methanol ices: Implications for organic chemical diversity on Europa’s surface.",j:"Icarus, 456, 117136, pp. 1–13",d:"10.1016/j.icarus.2026.117136"},
+{y:2026,a:"Kristinsson, T.H., S.T. Peters, J.R.C. Voigt, G. Steinbrügge, C.W. Hamilton, S. Diniega, J. Williams, G. Alfonso, and A. Romero-Wolf",t:"In Situ Demonstration of Passive Radar Using HF Jovian Bursts as a Source for Echo Detection.",j:"IEEE Transactions on Geoscience and Remote Sensing",d:"10.1109/TGRS.2026.3751587"},
 {y:2026,a:"Hadland, N., C.W. Hamilton, P. Schroedl, F. Calabrese, J. Marlow, and S. Duhamel",t:"Microbial dispersal from a hyperactive sandsheet in the Icelandic Highland.",j:"Science of the Total Environment, 1025, 181659, pp. 1–15",d:"10.1016/j.scitotenv.2026.181659"},
-{y:2026,a:"Carr, B.B., M.R. Patrick, H.R. Dietterich, M.H. Zoeller, C.E. Parcheta, D.T. Downs, P.A. Nadeau, and C.W. Hamilton",t:"Growth of a passive lava lake during the 2020–2021 Eruption of Kilauea Volcano, Hawaii.",j:"Bulletin of Volcanology, 88(1), pp. 1–17",d:"10.1007/s00445-025-01867-4"},
+{y:2026,a:"Carr, B.B., M.R. Patrick, H.R. Dietterich, M.H. Zoeller, C.E. Parcheta, D.T. Downs, P.A. Nadeau, and C.W. Hamilton",t:"Growth of a passive lava lake during the 2020–2021 Eruption of Kīlauea Volcano, Hawaii.",j:"Bulletin of Volcanology, 88(1), pp. 1–17",d:"10.1007/s00445-025-01867-4"},
 {y:2025,a:"Spurling, R., S. Nerozzi, and C.W. Hamilton",t:"Crater-based dating of Hebrus Valles and Hephaestus Fossae, Mars.",j:"The Planetary Science Journal, 6(306), pp. 1–14",d:"10.3847/PSJ/ae0721"},
 {y:2025,a:"Hadland, N., C.W. Hamilton, S.H. Bjornsdottir, and S. Duhamel",t:"Three eruptions at the Fagradalsfjall Volcano in Iceland show rapid and predictable microbial community establishment.",j:"Communications Biology, 8, 1657, pp. 1–17",d:"10.1038/s42003-025-09044-1"},
 {y:2025,a:"Hamid, S., L. Kerber, M. Varnam, C.W. Hamilton, and A. Clarke",t:"Warming, cooling, and surface ice accumulation from the Athabasca Valles flood lava eruption on Mars.",j:"Earth and Planetary Science Letters, 671, 119651, pp. 1–12",d:"10.1016/j.epsl.2025.119651"},
@@ -113,7 +114,7 @@ const pubs = [
 {y:2017,a:"Hamilton, C.W., E.P. Fitch, S.A. Fagents, and T. Thordarson",t:"Rootless tephra stratigraphy and emplacement processes.",j:"Bulletin of Volcanology, 79(11), pp. 1–19",d:"10.1007/s00445-016-1086-4"},
 {y:2017,a:"Neish, C.D., C.W. Hamilton, S.S. Hughes, S. Kobs-Nawotniak, W.B. Garry, J.R. Skok, R.C. Elphic, E. Schaefer, L.M. Carter, J.L. Bandfield, D. Lim, and J.L. Heldmann",t:"Terrestrial analogues for lunar impact melt flows.",j:"Icarus, 281, pp. 73–89",d:"10.1016/j.icarus.2016.08.008"},
 {y:2016,a:"Sori, M.M., S. Byrne, C.W. Hamilton, and M. Landis",t:"Viscous flow rates of icy topography on the North Polar Layered Deposits of Mars.",j:"Geophysical Research Letters, 43(2), pp. 541–549",d:"10.1002/2015GL067298"},
-{y:2015,a:"Tyler, R.H., W.G. Henning, and C.W. Hamilton",t:"Tidal heating in a magma ocean within Io.",j:"Astrophysical Journal Supplement Series, 218(22), pp. 1–17",d:"10.1088/0067–0049/218/2/22"},
+{y:2015,a:"Tyler, R.H., W.G. Henning, and C.W. Hamilton",t:"Tidal heating in a magma ocean within Io.",j:"Astrophysical Journal Supplement Series, 218(22), pp. 1–17",d:"10.1088/0067-0049/218/2/22"},
 {y:2015,a:"Baker, V.R., C.W. Hamilton, D.M. Burr, V.C. Gulick, G. Komatsu, W. Luo, J.W. Rice Jr., and J.A.P. Rodriguez",t:"Fluvial geomorphology on Earth-like planetary surfaces: A review.",j:"Geomorphology, 245, pp. 149–182",d:"10.1016/j.geomorph.2015.05.002"},
 {y:2015,a:"Fink, W., V.R. Baker, D. Schulze-Makuch, C.W. Hamilton, and M.A. Tarbell",t:"Autonomous exploration of planetary lava tubes using a multi-rover framework.",j:"IEEE Aerospace Conference Proceedings",d:"10.1109/aero.2015.7119315"},
 {y:2015,a:"Keske, A., C.W. Hamilton, A.S. McEwen, and I.J. Daubar",t:"Episodes of fluvial and volcanic activity in Mangala Valles, Mars.",j:"Icarus, 245, pp. 333–347",d:"10.1016/j.icarus.2014.09.040"},
@@ -133,21 +134,23 @@ const pubs = [
 
 const datasets = [
 {y:"2026",a:"Vanga, S., R.P. Perkins, C.D. Neish, M.R. Zanetti, B.B. Carr, and C.W. Hamilton",t:"Backpack LiDAR scans from a sand covered lava margin at Holuhraun (Iceland).",j:"Distributed by OpenTopography",d:"10.5069/G92805VK"},
-{y:"2026",a:"Hamilton, C.W., B.B. Carr, J.R.C. Voigt, and S.P. Scheidt",t:"Rover–Aerial Vehicle Exploration Network (RAVEN): Unoccupied aircraft system (UAS) surveys.",j:"UA Research Data Repository",d:"10.25422/azu.data.27156978"},
-{y:"2026",a:"Carr, B.B., C.W. Hamilton, N. Hadland, and M. Tuohy",t:"Hekla (Iceland) pumice quarry unoccupied aircraft system (UAS) surveys.",j:"UA Research Data Repository",d:"10.25422/azu.data.28915124"},
-{y:"2025",a:"Spurling, C.R., S. Nerozzi, and C.W. Hamilton",t:"Data for Crater-based dating of Hebrus Valles and Hephaestus Fossae, Mars.",j:"UA Research Data Repository",d:"10.25422/azu.data.27895710"},
-{y:"2024",a:"Ukstins, I.A., C.W. Hamilton, and B.B. Carr",t:"Photogrammetric experiment at Fagradalsfjall, Iceland.",j:"UA Research Data Repository",d:"10.25422/azu.data.26741719.v1"},
-{y:"2024",a:"Carr, B.B. and C.W. Hamilton",t:"VERITAS unoccupied aircraft system (UAS) surveys.",j:"UA Research Data Repository",d:"10.25422/azu.data.26035837.v2"},
-{y:"2023",a:"Voigt, J.R.C., C.W. Hamilton, and G. Steinbrugge",t:"Geomorphological maps for Elysium Planitia, Mars.",j:"UA Research Data Repository",d:"10.25422/azu.data.23278289"},
-{y:"2023",a:"Sutton, S., J.A. Richardson, P.L. Whelley, S.P. Scheidt, and C.W. Hamilton",t:"Repeat surveys of the topography of the main vent of the 2014–2015 eruption at Holuhraun, Iceland.",j:"UA Research Data Repository",d:"10.25422/azu.data.19680372.v1"},
+{y:"2026",a:"Hamilton, C.W., B.B. Carr, J.R.C. Voigt, and S.P. Scheidt",t:"Rover–Aerial Vehicle Exploration Network (RAVEN): Unoccupied aircraft system (UAS) surveys.",j:"University of Arizona Research Data Repository",d:"10.25422/azu.data.27156978"},
+{y:"2026",a:"Tuohy, M.C. and C.W. Hamilton",t:"Time-Series Geomorphological Facies Map Shapefiles for the 2021–2023 Fagradalsfjall Lava Flow-Field in Iceland.",j:"University of Arizona Research Data Repository",d:"10.25422/azu.data.34272279"},
+{y:"2026",a:"Kristinsson, T.H., S.T. Peters, J.R.C. Voigt, G. Steinbrügge, C.W. Hamilton, et al.",t:"In Situ Demonstration of Passive Radar Using HF Jovian Bursts as a Source for Echo Detection.",j:"JPL Dataverse",d:"10.48577/jpl.DSFUSK"},
+{y:"2026",a:"Carr, B.B., C.W. Hamilton, N. Hadland, and M. Tuohy",t:"Hekla (Iceland) pumice quarry unoccupied aircraft system (UAS) surveys.",j:"University of Arizona Research Data Repository",d:"10.25422/azu.data.28915124"},
+{y:"2025",a:"Spurling, C.R., S. Nerozzi, and C.W. Hamilton",t:"Data for Crater-based dating of Hebrus Valles and Hephaestus Fossae, Mars.",j:"University of Arizona Research Data Repository",d:"10.25422/azu.data.27895710"},
+{y:"2024",a:"Ukstins, I.A., C.W. Hamilton, and B.B. Carr",t:"Photogrammetric experiment at Fagradalsfjall, Iceland.",j:"University of Arizona Research Data Repository",d:"10.25422/azu.data.26741719.v1"},
+{y:"2024",a:"Carr, B.B. and C.W. Hamilton",t:"VERITAS unoccupied aircraft system (UAS) surveys.",j:"University of Arizona Research Data Repository",d:"10.25422/azu.data.26035837.v2"},
+{y:"2023",a:"Voigt, J.R.C., C.W. Hamilton, and G. Steinbrugge",t:"Geomorphological maps for Elysium Planitia, Mars.",j:"University of Arizona Research Data Repository",d:"10.25422/azu.data.23278289"},
+{y:"2023",a:"Sutton, S., J.A. Richardson, P.L. Whelley, S.P. Scheidt, and C.W. Hamilton",t:"Repeat surveys of the topography of the main vent of the 2014–2015 eruption at Holuhraun, Iceland.",j:"University of Arizona Research Data Repository",d:"10.25422/azu.data.19680372.v1"},
 {y:"2023",a:"Whelley, P.L., S.S. Sutton, J.A. Richardson, L. Gallant, C.W. Hamilton, A. Hoskuldsson, D.H. Needham, S. Byrne, A. Huff, and A. De Wet",t:"NASA GIFT Iceland Highlands: 2015–2019 Baugur LiDAR.",j:"U.S. Geological Survey",d:"10.5066/P9VQPE9W"},
-{y:"2022",a:"C.W. Hamilton, B.B. Carr, and J.R.C. Voigt",t:"Fagradalsfjall (Iceland) 2021 eruption unoccupied aircraft systems (UAS) data: Surveys.",j:"UA Research Data Repository",d:"10.25422/azu.data.21071140"},
+{y:"2022",a:"C.W. Hamilton, B.B. Carr, and J.R.C. Voigt",t:"Fagradalsfjall (Iceland) 2021 eruption unoccupied aircraft systems (UAS) data: Surveys.",j:"University of Arizona Research Data Repository",d:"10.25422/azu.data.21071140"},
 {y:"2022",a:"Hamilton, C.W., B. Óskarsson, G. Valsson, M.S. Christoffersen, J.R.C. Voigt, W. Moreland, N. Hadland, A. Kubas, and B.B. Carr",t:"Fagradalsfjall (Iceland) 2021 eruption ground control points (GCPs).",j:"University of Arizona Research Data Repository",d:"10.25422/azu.data.21084865.v1"},
-{y:"2021",a:"J.R.C. Voigt and C.W. Hamilton",t:"Geomorphological facies map for the 2014–2015 Holuhraun lava flow-field in Iceland.",j:"UA Campus Repository",d:"10.25422/azu.data.12971129"},
+{y:"2021",a:"J.R.C. Voigt and C.W. Hamilton",t:"Geomorphological facies map for the 2014–2015 Holuhraun lava flow-field in Iceland.",j:"University of Arizona Research Data Repository",d:"10.25422/azu.data.12971129"},
 {y:"2020",a:"C.W. Hamilton and S.P. Scheidt",t:"Supplemental information for “Lava-rise plateaus and inflation pits in the McCartys lava flow-field, New Mexico.”",j:"UA Campus Repository"},
 {y:"2019",a:"S.P. Scheidt and C.W. Hamilton",t:"Kite-derived orthoimage mosaic and digital terrain model of the southern portion of the McCartys lava flow-field, New Mexico, USA.",j:"UA Spatial Data Explorer",d:"10.2458/azu_geo_mccartys_2015"},
 {y:"2019",a:"S.P. Scheidt and C.W. Hamilton",t:"Unmanned aerial system (UAS)-derived orthoimage mosaics and digital terrain models of the northeastern portion of the 2014–2015 Holuhraun lava flow-field, Iceland: Data acquired from 2015 to 2018.",j:"UA Spatial Data Explorer",d:"10.2458/azu_geo_holuhraun_landscape_evolution"},
-{y:"2010",a:"Beggan, C.D., and C.W. Hamilton",t:"Geological Image Analysis Software (GIAS).",j:"Open-source software for geospatial analysis",h:"https://www.geoanalysis.org"},
+{y:"2010",a:"Beggan, C.D., and C.W. Hamilton",t:"Geological Image Analysis Software (GIAS).",j:"Open-source software for geospatial analysis",h:"http://www.geoanalysis.org"},
 ];
 
 const whitepapers = [
