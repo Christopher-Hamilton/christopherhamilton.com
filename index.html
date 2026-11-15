@@ -34,6 +34,7 @@
   <!-- Font Preconnect -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Syne:wght@600;700;800&display=swap">
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
@@ -144,7 +145,7 @@
     <div class="hero-content fade-in">
       <div class="hero-layout">
         <div class="hero-text-col">
-          <h1>Christopher W.<br><span class="gradient">Hamilton</span></h1>
+          <h1>Christopher&nbsp;W.<br><span class="gradient">Hamilton</span></h1>
           <p class="hero-text">Investigating volcanic processes&#8212;from active volcanic eruptions in Iceland to lava plains on Mars, Venus, the Moon, and Io&#8212;opens new frontiers for planetary exploration, understanding the geological history of the Solar System, and exploring life's origins.</p>
           <div class="affiliation-chips">
             <span class="affiliation-chip">Professor, Lunar and Planetary Laboratory, University of Arizona</span>
@@ -166,7 +167,7 @@
 
   <div class="section section-wide reveal">
     <p class="tag-label">Latest</p>
-    <h2 class="section-heading" style="font-size:30px;margin-bottom:8px">Recent Publications and News</h2>
+    <h2 class="section-heading h-section">Recent Publications and News</h2>
     <div class="accent-line"></div>
     <div class="grid-pubs" id="latest-pubs"></div>
     <div id="latest-extra" style="display:none;margin-top:12px" class="grid-pubs"></div>
@@ -181,17 +182,17 @@
       <div class="raven-banner-overlay"></div>
       <div class="raven-banner-content">
         <div class="raven-figure-text">
-          <h2 style="font-size:22px;margin-bottom:0;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,0.7)">Planetary Analogs for Solar System Exploration: Results of the RAVEN Project</h2>
+          <h2>Planetary Analogs for Solar System Exploration: Results of the RAVEN Project</h2>
         </div>
         <div class="raven-figure-btn">
           <a href="https://iopscience.iop.org/collections/psj-240707-01" target="_blank" rel="noopener noreferrer" class="link-btn-lg" onclick="event.stopPropagation()">View Focus Issue &#8599;</a>
         </div>
       </div>
     </div>
-    <div class="raven-info" style="padding:22px 28px;background:var(--bg-card);display:flex;gap:24px;align-items:stretch">
+    <div class="raven-info">
       <div style="flex:1">
-        <p class="mono" style="font-size:12px;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">The Planetary Science Journal</p>
-        <p style="font-size:16px;color:var(--dim);max-width:700px;line-height:1.7">A collection of papers from the Rover&#8211;Aerial Vehicle Exploration Network (RAVEN) project, testing next-generation rover&#8211;helicopter mission architectures in Mars-analog volcanic terrains in Iceland. This focus issue is still active, with additional papers in review.</p>
+        <p class="raven-kicker">The Planetary Science Journal</p>
+        <p class="raven-desc">A collection of papers from the Rover&#8211;Aerial Vehicle Exploration Network (RAVEN) project, testing next-generation rover&#8211;helicopter mission architectures in Mars-analog volcanic terrains in Iceland. This focus issue is still active, with additional papers in review.</p>
       </div>
       <div class="raven-logo-wrap"><img src="images/raven-logo.webp" alt="RAVEN mission logo"></div>
     </div>
@@ -199,14 +200,14 @@
 
   <div class="section reveal">
     <p class="tag-label">Research Highlights</p>
-    <h2 class="section-heading" style="font-size:30px;margin-bottom:8px">Exploring volcanism from Earth to the outer Solar System</h2>
+    <h2 class="section-heading h-section">Exploring volcanism from Earth to the outer Solar System</h2>
     <p class="section-sub">Our work links fieldwork in extreme environments to planetary remote sensing and mission development.</p>
     <div class="grid-cards" id="research-highlights"></div>
   </div>
 
   <div class="section reveal">
     <p class="tag-label">About</p>
-    <h2 class="section-heading" style="font-size:30px;margin-bottom:8px">Background and Recognition</h2>
+    <h2 class="section-heading h-section">Background and Recognition</h2>
     <div class="accent-line"></div>
     <div class="grid-2">
       <div>
@@ -217,10 +218,10 @@
           <img src="images/profile-3.webp" srcset="images/sm/profile-3.webp 400w, images/profile-3.webp 600w" sizes="(max-width: 768px) 120px, 240px" alt="Christopher Hamilton at Fagradalsfjall">
           <img src="images/profile-2.webp" srcset="images/sm/profile-2.webp 400w, images/profile-2.webp 600w" sizes="(max-width: 768px) 120px, 240px" alt="Christopher Hamilton at volcanic vent">
         </div>
-        <p style="color:var(--text);font-size:18px;margin-bottom:14px">I am a Professor at the Lunar and Planetary Laboratory (LPL) and Department of Geosciences at the University of Arizona.</p>
-        <p style="color:var(--dim);font-size:17px;margin-bottom:14px">My research as a <strong class="hl" style="cursor:default">volcanologist</strong> combines field observations, remote sensing, and mission development through planetary analog research, including studies of the 2014&#8211;2015 Holuhraun and 2021&#8211;2023 Fagradalsfjall eruptions in Iceland.</p>
-        <p style="color:var(--dim);font-size:17px">My work has been featured by <a href="#media" data-page="media" class="hl">CNN</a>, <a href="#media" data-page="media" class="hl">BBC</a>, <a href="#media" data-page="media" class="hl">CBS 60 Minutes</a>, <a href="#media" data-page="media" class="hl">Channel 4</a>, <a href="#media" data-page="media" class="hl">Discovery Channel</a>, and <a href="#media" data-page="media" class="hl">Netflix</a> documentaries.</p>
-        <p style="color:var(--dim);font-size:17px;margin-top:14px">Ph.D. Geology and Geophysics, University of Hawai&#39;i at M&#257;noa<br>B.Sc. Earth Sciences (First Class Honors), Dalhousie University</p>
+        <p class="prose" style="margin-bottom:14px">I am a Professor at the Lunar and Planetary Laboratory (LPL) and Department of Geosciences at the University of Arizona.</p>
+        <p class="prose" style="margin-bottom:14px">My research as a <strong class="hl" style="cursor:default">volcanologist</strong> combines field observations, remote sensing, and mission development through planetary analog research, including studies of the 2014&#8211;2015 Holuhraun and 2021&#8211;2023 Fagradalsfjall eruptions in Iceland.</p>
+        <p class="prose">My work has been featured by <a href="#media" data-page="media" class="hl">CNN</a>, <a href="#media" data-page="media" class="hl">BBC</a>, <a href="#media" data-page="media" class="hl">CBS 60 Minutes</a>, <a href="#media" data-page="media" class="hl">Channel 4</a>, <a href="#media" data-page="media" class="hl">Discovery Channel</a>, and <a href="#media" data-page="media" class="hl">Netflix</a> documentaries.</p>
+        <p class="prose" style="margin-top:14px">Ph.D. Geology and Geophysics, University of Hawai&#39;i at M&#257;noa<br>B.Sc. Earth Sciences (First Class Honors), Dalhousie University</p>
         <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:18px">
           <a href="https://orcid.org/0000-0001-9731-517X" target="_blank" rel="noopener noreferrer" class="link-btn">ORCID &#8599;</a>
           <a href="https://lpl.arizona.edu/faculty/christopher-hamilton" target="_blank" rel="noopener noreferrer" class="link-btn">Faculty Page &#8599;</a>
@@ -229,7 +230,7 @@
         </div>
       </div>
       <div>
-        <h3 class="section-heading" style="font-size:16px;margin-bottom:14px">Selected Awards and Service</h3>
+        <h3 class="section-heading h-sub" style="margin-bottom:14px">Selected Awards and Service</h3>
         <div class="award-item"><span class="award-year">2021</span><span class="award-text">Fulbright-NSF Arctic Scholar</span></div>
         <div class="award-item"><span class="award-year">2020</span><span class="award-text">Scialog Fellow, Signatures of Life in the Universe</span></div>
         <div class="award-item"><span class="award-year">2018</span><span class="award-text">Geological Society of America Early Career Award</span></div>
@@ -250,7 +251,7 @@
     <div class="page-banner-bg" style="background-image:url('images/research-banner.webp');background-position:center 55%"></div>
     <div class="page-banner-overlay"></div>
     <div class="page-banner-content">
-      <div><h2 class="section-heading" style="font-size:32px;margin-bottom:0">Research Projects</h2></div>
+      <div><h2 class="section-heading">Research Projects</h2></div>
     </div>
   </div>
   <div class="section">
@@ -268,7 +269,7 @@
     <div class="page-banner-bg" style="background-image:url('images/pubs-banner.webp')"></div>
     <div class="page-banner-overlay"></div>
     <div class="page-banner-content">
-      <div><h2 class="section-heading" style="font-size:32px;margin-bottom:0">Publications</h2></div>
+      <div><h2 class="section-heading">Publications</h2></div>
     </div>
   </div>
   <div class="section">
@@ -300,19 +301,19 @@
 
 <!-- ===== OPPORTUNITIES PAGE ===== -->
 <div id="page-opportunities" class="page" style="display:none">
-  <div class="page-banner" style="height:280px">
+  <div class="page-banner page-banner-tall">
     <div class="page-banner-bg" style="background-image:url('images/opportunities-banner.webp');background-position:center 35%"></div>
     <div class="page-banner-overlay"></div>
     <div class="page-banner-content">
-      <div><h2 class="section-heading" style="font-size:32px;margin-bottom:0">Opportunities</h2></div>
+      <div><h2 class="section-heading">Opportunities</h2></div>
     </div>
   </div>
   <div class="section">
-    <p style="color:var(--text);font-size:19px;margin-bottom:12px">I welcome inquiries from motivated individuals interested in planetary volcanism, astrobiology, and exploration technology.</p>
-    <p style="color:var(--dim);font-size:18px;margin-bottom:16px">There are no project-specific vacancies at this time, but I am always open to hearing from potential collaborators at all career stages. The best first step is to <strong style="color:var(--accent)">send me an email</strong> at <a href="mailto:chamilton@arizona.edu?subject=Hamilton%20Lab%20Inquiry" class="hl">chamilton@arizona.edu</a> describing your background and interests.</p>
-    <p style="color:var(--dim);font-size:18px;margin-bottom:24px">Above all, I am looking for three qualities: <strong style="color:var(--text)">Creativity</strong>, <strong style="color:var(--text)">Technical Capability</strong>, and <strong style="color:var(--text)">Independence</strong>.</p>
+    <p class="lead" style="margin-bottom:12px">I welcome inquiries from motivated individuals interested in planetary volcanism, astrobiology, and exploration technology.</p>
+    <p class="prose" style="margin-bottom:16px">There are no project-specific vacancies at this time, but I am always open to hearing from potential collaborators at all career stages. The best first step is to <strong style="color:var(--accent)">send me an email</strong> at <a href="mailto:chamilton@arizona.edu?subject=Hamilton%20Lab%20Inquiry" class="hl">chamilton@arizona.edu</a> describing your background and interests.</p>
+    <p class="prose" style="margin-bottom:24px">Above all, I am looking for three qualities: <strong style="color:var(--text)">Creativity</strong>, <strong style="color:var(--text)">Technical Capability</strong>, and <strong style="color:var(--text)">Independence</strong>.</p>
 
-    <p style="margin-bottom:24px"><a href="#" onclick="event.preventDefault();document.querySelector('[data-opptab=teaching]').click()" style="color:var(--accent);font-size:17px;font-weight:600">Take a course with me.</a></p>
+    <p style="margin-bottom:24px"><a href="#" onclick="event.preventDefault();document.querySelector('[data-opptab=teaching]').click()" class="text-link">Take a course with me.</a></p>
 
     <div class="data-tabs" id="opp-tabs" style="margin-bottom:24px">
       <button class="data-tab active" data-opptab="research">Research</button>
@@ -330,36 +331,36 @@
 
     <div class="opp-section" data-opp-cat="undergraduate">
     <h3 class="section-divider">Undergraduate Students</h3>
-    <p style="color:var(--dim);font-size:17px;margin-bottom:12px">I support undergraduate research through several pathways: independent study for course credit, paid internships through the <a href="https://spacegrant.arizona.edu/students/u-internships" target="_blank" rel="noopener noreferrer" class="hl">Arizona Space Grant</a> program, and Honors thesis advising through the Geosciences, Planetary Science, and Astronomy programs.</p>
-    <p style="color:var(--dim);font-size:17px;margin-bottom:12px">I am open to working with students from a wide range of disciplines&#8212;from Art to Architecture&#8212;so reach out.</p>
-    <p style="font-size:15px;color:var(--dim);margin-bottom:24px">Interested in planetary geosciences? Explore the <a href="https://lpl.arizona.edu/undergraduate/planetary-geos" target="_blank" rel="noopener noreferrer" style="color:var(--accent-light)">UA Undergraduate Program in Planetary Geosciences &#8599;</a></p>
+    <p class="prose" style="margin-bottom:12px">I support undergraduate research through several pathways: independent study for course credit, paid internships through the <a href="https://spacegrant.arizona.edu/students/u-internships" target="_blank" rel="noopener noreferrer" class="hl">Arizona Space Grant</a> program, and Honors thesis advising through the Geosciences, Planetary Science, and Astronomy programs.</p>
+    <p class="prose" style="margin-bottom:12px">I am open to working with students from a wide range of disciplines&#8212;from Art to Architecture&#8212;so reach out.</p>
+    <p class="prose-small" style="margin-bottom:24px">Interested in planetary geosciences? Explore the <a href="https://lpl.arizona.edu/undergraduate/planetary-geos" target="_blank" rel="noopener noreferrer" style="color:var(--accent-light)">UA Undergraduate Program in Planetary Geosciences &#8599;</a></p>
     </div>
 
     <div class="opp-section" data-opp-cat="graduate">
     <h3 class="section-divider">Graduate Students</h3>
-    <p style="color:var(--dim);font-size:17px;margin-bottom:12px">Prospective graduate students should <strong style="color:var(--text)">contact me before applying</strong> to discuss research interests and fit. Formal applications are submitted through <a href="https://lpl.arizona.edu/admissions" target="_blank" rel="noopener noreferrer" class="hl">LPL Graduate Admissions</a>.</p>
-    <p style="color:var(--dim);font-size:17px;margin-bottom:12px">Our primary research areas are:</p>
-    <p style="color:var(--dim);font-size:17px;margin-bottom:12px;padding-left:16px"><strong style="color:var(--text)">Geologic Surface Processes</strong>&#8212;lava emplacement, magma&#8211;water interactions, volcano-tectonics, aeolian processes, megaflooding, impact cratering<br>
+    <p class="prose" style="margin-bottom:12px">Prospective graduate students should <strong style="color:var(--text)">contact me before applying</strong> to discuss research interests and fit. Formal applications are submitted through <a href="https://lpl.arizona.edu/admissions" target="_blank" rel="noopener noreferrer" class="hl">LPL Graduate Admissions</a>.</p>
+    <p class="prose" style="margin-bottom:12px">Our primary research areas are:</p>
+    <p class="prose" style="margin-bottom:12px;padding-left:16px"><strong style="color:var(--text)">Geologic Surface Processes</strong>&#8212;lava emplacement, magma&#8211;water interactions, volcano-tectonics, aeolian processes, megaflooding, impact cratering<br>
     <strong style="color:var(--text)">Astrobiology</strong>&#8212;microbial colonization of volcanic terrains, biosignature detection, habitability<br>
     <strong style="color:var(--text)">Geoinformatics</strong>&#8212;remote sensing, information theory, Bayesian inference, clustering analysis, self-organization, digital twinning, machine learning, and computer vision</p>
-    <p style="color:var(--dim);font-size:17px;margin-bottom:24px">I expect applicants to have a strong foundation in one or more of: Physics, Chemistry, Geology, Biology, or Informatics, with technical background in Mathematics, Natural Sciences, and/or Information Technology.</p>
+    <p class="prose" style="margin-bottom:24px">I expect applicants to have a strong foundation in one or more of: Physics, Chemistry, Geology, Biology, or Informatics, with technical background in Mathematics, Natural Sciences, and/or Information Technology.</p>
     </div>
 
     <div class="opp-section" data-opp-cat="postdoctoral">
     <h3 class="section-divider">Postdoctoral Researchers</h3>
-    <p style="color:var(--dim);font-size:17px;margin-bottom:24px">Postdoctoral opportunities follow the same research areas and skill expectations as graduate positions, with additional emphasis on <strong style="color:var(--text)">advanced geophysical and computational methods</strong>, numerical modeling capabilities, and information technology skills. I encourage prospective postdoctoral researchers to reach out about fellowship opportunities and potential collaborations.</p>
+    <p class="prose" style="margin-bottom:24px">Postdoctoral opportunities follow the same research areas and skill expectations as graduate positions, with additional emphasis on <strong style="color:var(--text)">advanced geophysical and computational methods</strong>, numerical modeling capabilities, and information technology skills. I encourage prospective postdoctoral researchers to reach out about fellowship opportunities and potential collaborations.</p>
     </div>
 
     <div class="opp-section" data-opp-cat="technician">
     <h3 class="section-divider">Technicians and Staff</h3>
-    <p style="color:var(--dim);font-size:17px;margin-bottom:12px">Our group benefits from technical expertise in several areas:</p>
-    <p style="color:var(--dim);font-size:17px;margin-bottom:12px;padding-left:16px">Information Technology &#8226; Precision Surveying (GNSS, UAS, LiDAR, and Photogrammetry) &#8226; Astrobiology &#8226; Engineering &#8226; Laboratory Management</p>
-    <p style="color:var(--dim);font-size:17px;margin-bottom:24px">Computational and engineering skills are highly desired&#8212;if it doesn&#8217;t exist, we&#8217;ll make it.</p>
+    <p class="prose" style="margin-bottom:12px">Our group benefits from technical expertise in several areas:</p>
+    <p class="prose" style="margin-bottom:12px;padding-left:16px">Information Technology &#8226; Precision Surveying (GNSS, UAS, LiDAR, and Photogrammetry) &#8226; Astrobiology &#8226; Engineering &#8226; Laboratory Management</p>
+    <p class="prose" style="margin-bottom:24px">Computational and engineering skills are highly desired&#8212;if it doesn&#8217;t exist, we&#8217;ll make it.</p>
     </div>
     </div><!-- end research tab -->
 
     <div id="opptab-teaching" class="opp-tab-panel" style="display:none">
-      <p style="color:var(--text);font-size:18px;margin-bottom:20px">I regularly teach courses in planetary science, volcanology, and geoinformatics at the University of Arizona.</p>
+      <p class="lead" style="margin-bottom:20px">I regularly teach courses in planetary science, volcanology, and geoinformatics at the University of Arizona.</p>
 
       <h3 class="section-divider">University of Arizona</h3>
 
@@ -388,8 +389,8 @@
     </div><!-- end teaching tab -->
 
     <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:24px 28px;margin-top:20px">
-      <p style="color:var(--text);font-size:18px;margin-bottom:8px"><strong>Interested?</strong></p>
-      <p style="color:var(--dim);font-size:17px;margin-bottom:14px">Send me an email with a brief description of your background, research interests, and what draws you to our work. Please include a CV or resume.</p>
+      <p class="lead" style="margin-bottom:8px"><strong>Interested?</strong></p>
+      <p class="prose" style="margin-bottom:14px">Send me an email with a brief description of your background, research interests, and what draws you to our work. Please include a CV or resume.</p>
       <a href="mailto:chamilton@arizona.edu?subject=Hamilton%20Lab%20Inquiry" class="link-btn-lg">chamilton@arizona.edu &#8599;</a>
     </div>
   </div>
@@ -401,7 +402,7 @@
     <div class="page-banner-bg" style="background-image:url('images/team-banner.webp');background-position:center 60%"></div>
     <div class="page-banner-overlay"></div>
     <div class="page-banner-content">
-      <div><h2 class="section-heading" style="font-size:32px;margin-bottom:0">Team</h2></div>
+      <div><h2 class="section-heading">Team</h2></div>
     </div>
   </div>
   <div class="section">
@@ -474,7 +475,7 @@
     <div class="page-banner-bg" style="background-image:url('images/data-banner.webp')"></div>
     <div class="page-banner-overlay"></div>
     <div class="page-banner-content">
-      <div><h2 class="section-heading" style="font-size:32px;margin-bottom:0">Data and Resources</h2></div>
+      <div><h2 class="section-heading">Data and Resources</h2></div>
     </div>
   </div>
   <div class="section">
@@ -498,7 +499,7 @@
     <div class="page-banner-bg" style="background-image:url('images/gallery-dji0717.webp');background-position:center 48%"></div>
     <div class="page-banner-overlay"></div>
     <div class="page-banner-content">
-      <div><h2 class="section-heading" style="font-size:32px;margin-bottom:0">Media and Gallery</h2></div>
+      <div><h2 class="section-heading">Media and Gallery</h2></div>
     </div>
   </div>
   <div class="section">
@@ -749,10 +750,12 @@ function togglePrevious() {
   btn.classList.toggle('open', !showing);
 }
 
-// RAVEN logo: match the height of the focus-issue box, keep aspect ratio
+// RAVEN logo: match the height of the focus-issue box, keep aspect ratio (CSS caps the width)
+// Same query as the .raven-info column layout in style.css
+const RAVEN_STACKED = window.matchMedia('(max-width: 768px)');
 function sizeRavenLogo() {
   const w = document.querySelector('.raven-logo-wrap');
-  if (!w || window.innerWidth <= 768) { if (w) w.style.width = ''; return; }
+  if (!w || RAVEN_STACKED.matches) { if (w) w.style.width = ''; return; }
   w.style.width = Math.round(w.getBoundingClientRect().height * 420 / 369) + 'px';
 }
 // MEDIA: show whole rows only (3 rows collapsed), recomputed on resize
@@ -835,7 +838,7 @@ function renderHighlights() {
       '<div class="related-pub"><p class="rp-title">'+rp.t+'</p><p class="rp-authors">'+rp.a+'</p>'+(rp.d?'<a href="https://doi.org/'+rp.d+'" target="_blank" rel="noopener noreferrer" class="rp-doi" onclick="event.stopPropagation()">doi:'+rp.d+'</a>':'')+'</div>'
     ).join('') : '';
     const viewMore = h.filter ? '<a class="view-more-link" href="#publications" onclick="event.preventDefault();event.stopPropagation();showPubFilter(\''+h.filter+'\')">View more &#8594;</a>' : '';
-    return '<div class="card research-card stagger-item" onclick="toggleCard(this)"><div class="card-img-wrap"><div class="card-img" style="background-image:url(\''+h.img+'\');'+imgStyle+'"></div></div><div class="card-body"><h3 class="card-title">'+h.title+'</h3><p class="card-desc">'+h.desc+'</p><div class="card-tags">'+h.tags.map(t=>'<span class="card-tag">'+t+'</span>').join('')+'</div><div class="expand-indicator"><span class="arrow expand-arrow">&#9656;</span> Learn more</div></div><div class="card-detail"><p>'+h.detail+'</p>'+(pubsHtml?'<p class="card-detail-heading">Related Publications</p>'+pubsHtml+viewMore:'')+'</div></div>';
+    return '<div class="card research-card stagger-item" onclick="toggleCard(this)"><div class="card-img-wrap"><div class="card-img" style="background-image:url(\''+h.img+'\');'+imgStyle+'"></div></div><div class="card-body"><h3 class="card-title">'+h.title+'</h3><p class="card-desc">'+h.desc+'</p><div class="card-tags">'+h.tags.map(t=>'<span class="card-tag">'+t+'</span>').join('')+'</div><div class="expand-indicator"><span class="arrow expand-arrow">&#9656;</span> Learn more</div></div><div class="card-detail"><div class="cd-clip"><div class="cd-body"><p>'+h.detail+'</p>'+(pubsHtml?'<p class="card-detail-heading">Related Publications</p>'+pubsHtml+viewMore:'')+'</div></div></div></div>';
   }).join('');
 }
 
@@ -887,10 +890,10 @@ function renderPubChart() {
   const years = Object.keys(yearly).sort();
   const maxN = Math.max(...Object.values(yearly));
   document.getElementById('pub-chart').innerHTML =
-    '<h3 class="section-heading" style="font-size:18px;margin-bottom:16px">Publications per Year</h3><div class="chart-bars">'+
+    '<h3 class="section-heading h-sub" style="margin-bottom:16px">Publications per Year</h3><div class="chart-bars">'+
     years.map(y => {
-      const h = Math.max(4, (yearly[y]/maxN)*120);
-      return '<div class="chart-bar-group" data-year="'+y+'" onclick="filterByYear(\''+y+'\')"><span class="chart-bar-count">'+yearly[y]+'</span><div class="chart-bar" style="height:'+h+'px"></div><span class="chart-bar-year">'+y+'</span></div>';
+      const h = Math.max(.25, (yearly[y]/maxN)*7.5);
+      return '<div class="chart-bar-group" data-year="'+y+'" onclick="filterByYear(\''+y+'\')"><span class="chart-bar-count">'+yearly[y]+'</span><div class="chart-bar" style="height:'+h+'rem"></div><span class="chart-bar-year">'+y+'</span></div>';
     }).join('')+'</div><div class="chart-legend"><span><span class="chart-legend-dot"></span> Papers/year (click bar to filter)</span></div>';
 }
 
