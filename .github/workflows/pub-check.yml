@@ -1,0 +1,33 @@
+name: Weekly publication check
+
+on:
+  schedule:
+    - cron: "0 14 * * 1"  # Mondays 14:00 UTC (7:00 a.m. Tucson)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare ORCID and OpenAlex with js/data.js
+        run: python3 .github/scripts/check_new_pubs.py new-pubs.md
+      - name: Open or update the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="New publications to add to the website"
+          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number')
+          if [ -f new-pubs.md ]; then
+            if [ -n "$existing" ]; then
+              gh issue edit "$existing" --body-file new-pubs.md
+            else
+              gh issue create --title "$title" --body-file new-pubs.md
+            fi
+          elif [ -n "$existing" ]; then
+            gh issue close "$existing" --comment "All works linked to the ORCID are now on the site."
+          fi

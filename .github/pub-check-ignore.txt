@@ -1,0 +1,3 @@
+# DOIs the weekly publication check should never report (one per line; text after # is ignored).
+10.1002/essoar.10504418.1  # preprint of the lava-margin fractality paper (published version is on the site)
+10.1002/essoar.10504418.2  # preprint, second version
