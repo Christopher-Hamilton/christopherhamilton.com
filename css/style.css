@@ -1,7 +1,7 @@
 /* Fonts are loaded by <link> tags in the page head (no @import) */
-:root{--bg-deep:#0A0807;--bg:#0F0D0B;--bg-card:#1E1A17;--accent:#E8621E;--accent-light:#F59E4A;--mars:#C53A1A;--ice:#5BC0EB;--text:#F5F0EB;--dim:#B5ADA6;--muted:#89817A;--border:#2E2924;--syne-scale:0.90;--mono:'JetBrains Mono',monospace;
+:root{--bg-deep:#0A0807;--bg:#0F0D0B;--bg-card:#1E1A17;--accent:#E8621E;--accent-light:#F59E4A;--mars:#C53A1A;--ice:#5BC0EB;--text:#F5F0EB;--dim:#B5ADA6;--muted:#9A928B;--border:#2E2924;--syne-scale:0.90;--mono:'JetBrains Mono',monospace;
 /* Text colours: long paragraphs and small orange text (opt-in tokens) */
---text-body:var(--text);--accent-small:var(--accent);
+--text-body:#E6E0DA;--accent-small:#F07A3A;
 /* TYPE SCALE (rem; 1rem = the reader's browser default, normally 16px). Change html{font-size} to scale everything. */
 --fs-prose:clamp(1.0625rem,.95rem + .35vw,1.1875rem);/* running prose 17-19 px */
 --fs-lead:clamp(1.125rem,1rem + .4vw,1.25rem);/* hero, intros 18-20 px */
