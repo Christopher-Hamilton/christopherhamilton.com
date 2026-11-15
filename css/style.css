@@ -277,7 +277,7 @@ a:focus-visible,.link-btn:focus-visible,.link-btn-lg:focus-visible,.view-prev-bt
   *{background:transparent!important;color:#000!important;box-shadow:none!important;text-shadow:none!important}
   html{font-size:12pt}
   body{font-size:12pt;line-height:1.5}
-  .nav,.mobile-menu,.back-to-top,.hero-bg,.hero-overlay,.page-banner,.nav-hamburger,.view-prev-btn,.link-btn,.link-btn-lg,.expand-indicator,.chart-container,.card-img-wrap,.raven-section,.footer,.filter-chips,.data-tabs,.opp-tab-panel,.pub-search-row,.scholar-metrics,.scholar-link,.skip-link,.pub-card-img,.media-card-img{display:none!important}
+  .nav,.mobile-menu,.back-to-top,.hero-bg,.hero-overlay,.page-banner,.nav-hamburger,.view-prev-btn,.link-btn,.link-btn-lg,.expand-indicator,.chart-container,.card-img-wrap,.raven-section,.footer,.filter-chips,.data-tabs,.opp-tab-panel,.pub-search-row,.scholar-metrics,.scholar-link,.scholar-asof,.skip-link,.pub-card-img,.media-card-img{display:none!important}
   .page,.opp-tab-panel,.team-tab-panel,.data-tab-panel{display:block!important}
   .reveal,.stagger-item,.fade-in{opacity:1!important;transform:none!important;transition:none!important;animation:none!important}
   #latest-extra{display:block!important}
@@ -427,6 +427,7 @@ a:focus-visible,.link-btn:focus-visible,.link-btn-lg:focus-visible,.view-prev-bt
 .scholar-metric .metric-label{font-family:var(--mono);font-size:var(--fs-label);color:var(--muted);letter-spacing:.02em}
 .scholar-link{font-family:var(--mono);font-size:var(--fs-label);color:var(--muted);display:inline-block;margin-top:4px}
 .scholar-link:hover{color:var(--accent)}
+.scholar-asof{font-family:var(--mono);font-size:var(--fs-label-sm);color:var(--muted);margin-left:12px}
 
 /* GALLERY GRID */
 .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
