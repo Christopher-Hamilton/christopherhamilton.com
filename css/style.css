@@ -420,6 +420,18 @@ h1[tabindex="-1"]:focus{outline:none}
 .page-banner{overflow:hidden}
 .page-banner-bg{inset:-14% 0}
 
+/* BANNER AND HERO IMAGES: one class per banner; phones (48em and below) get a 1200-px file (hero 900 px), so only one file downloads.
+   Opportunities is 1200 px already. Keep these media queries in step with the hero preload in index.html. */
+.bg-hero{background-image:url(../images/hero.webp)}
+.bg-raven{background-image:url(../images/raven-hero.webp)}
+.bg-research{background-image:url(../images/research-banner.webp);background-position:center 55%}
+.bg-pubs{background-image:url(../images/pubs-banner.webp)}
+.bg-team{background-image:url(../images/team-banner.webp);background-position:center 60%}
+.bg-opportunities{background-image:url(../images/opportunities-banner.webp);background-position:center 35%}
+.bg-data{background-image:url(../images/data-banner.webp)}
+.bg-media{background-image:url(../images/gallery-dji0717.webp);background-position:center 48%}
+@media(max-width:48em){.bg-hero{background-image:url(../images/mobile/hero.webp)}.bg-raven{background-image:url(../images/mobile/raven-hero.webp)}.bg-research{background-image:url(../images/mobile/research-banner.webp)}.bg-pubs{background-image:url(../images/mobile/pubs-banner.webp)}.bg-team{background-image:url(../images/mobile/team-banner.webp)}.bg-data{background-image:url(../images/mobile/data-banner.webp)}.bg-media{background-image:url(../images/mobile/gallery-dji0717.webp)}}
+
 @media(max-width:768px){
   .data-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;gap:0}
   .data-tab{padding:10px 14px 8px}
