@@ -1084,9 +1084,28 @@ function renderPubs(query) {
       });
     }
     const cfNote = cfNames ? '<br><span class="cofirst"><sup>*</sup>Co-First Author</span>' : '';
-    return yh+'<div class="pub-entry'+faClass+'"><p class="authors">'+authorDisplay+' ('+p.y+')</p><p class="title">'+p.t+'</p><p class="journal">'+p.j+'</p>'+doi+cfNote+'</div>';
+    return yh+'<div class="pub-entry'+faClass+'"><p class="authors">'+authorDisplay+' ('+p.y+')</p><p class="title">'+p.t+'</p><p class="journal">'+p.j+'</p>'+doi+cfNote+abstractHtml(p)+'</div>';
   }).join('');
+  markNewTabLinks();
 }
+
+// ABSTRACTS: only for papers whose publisher released the abstract under CC BY (abs and lic in data.js)
+function escapeHtml(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function abstractHtml(p) {
+  if (!p.abs || !p.lic) return '';
+  const id = 'abs-' + pubs.indexOf(p);
+  const ver = (p.lic.match(/[\d.]+$/) || ['4.0'])[0];
+  return '<div class="pub-abs"><button type="button" class="abs-toggle" aria-expanded="false" aria-controls="'+id+'"><span class="arrow" aria-hidden="true">&#9656;</span> Abstract</button>'+
+    '<div class="abs-panel" id="'+id+'" hidden>'+p.abs.split('\n').map(t => '<p>'+escapeHtml(t)+'</p>').join('')+
+    '<p class="abs-lic">Abstract: <a href="https://creativecommons.org/licenses/by/'+ver+'/" target="_blank" rel="noopener noreferrer">'+p.lic+'</a>, via the publisher</p></div></div>';
+}
+document.getElementById('pub-list').addEventListener('click', (e) => {
+  const btn = e.target.closest('.abs-toggle');
+  if (!btn) return;
+  const open = btn.getAttribute('aria-expanded') !== 'true';
+  btn.setAttribute('aria-expanded', open);
+  document.getElementById(btn.getAttribute('aria-controls')).hidden = !open;
+});
 
 // FILTER CHIPS
 function clearActiveChips() {
