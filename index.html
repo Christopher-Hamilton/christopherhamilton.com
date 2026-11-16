@@ -40,7 +40,7 @@
   <script>
     const PAGES = ['home','research','publications','team','opportunities','data','media'];
     (function () {
-      var page = location.hash.slice(1);
+      var page = location.hash.slice(1).split('/')[0];
       if (PAGES.indexOf(page) > 0) { document.documentElement.setAttribute('data-start-page', page); return; }
       [['images/hero.webp', '(min-width: 48.0001em)'], ['images/mobile/hero.webp', '(max-width: 48em)']].forEach(function (h) {
         var l = document.createElement('link');
@@ -244,7 +244,7 @@
         </div>
         <p class="prose" style="margin-bottom:14px">I am a Professor at the Lunar and Planetary Laboratory (LPL) and Department of Geosciences at the University of Arizona.</p>
         <p class="prose" style="margin-bottom:14px">My research as a <strong style="color:var(--text)">volcanologist</strong> combines field observations, remote sensing, and mission development through planetary analog research, including studies of the 2014&#8211;2015 Holuhraun and 2021&#8211;2023 Fagradalsfjall eruptions in Iceland.</p>
-        <p class="prose">My work has been featured by <a href="#media" data-page="media" class="hl">CNN</a>, <a href="#media" data-page="media" class="hl">BBC</a>, <a href="#media" data-page="media" class="hl">CBS 60 Minutes</a>, <a href="#media" data-page="media" class="hl">Channel 4</a>, and <a href="#media" data-page="media" class="hl">Netflix</a> documentaries.</p>
+        <p class="prose">My work has been featured by <a href="#media/coverage" class="hl">CNN</a>, <a href="#media/coverage" class="hl">BBC</a>, <a href="#media/coverage" class="hl">CBS 60 Minutes</a>, <a href="#media/coverage" class="hl">Channel 4</a>, and <a href="#media/coverage" class="hl">Netflix</a> documentaries.</p>
         <p class="prose" style="margin-top:14px">Ph.D. Geology and Geophysics, University of Hawai&#39;i at M&#257;noa<br>B.Sc. Earth Sciences (First Class Honors), Dalhousie University</p>
         <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:18px">
           <a href="cv/Hamilton_CV.pdf" class="link-btn">CV (PDF)<span class="cv-updated"></span></a>
@@ -344,7 +344,7 @@
     <p class="prose" style="margin-bottom:16px">There are no project-specific vacancies at this time, but I am always open to hearing from potential collaborators at all career stages. The best first step is to <strong style="color:var(--accent)">send me an email</strong> at <a href="mailto:chamilton@arizona.edu?subject=Hamilton%20Lab%20Inquiry" class="hl">chamilton@arizona.edu</a> describing your background and interests.</p>
     <p class="prose" style="margin-bottom:24px">Above all, I am looking for three qualities: <strong style="color:var(--text)">Creativity</strong>, <strong style="color:var(--text)">Technical Capability</strong>, and <strong style="color:var(--text)">Independence</strong>.</p>
 
-    <p style="margin-bottom:24px"><button type="button" class="text-link link-button" id="take-course" aria-controls="opptab-teaching">Take a course with me.</button></p>
+    <p style="margin-bottom:24px"><a href="#opportunities/teaching" class="text-link" id="take-course">Take a course with me.</a></p>
 
     <div class="data-tabs" id="opp-tabs" style="margin-bottom:24px" aria-label="Opportunities">
       <button type="button" class="data-tab active" data-opptab="research">Research</button>
@@ -639,7 +639,8 @@ const LAST_UPDATED = '2026-11-15';
 // The /update-cv routine changes this when it rebuilds the PDF.
 const CV_UPDATED = '2026-11';
 
-// Known page names (PAGES) are defined in the <head> script; any other hash goes to Home
+// Known page names (PAGES) are defined in the <head> script; any other hash goes to Home.
+// A page with tabs also takes a tab name, such as #media/gallery (see TAB_PANELS).
 
 function highlightAuthor(text) {
   const patterns = ['Hamilton, C.W.', 'C.W. Hamilton'];
@@ -722,14 +723,32 @@ function navigate(page) {
   setTimeout(() => { initReveal(); initStagger(); layoutMedia(); sizeRavenLogo(); }, 100);
 }
 
+// The tab named after the page in the address (#media/gallery), or null
+function tabForAddress(page, sub) {
+  const id = Object.keys(TAB_PANELS).find(k => TAB_PANELS[k][2] === page);
+  if (!id || !sub) return null;
+  return Array.from(document.querySelectorAll('#' + id + ' .data-tab')).find(t => t.dataset[TAB_PANELS[id][0]] === sub) || null;
+}
+let tabFromAddress = false;
 function handleHash() {
-  const page = location.hash.replace('#', '');
+  const parts = location.hash.replace('#', '').split('/');
+  const page = parts[0], sub = parts.slice(1).join('/');
   if (page && !PAGES.includes(page)) {
     history.replaceState(null, '', location.pathname + location.search);
     navigate('home');
     return;
   }
-  navigate(page || 'home');
+  // An unknown tab name falls back to the page itself
+  const tab = tabForAddress(page, sub);
+  if (sub && !tab) history.replaceState(null, '', location.pathname + location.search + '#' + page);
+  // A tab link on the page already showing (such as "Take a course with me.") only switches the tab
+  const samePage = !!tab && !!currentPage && currentPage.id === 'page-' + page;
+  if (!samePage) navigate(page || 'home');
+  // The address decides the tab: the named one, or the first tab for the bare page
+  const listId = Object.keys(TAB_PANELS).find(k => TAB_PANELS[k][2] === page);
+  const show = tab || (listId && document.querySelector('#' + listId + ' .data-tab'));
+  if (show) { tabFromAddress = true; show.click(); tabFromAddress = false; }
+  if (samePage && tab) tab.focus();
 }
 window.addEventListener('hashchange', handleHash);
 document.querySelectorAll('[data-page]').forEach(el => {
@@ -1134,16 +1153,25 @@ function initFilterChips() {
   });
 }
 
-// DATA PAGE TABS
-function initDataTabs() {
-  document.querySelectorAll('#data-tabs .data-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('#data-tabs .data-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.data-tab-panel').forEach(p => p.classList.remove('active'));
-      tab.classList.add('active');
-      const target = document.getElementById('tab-'+tab.dataset.tab);
-      if (target) target.classList.add('active');
-    });
+// TABS (all four groups): show the chosen panel. A tab the visitor chooses goes into the address
+// (#media/gallery) without a new history entry, so the link can be shared; page views are still
+// counted per page (gcCount ignores the tab part, and replaceState fires no hashchange).
+// Tab list id -> [data attribute on the tab, panel id prefix, page]
+const TAB_PANELS = {'data-tabs':['tab','tab-','data'], 'opp-tabs':['opptab','opptab-','opportunities'], 'team-tabs':['teamtab','teamtab-','team'], 'media-tabs':['mtab','mtab-','media']};
+function initTabs() {
+  Object.keys(TAB_PANELS).forEach(id => {
+    const [attr, prefix, page] = TAB_PANELS[id];
+    const tabs = document.querySelectorAll('#' + id + ' .data-tab');
+    tabs.forEach(tab => tab.addEventListener('click', () => {
+      tabs.forEach(t => {
+        const on = t === tab;
+        t.classList.toggle('active', on);
+        const panel = document.getElementById(prefix + t.dataset[attr]);
+        if (panel) { panel.classList.toggle('active', on); panel.style.display = on ? 'block' : 'none'; }
+      });
+      if (id === 'media-tabs') layoutMedia();
+      if (!tabFromAddress) history.replaceState(null, '', location.pathname + location.search + '#' + page + '/' + tab.dataset[attr]);
+    }));
   });
 }
 
@@ -1209,42 +1237,9 @@ function initOppChips() {
       });
     });
   });
-  // Opp Research/Teaching tabs
-  document.querySelectorAll('#opp-tabs .data-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('#opp-tabs .data-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      document.querySelectorAll('.opp-tab-panel').forEach(p => p.style.display = 'none');
-      const target = document.getElementById('opptab-' + tab.dataset.opptab);
-      if (target) target.style.display = 'block';
-    });
-  });
-  // Media and Gallery tabs
-  document.querySelectorAll('#media-tabs .data-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('#media-tabs .data-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      document.querySelectorAll('.media-tab-panel').forEach(p => p.style.display = 'none');
-      const target = document.getElementById('mtab-' + tab.dataset.mtab);
-      if (target) target.style.display = 'block';
-      layoutMedia();
-    });
-  });
-  // Team tabs
-  document.querySelectorAll('#team-tabs .data-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('#team-tabs .data-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      document.querySelectorAll('.team-tab-panel').forEach(p => p.style.display = 'none');
-      const target = document.getElementById('teamtab-' + tab.dataset.teamtab);
-      if (target) target.style.display = 'block';
-    });
-  });
 }
 
-// ARIA tabs for all tab groups: tab and panel linked, roving tabindex, arrow/Home/End keys.
-// Tab list id -> [data attribute on the tab, panel id prefix]
-const TAB_PANELS = {'data-tabs':['tab','tab-'], 'opp-tabs':['opptab','opptab-'], 'team-tabs':['teamtab','teamtab-'], 'media-tabs':['mtab','mtab-']};
+// ARIA tabs for all tab groups (TAB_PANELS): tab and panel linked, roving tabindex, arrow/Home/End keys.
 function initTabAria() {
   document.querySelectorAll('.data-tabs').forEach(list => {
     const conf = TAB_PANELS[list.id];
@@ -1278,13 +1273,6 @@ function initTabAria() {
       tabs[n].focus();
       tabs[n].click();
     });
-  });
-  // "Take a course with me." selects the Teaching tab
-  const course = document.getElementById('take-course');
-  if (course) course.addEventListener('click', () => {
-    const tab = document.querySelector('#opp-tabs [data-opptab="teaching"]');
-    tab.click();
-    tab.focus();
   });
 }
 
@@ -1453,7 +1441,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFooterDates();
   renderLatest(); renderHighlights(); renderProjects(); renderPubChart(); renderPubs('');
   document.getElementById('pub-total').textContent = pubs.length;
-  renderDataPage(); initFilterChips(); initDataTabs(); handleHash();
+  renderDataPage(); initFilterChips(); initTabs(); handleHash();
   initReveal(); initStagger(); initBackToTop(); initScrollEffects();
   initProfileRotation(); initOppChips(); initTeamPubs();
   initDisclosures(document.getElementById('research-highlights'), '.research-card');
@@ -1465,12 +1453,19 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 <script>
   window.goatcounter = {no_onload: true}
-  // Count known pages only (the skip link and unknown hashes are not page views)
+  // Count known pages only (the skip link and unknown hashes are not page views).
+  // A tab address such as #media/gallery counts as its page (#media), and a tab link on the
+  // page already counted (#media to #media/gallery) is not a second view.
+  var gcLast = null
   function gcCount() {
-    var h = location.hash.replace('#', '')
+    var h = location.hash.replace('#', '').split('/')[0]
     if (h && PAGES.indexOf(h) < 0) return
-    if (window.goatcounter && window.goatcounter.count)
-      window.goatcounter.count({path: location.pathname + location.search + location.hash})
+    var path = location.pathname + location.search + (h ? '#' + h : '')
+    if (path === gcLast) return
+    if (window.goatcounter && window.goatcounter.count) {
+      gcLast = path
+      window.goatcounter.count({path: path})
+    }
   }
   window.addEventListener('hashchange', gcCount)
   // Wait up to 10 s for the script; stop polling if it is blocked
