@@ -164,11 +164,11 @@ const whitepapers = [
 {y:"2020",a:"Bapst, J. et al., including C.W. Hamilton",t:"Mars science helicopter: Compelling science enabled by an aerial platform.",j:"Decadal Survey White Paper",d:"10.3847/25c2cfeb.a126aea0"},
 {y:"2019",a:"de Kleer, K. et al., including C.W. Hamilton",t:"Tidal heating: Lessons from Io and the Jovian System.",j:"Keck Institute for Space Studies",d:"kiss",h:"https://www.kiss.caltech.edu/final_reports/tidal_heating_final_report.pdf"},
 {y:"2018",a:"Henning, W.G. et al., including C.W. Hamilton",t:"Highly volcanic exoplanets, lava worlds, and magma ocean worlds.",j:"NAS Exoplanet Science Strategy White Paper",d:"arxiv",h:"https://arxiv.org/abs/1804.05110"},
-{y:"2015",a:"Hamilton, C.W.",t:"Team gets firsthand look at the new Holuhraun eruption site.",j:"Eos, 96",d:"10.1029/2015EO041197"},
 ];
 
 const outreach = [
 {y:"2021",a:"Duhamel, S. and C.W. Hamilton",t:"How microbes in Iceland can teach us about possible life on Mars.",j:"Futurum, 7",d:"10.33424/FUTURUM112"},
+{y:"2015",a:"Hamilton, C.W.",t:"Team gets firsthand look at the new Holuhraun eruption site.",j:"Eos, 96",d:"10.1029/2015EO041197"},
 ];
 
 // Book chapters: shown in their own tab once this list has an entry. Same fields as datasets, e.g.
