@@ -9,7 +9,9 @@ Usage:
     python3 cv/tools/cv_sync_report.py [path/to/master.docx] [--mark-synced] [--full]
 
 With no path, the master is the Hamilton_CV_<Month>_<day>_<year>.docx with the latest
-date in its name, found in ~/Documents/CV, ~/Documents, ~/Desktop or ~/Downloads.
+date in its name, found in ~/Documents/CVs (the CVs folder; ~/Downloads/CVs is a
+symlink to it), ~/Documents/CV, ~/Documents, ~/Desktop or ~/Downloads. Symlinked
+duplicates are counted once.
 Tailored variants (Abridged, Fulbright, Imera, ...) and names containing "Public" are
 skipped. Set HAMILTON_CV_MASTER=/path/to/file.docx to override.
 
@@ -44,8 +46,9 @@ from docx_text import docx_to_text  # noqa: E402
 STATE_DIR = Path.home() / ".hamilton-cv-sync"
 SNAPSHOT = STATE_DIR / "master-snapshot.txt"
 META = STATE_DIR / "master-snapshot.json"
-SEARCH_DIRS = [Path.home() / "Documents" / "CV", Path.home() / "Documents",
-               Path.home() / "Desktop", Path.home() / "Downloads"]
+SEARCH_DIRS = [Path.home() / "Documents" / "CVs", Path.home() / "Documents" / "CV",
+               Path.home() / "Documents", Path.home() / "Desktop",
+               Path.home() / "Downloads" / "CVs", Path.home() / "Downloads"]
 
 # Top-level headings of the master CV (prefix match, case-insensitive).
 TOP_HEADINGS = [
@@ -156,13 +159,23 @@ def find_master() -> Path:
     if env:
         return Path(env).expanduser().resolve()
     dated, other = [], []
+    seen_dirs, seen_files = set(), set()
     for d in SEARCH_DIRS:
-        if d.is_dir():
-            for p in d.glob("Hamilton_CV*.docx"):
-                if "public" in p.name.lower() or p.name.startswith("~$"):
-                    continue
-                nd = name_date(p)
-                (dated if nd else other).append((nd, p))
+        if not d.is_dir():
+            continue
+        rd = d.resolve()  # ~/Downloads/CVs -> ~/Documents/CVs: search it only once
+        if rd in seen_dirs:
+            continue
+        seen_dirs.add(rd)
+        for p in sorted(d.glob("Hamilton_CV*.docx")):
+            if "public" in p.name.lower() or p.name.startswith("~$"):
+                continue
+            rp = p.resolve()  # a symlinked copy of a file already found is not a second master
+            if rp in seen_files:
+                continue
+            seen_files.add(rp)
+            nd = name_date(p)
+            (dated if nd else other).append((nd, p))
     if dated:
         return max(dated, key=lambda t: (t[0], t[1].stat().st_mtime))[1]
     if other:
