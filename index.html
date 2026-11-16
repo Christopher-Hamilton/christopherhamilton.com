@@ -35,6 +35,21 @@
   <link rel="preload" href="fonts/source-sans-3-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/syne-latin.woff2" as="font" type="font/woff2" crossorigin>
 
+  <!-- A link straight to a page (such as #publications) shows that page from the first paint, not Home first.
+       Home visits fetch the hero photo early, phone-sized below 48em (same queries as .bg-hero in style.css). -->
+  <script>
+    const PAGES = ['home','research','publications','team','opportunities','data','media'];
+    (function () {
+      var page = location.hash.slice(1);
+      if (PAGES.indexOf(page) > 0) { document.documentElement.setAttribute('data-start-page', page); return; }
+      [['images/hero.webp', '(min-width: 48.0001em)'], ['images/mobile/hero.webp', '(max-width: 48em)']].forEach(function (h) {
+        var l = document.createElement('link');
+        l.rel = 'preload'; l.as = 'image'; l.href = h[0]; l.media = h[1]; l.setAttribute('fetchpriority', 'high');
+        document.head.appendChild(l);
+      });
+    })();
+  </script>
+
   <!-- Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
   <!-- Without JavaScript, show content that would otherwise fade in -->
@@ -588,8 +603,7 @@
 // Hard-coded on purpose: document.lastModified is unreliable on GitHub Pages.
 const LAST_UPDATED = '2026-11-15';
 
-// Known page names; any other hash goes to Home
-const PAGES = ['home','research','publications','team','opportunities','data','media'];
+// Known page names (PAGES) are defined in the <head> script; any other hash goes to Home
 
 function highlightAuthor(text) {
   const patterns = ['Hamilton, C.W.', 'C.W. Hamilton'];
@@ -645,10 +659,14 @@ const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 // NAV
 let firstNavigation = true;
+let currentPage = null;
 function navigate(page) {
   document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
   const target = document.getElementById('page-' + page);
   if (target) target.style.display = 'block';
+  currentPage = target;
+  // From now on the inline display styles decide which page shows (see the <head> script)
+  document.documentElement.removeAttribute('data-start-page');
   const navLink = document.querySelector('.nav-links a[data-page="' + page + '"]');
   document.title = navLink && page !== 'home' ? navLink.textContent + ' — Christopher W. Hamilton' : 'Christopher W. Hamilton — Planetary Volcanism and Exploration';
   document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(a => {
@@ -727,35 +745,28 @@ function initStagger() {
   document.querySelectorAll('.stagger-container').forEach(el => observer.observe(el));
 }
 
-// PARALLAX
-function initParallax() {
-  window.addEventListener('scroll', () => {
-    if (REDUCED_MOTION.matches) return;
-    const scrollY = window.scrollY;
-    const heroBg = document.querySelector('#page-home .hero-bg');
-    if (heroBg && document.getElementById('page-home').style.display !== 'none') {
-      heroBg.style.transform = 'translateY(' + (scrollY * 0.3) + 'px)';
-    }
-    document.querySelectorAll('.page-banner-bg, .raven-banner-bg').forEach(bg => {
-      const banner = bg.closest('.page-banner, .raven-banner');
-      if (banner) {
-        const rect = banner.getBoundingClientRect();
-        if (rect.bottom > 0 && rect.top < window.innerHeight) {
-          const offset = (rect.top * 0.25);
-          bg.style.transform = 'translateY(' + offset + 'px)';
-        }
-      }
-    });
-  }, { passive: true });
-}
-
-// PROGRESS BAR
-function initProgressBar() {
+// PARALLAX AND PROGRESS BAR: one scroll handler, at most one update per frame.
+// Parallax moves only the visible page's banners (none for reduced motion).
+function initScrollEffects() {
   const bar = document.getElementById('progress-bar');
-  if (!bar) return;
+  let queued = false;
+  const update = () => {
+    queued = false;
+    const scrollY = window.scrollY;
+    if (bar) {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = h > 0 ? ((scrollY / h) * 100) + '%' : '0%';
+    }
+    if (REDUCED_MOTION.matches || !currentPage) return;
+    const heroBg = currentPage.querySelector('.hero-bg');
+    if (heroBg) heroBg.style.transform = 'translateY(' + (scrollY * 0.3) + 'px)';
+    currentPage.querySelectorAll('.page-banner-bg, .raven-banner-bg').forEach(bg => {
+      const rect = bg.parentElement.getBoundingClientRect();
+      if (rect.bottom > 0 && rect.top < window.innerHeight) bg.style.transform = 'translateY(' + (rect.top * 0.25) + 'px)';
+    });
+  };
   window.addEventListener('scroll', () => {
-    const h = document.documentElement.scrollHeight - window.innerHeight;
-    bar.style.width = h > 0 ? ((window.scrollY / h) * 100) + '%' : '0%';
+    if (!queued) { queued = true; requestAnimationFrame(update); }
   }, { passive: true });
 }
 
@@ -1233,16 +1244,6 @@ function initChipState() {
 // PROFILE PHOTO ROTATION - handles all portrait circles.
 // Every 20 s; paused on hover or focus and while the tab is hidden; off for reduced motion.
 // Only the visible photo is exposed to screen readers.
-function initProfileRotation() {
-  document.querySelectorAll('#profile-circle, #hero-portrait').forEach(circle => {
-    const imgs = circle.querySelectorAll('img');
-    let current = 0, paused = false;
-    const show = i => imgs.forEach((img, j) => {
-      img.classList.toggle('active', j === i);
-      if (j === i) img.removeAttribute('aria-hidden'); else img.setAttribute('aria-hidden', 'true');
-    });
-    show(0);
-    if (imgs.length < 2) return;
 // The hidden photos wait in data-src/data-srcset; each loads about 5 s before its turn.
 function loadFrame(img) {
   if (!img || !img.dataset.src) return;
@@ -1250,31 +1251,41 @@ function loadFrame(img) {
   img.src = img.dataset.src;
   delete img.dataset.src; delete img.dataset.srcset;
 }
-    circle.addEventListener('mouseenter', () => { paused = true; });
-    circle.addEventListener('mouseleave', () => { paused = false; });
-    circle.addEventListener('focusin', () => { paused = true; });
-    circle.addEventListener('focusout', () => { paused = false; });
-    setInterval(() => {
+function initProfileRotation() {
+  document.querySelectorAll('#profile-circle, #hero-portrait').forEach(circle => {
+    const imgs = circle.querySelectorAll('img');
+    let current = 0, paused = false;
+    const show = i => imgs.forEach((img, j) => {
       if (j === i) loadFrame(img);
-      if (paused || document.hidden || REDUCED_MOTION.matches) return;
-      current = (current + 1) % imgs.length;
-      show(current);
+      img.classList.toggle('active', j === i);
+      if (j === i) img.removeAttribute('aria-hidden'); else img.setAttribute('aria-hidden', 'true');
+    });
     const loadNext = () => setTimeout(() => {
       // Skip while the circle is on a hidden page or rotation is off; show() loads it on demand
       if (circle.offsetParent && !REDUCED_MOTION.matches) loadFrame(imgs[(current + 1) % imgs.length]);
     }, 15000);
+    show(0);
+    if (imgs.length < 2) return;
+    circle.addEventListener('mouseenter', () => { paused = true; });
+    circle.addEventListener('mouseleave', () => { paused = false; });
+    circle.addEventListener('focusin', () => { paused = true; });
+    circle.addEventListener('focusout', () => { paused = false; });
+    loadNext();
+    setInterval(() => {
+      if (paused || document.hidden || REDUCED_MOTION.matches) return;
+      current = (current + 1) % imgs.length;
+      show(current);
+      loadNext();
     }, 20000);
   });
 }
 
 // Links that open a new tab: say so to screen readers, and keep the arrow from being read aloud
 function markNewTabLinks() {
-    loadNext();
   document.querySelectorAll('a[target="_blank"]:not([data-newtab])').forEach(a => {
     a.setAttribute('data-newtab', '');
     if (a.innerHTML.includes('\u2197')) a.innerHTML = a.innerHTML.replace(/\u2197/g, '<span aria-hidden="true">\u2197</span>');
     a.insertAdjacentHTML('beforeend', '<span class="sr-only"> (opens in new tab)</span>');
-      loadNext();
   });
 }
 
@@ -1385,7 +1396,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderLatest(); renderHighlights(); renderProjects(); renderPubChart(); renderPubs('');
   document.getElementById('pub-total').textContent = pubs.length;
   renderDataPage(); initFilterChips(); initDataTabs(); handleHash();
-  initReveal(); initStagger(); initBackToTop(); initParallax(); initProgressBar();
+  initReveal(); initStagger(); initBackToTop(); initScrollEffects();
   initProfileRotation(); initOppChips(); initTeamPubs();
   initDisclosures(document.getElementById('research-highlights'), '.research-card');
   initDisclosures(document.getElementById('active-projects'), '.compact-card');

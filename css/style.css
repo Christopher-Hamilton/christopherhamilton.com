@@ -428,6 +428,11 @@ h1[tabindex="-1"]:focus{outline:none}
 .page-banner{overflow:hidden}
 .page-banner-bg{inset:-14% 0}
 
+/* DIRECT LINKS: the <head> script sets data-start-page on <html> for a link such as #publications, so that page shows from the
+   first paint; navigate() removes it once the inline display styles take over */
+html[data-start-page] #page-home{display:none}
+html[data-start-page="research"] #page-research,html[data-start-page="publications"] #page-publications,html[data-start-page="team"] #page-team,html[data-start-page="opportunities"] #page-opportunities,html[data-start-page="data"] #page-data,html[data-start-page="media"] #page-media{display:block!important}
+
 /* BANNER AND HERO IMAGES: one class per banner; phones (48em and below) get a 1200-px file (hero 900 px), so only one file downloads.
    Opportunities is 1200 px already. Keep these media queries in step with the hero preload in index.html. */
 .bg-hero{background-image:url(../images/hero.webp)}
