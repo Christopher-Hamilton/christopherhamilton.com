@@ -15,7 +15,7 @@
 --fs-h2:clamp(1.875rem,1.3rem + 1.6vw,2.375rem);/* section headings 30-38 px */
 --fs-banner:clamp(1.875rem,1.25rem + 2.5vw,2.5rem);/* banner titles 30-40 px ("Opportunities" fits at 320 px) */
 --nav-h:3.5rem}
-html{scroll-behavior:smooth;font-size:100%}
+html{scroll-behavior:smooth;font-size:125%}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;font-size:var(--fs-prose);-webkit-font-smoothing:antialiased;background-image:radial-gradient(ellipse at 20% 50%,rgba(197,58,26,.04) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(91,192,235,.03) 0%,transparent 40%),radial-gradient(ellipse at 50% 100%,rgba(232,98,30,.03) 0%,transparent 50%)}
 a{color:inherit;text-decoration:none}img{max-width:100%;display:block}button{cursor:pointer}
@@ -53,7 +53,7 @@ h1,h2,h3{text-wrap:balance}h4,p{text-wrap:pretty}
 .mobile-menu a{font-family:'Syne',sans-serif;font-weight:600;font-size:1.0625rem;letter-spacing:.03em;text-transform:uppercase;color:var(--dim);padding:12px 0;transform:scaleX(var(--syne-scale));transform-origin:left;display:inline-block;min-height:44px}
 .mobile-menu a.active{color:var(--text)}
 /* Hamburger below the width where the seven nav links fit (em, so it follows the reader's text size) */
-@media(max-width:72em){.nav-links{display:none}.nav-hamburger{display:flex}.mobile-menu.open{display:flex}}
+@media(max-width:87.5em){.nav-links{display:none}.nav-hamburger{display:flex}.mobile-menu.open{display:flex}}
 
 /* HERO */
 .hero{min-height:35rem;display:flex;align-items:center;position:relative;padding:80px 24px 48px;overflow:hidden}
