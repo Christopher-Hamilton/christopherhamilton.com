@@ -184,7 +184,7 @@ const media = [
 {o:"CBS 60 Minutes, 2021",t:"Iceland Volcano and Mars Exploration",h:"https://www.cbsnews.com/news/iceland-volcano-mars-geldingadalir-60-minutes-2021-08-22",img:"images/thumbs/active.webp"},
 {o:"CNN, 2021",t:"How Iceland's Volcano Surprised an Expert",h:"https://www.cnn.com/videos/weather/2021/03/25/iceland-volcano-volcanologist-christopher-hamilton-full-episode-acfc-vpx.cnn",img:"images/media-cnn.webp",pos:"center 10%"},
 {o:"BBC Click, 2021",t:"Drones for Mars Tested in Iceland",h:"https://www.youtube.com/watch?v=6SIgFPhhRPE",img:"images/media-bbc.webp"},
-{o:"Atlas Obscura, 2021",t:"Testing Drones for Mars Exploration in Iceland",h:"https://www.atlasobscura.com/articles/iceland-mars-drone-exploration"},
+{o:"Atlas Obscura, 2021",t:"Testing Drones for Mars Exploration in Iceland",h:"https://www.atlasobscura.com/articles/iceland-mars-drone-exploration",img:"images/thumbs/atlas-drone-sampler.webp",credit:"Photo: Carr et al. (2024), PSJ, Fig. 4c, CC BY 4.0"},
 {o:"UA Alumni Magazine, 2021",t:"Iceland: The Wildcat Testing Ground",h:"https://alumni.arizona.edu/arizona-magazine/spring-2021/iceland-wildcat-testing-ground",img:"images/thumbs/embassy.webp"},
 {o:"UArizona News, 2021",t:"$3M NASA Grant for Mars Exploration Drones in Iceland",h:"https://news.arizona.edu/story/3m-nasa-grant-uarizona-scientists-will-test-mars-exploration-drones-iceland",img:"images/thumbs/raven-hero.webp"},
 {o:"Morgunblaðið, 2021",t:"Preparing for Flight on the Red Planet",h:"https://www.mbl.is/frettir/taekni/2021/01/23/undirbyr_flug_a_raudu_planetunni"},

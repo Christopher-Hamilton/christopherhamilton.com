@@ -43,7 +43,7 @@ h1,h2,h3{text-wrap:balance}h4,p{text-wrap:pretty}
 .accent-line{width:110px;height:3px;background:linear-gradient(90deg,var(--accent) 45%,transparent);margin-bottom:24px}
 .section-sub{font-size:var(--fs-lead);line-height:1.5;color:var(--dim);margin-bottom:32px;font-weight:400;max-width:66ch}
 /* Running prose and lead paragraphs */
-.prose{font-size:var(--fs-prose);line-height:1.6;color:var(--text-body);max-width:66ch}
+.prose{font-size:var(--fs-prose);line-height:1.6;color:var(--text-body);max-width:66ch}#page-opportunities .prose,#page-opportunities .lead,#page-opportunities .reach-list{max-width:none;text-wrap:pretty}.skill-list{list-style:none;margin:0 0 16px;padding-left:16px}.skill-list li+li{margin-top:.35rem}.skill-list li{position:relative;padding-left:.9rem}.skill-list li::before{content:"\2022";position:absolute;left:0;color:var(--accent)}
 .lead{font-size:var(--fs-lead);line-height:1.5;color:var(--text);max-width:66ch}
 .prose-small{font-size:var(--fs-detail);color:var(--dim)}
 .text-link{color:var(--accent);font-size:var(--fs-prose);font-weight:600;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.18em}
@@ -554,7 +554,7 @@ html[data-start-page="research"] #page-research,html[data-start-page="publicatio
 .latest-card .lc-meta{font-family:var(--mono);font-size:var(--fs-label);color:var(--accent-small);letter-spacing:.04em;text-transform:uppercase;line-height:1.45;padding-top:3px;border-right:1px solid var(--border);padding-right:14px;min-width:0}
 .latest-card .lc-year{display:block;font-size:1.25rem;font-family:'Archivo Expanded','Source Sans 3',sans-serif;font-stretch:112%;font-weight:800;letter-spacing:-.01em;color:var(--accent);margin-bottom:2px}
 .latest-card h3{font-size:var(--fs-title);font-weight:600;color:var(--text);line-height:1.4;margin-bottom:4px}
-.latest-card p{font-size:var(--fs-detail);color:var(--muted);line-height:1.5}
+.latest-card p{font-size:var(--fs-detail);color:var(--muted);line-height:1.5}.latest-card p.card-credit,.media-card .card-credit{font-size:var(--fs-label);color:var(--muted);line-height:1.4;margin-top:.35rem}
 .latest-card .lc-thumb{background-size:cover;background-position:center;min-height:8rem;transition:transform .5s}
 .latest-card.has-thumb:hover .lc-thumb{transform:scale(1.03)}
 @media(max-width:768px){.grid-pubs{grid-template-columns:1fr}.latest-card,.latest-card.has-thumb{grid-template-columns:1fr;gap:8px}.latest-card .lc-meta{border-right:none;padding-right:0}.latest-card .lc-thumb{aspect-ratio:16/9;min-height:0}}

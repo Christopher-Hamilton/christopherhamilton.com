@@ -371,9 +371,11 @@
     <h2 class="section-divider">Graduate Students</h2>
     <p class="prose" style="margin-bottom:12px">Prospective graduate students should <strong style="color:var(--text)">contact me before applying</strong> to discuss research interests and fit. Formal applications are submitted through <a href="https://lpl.arizona.edu/admissions" target="_blank" rel="noopener noreferrer" class="hl">LPL Graduate Admissions</a>.</p>
     <p class="prose" style="margin-bottom:12px">Our primary research areas are:</p>
-    <p class="prose" style="margin-bottom:12px;padding-left:16px"><strong style="color:var(--text)">Geologic Surface Processes</strong>&#8212;lava emplacement, magma&#8211;water interactions, volcano-tectonics, aeolian processes, megaflooding, impact cratering<br>
-    <strong style="color:var(--text)">Astrobiology</strong>&#8212;microbial colonization of volcanic terrains, biosignature detection, habitability<br>
-    <strong style="color:var(--text)">Geoinformatics</strong>&#8212;remote sensing, information theory, Bayesian inference, clustering analysis, self-organization, digital twinning, machine learning, and computer vision</p>
+    <ul class="prose skill-list">
+      <li><strong style="color:var(--text)">Geologic Surface Processes</strong>&#8212;lava emplacement, magma&#8211;water interactions, volcano-tectonics, aeolian processes, megaflooding, impact cratering</li>
+      <li><strong style="color:var(--text)">Astrobiology</strong>&#8212;microbial colonization of volcanic terrains, biosignature detection, habitability</li>
+      <li><strong style="color:var(--text)">Geoinformatics</strong>&#8212;remote sensing, information theory, Bayesian inference, clustering analysis, self-organization, digital twinning, machine learning, and computer vision</li>
+    </ul>
     <p class="prose" style="margin-bottom:24px">I expect applicants to have a strong foundation in one or more of: Physics, Chemistry, Geology, Biology, or Informatics, with technical background in Mathematics, Natural Sciences, and/or Information Technology.</p>
     </div>
 
@@ -385,7 +387,7 @@
     <div class="opp-section" data-opp-cat="technician">
     <h2 class="section-divider">Technicians and Staff</h2>
     <p class="prose" style="margin-bottom:12px">Our group benefits from technical expertise in several areas:</p>
-    <p class="prose" style="margin-bottom:12px;padding-left:16px">Information Technology &#8226; Precision Surveying (GNSS, UAS, LiDAR, and Photogrammetry) &#8226; Astrobiology &#8226; Engineering &#8226; Laboratory Management</p>
+    <ul class="prose skill-list"><li>Information Technology</li><li>Precision Surveying (GNSS, UAS, LiDAR, and Photogrammetry)</li><li>Astrobiology</li><li>Engineering</li><li>Laboratory Management</li></ul>
     <p class="prose" style="margin-bottom:24px">Computational and engineering skills are highly desired&#8212;if it doesn&#8217;t exist, we&#8217;ll make it.</p>
     </div>
     </div><!-- end research tab -->
@@ -835,13 +837,13 @@ function initScrollEffects() {
 
 // LATEST PUBS
 const latestItems = [
-  {href:"https://doi.org/10.1109/TGRS.2026.3751587",src:"IEEE Transactions on Geoscience and Remote Sensing, 2026",t:"In situ demonstration of passive radar using HF Jovian bursts as a source for echo detection",a:"Kristinsson, Peters, Voigt, Steinbr\u00fcgge, Hamilton, Diniega, Williams, Alfonso, and Romero-Wolf"},
+  {href:"https://doi.org/10.1109/TGRS.2026.3751587",src:"IEEE Transactions on Geoscience and Remote Sensing, 2026",t:"In situ demonstration of passive radar using HF Jovian bursts as a source for echo detection",a:"Kristinsson, Peters, Voigt, Steinbr\u00fcgge, Hamilton, Diniega, Williams, Alfonso, and Romero-Wolf",img:"images/pub-sm/pub-jupiter.webp",credit:"Image: NASA/JPL-Caltech/SwRI/MSSS, G. Eichst\u00e4dt"},
   {href:"https://doi.org/10.1016/j.icarus.2026.117136",src:"Icarus, 2026",t:"Electron irradiation of methanol ices: Implications for organic chemical diversity on Europa\u2019s surface",a:"Carrasco-Herrera, Bouquet, Noble, Danger, Duvernay, Park, Shock, Miller, Glein, Waite, and Hamilton",img:"images/pub-sm/pub-europa.webp"},
   {href:"cv/Hamilton_CV.pdf",src:"News, 2026",t:"Promoted to Professor",a:"Lunar and Planetary Laboratory and Department of Geosciences, University of Arizona"},
   {href:"https://doi.org/10.1007/s00445-025-01867-4",src:"Bulletin of Volcanology, 2026",t:"Growth of a passive lava lake during the 2020\u20132021 eruption of K\u012blauea volcano, Hawaii",a:"Carr, Patrick, Dietterich, Zoeller, Parcheta, Downs, Nadeau, and Hamilton",img:"images/pub-sm/pub-lavalake.webp",pos:"center 65%"},
   {href:"https://doi.org/10.1016/j.scitotenv.2026.181659",src:"Science of the Total Environment, 2026",t:"Microbial dispersal from a hyperactive sandsheet in the Icelandic Highland",a:"Hadland, Hamilton, Schroedl, Calabrese, Marlow, and Duhamel",img:"images/pub-sm/pub-sandsheet.webp",pos:"35% center"},
   {href:"https://doi.org/10.3847/PSJ/ae0721",src:"The Planetary Science Journal, 2025",t:"Crater-based dating of Hebrus Valles and Hephaestus Fossae, Mars",a:"Spurling, Nerozzi, and Hamilton",img:"images/pub-sm/pub-hephaestus1.webp"},
-  {href:"https://doi.org/10.1038/s42003-025-09044-1",src:"Communications Biology, 2025",t:"Three eruptions at the Fagradalsfjall Volcano in Iceland show rapid and predictable microbial community establishment",a:"Hadland, Hamilton, Bj\u00f6rnsd\u00f3ttir, and Duhamel"},
+  {href:"https://doi.org/10.1038/s42003-025-09044-1",src:"Communications Biology, 2025",t:"Three eruptions at the Fagradalsfjall Volcano in Iceland show rapid and predictable microbial community establishment",a:"Hadland, Hamilton, Bj\u00f6rnsd\u00f3ttir, and Duhamel",img:"images/pub-sm/pub-fagradalsfjall-map.webp",credit:"Map: Hadland et al. (2025), Fig. 1, CC BY 4.0"},
   {href:"https://doi.org/10.1016/j.epsl.2025.119651",src:"Earth and Planetary Science Letters, 2025",t:"Warming, cooling, and surface ice accumulation initiated by the release of water from the Athabasca Valles flood lava eruption on Mars",a:"Hamid, Kerber, Varnam, Hamilton, and Clarke"},
   {href:"https://news.arizona.edu/news/life-lava-how-microbes-colonize-new-habitats",src:"UArizona News, 2025",t:"Life on Lava: How Microbes Colonize New Habitats",a:"University of Arizona News feature",img:"images/pub-sm/pub-sampling.webp"},
   {href:"https://doi.org/10.3847/PSJ/ae0b50",src:"The Planetary Science Journal, 2025",t:"Surface properties of sediments at the 2014\u20132015 Holuhraun lava flow-field: Insights from multiwavelength radar",a:"Perkins, Hibbard, Neish, Hamilton, and Campbell"},
@@ -851,9 +853,10 @@ const latestItems = [
 function pubCard(item) {
   const m = item.src.match(/^(.*),\s*(\d{4})$/);
   const venue = m ? m[1] : item.src, year = m ? m[2] : '';
-  const text = '<div class="lc-text"><h3>'+item.t+'</h3><p>'+item.a+'</p></div>';
+  const credit = item.credit ? '<p class="card-credit">'+item.credit+'</p>' : '';
+  const text = '<div class="lc-text"><h3>'+item.t+'</h3><p>'+item.a+'</p>'+credit+'</div>';
   if (item.img) {
-    return '<a href="'+item.href+'" target="_blank" rel="noopener noreferrer" style="text-decoration:none"><div class="card latest-card has-thumb"><div class="lc-thumb" style="background-image:url(\''+item.img+'\');background-position:'+(item.pos||'center')+'"></div><div class="lc-text"><p class="lc-src">'+venue+(year?', '+year:'')+'</p><h3>'+item.t+'</h3><p>'+item.a+'</p></div></div></a>';
+    return '<a href="'+item.href+'" target="_blank" rel="noopener noreferrer" style="text-decoration:none"><div class="card latest-card has-thumb"><div class="lc-thumb" style="background-image:url(\''+item.img+'\');background-position:'+(item.pos||'center')+'"></div><div class="lc-text"><p class="lc-src">'+venue+(year?', '+year:'')+'</p><h3>'+item.t+'</h3><p>'+item.a+'</p>'+credit+'</div></div></a>';
   }
   return '<a href="'+item.href+'" target="_blank" rel="noopener noreferrer" style="text-decoration:none"><div class="card latest-card"><div class="lc-meta"><span class="lc-year">'+year+'</span>'+venue+'</div>'+text+'</div></a>';
 }
@@ -1206,7 +1209,7 @@ function renderDataPage() {
   const mediaCard = m => {
     const bgStyle = m.bg ? 'background-color:'+m.bg+';' : '';
     const imgHtml = m.img ? '<div class="media-card-img" style="'+bgStyle+'background-image:url(\''+m.img+'\');background-position:'+(m.pos||'center')+'"></div>' : '';
-    return '<a class="media-item" href="'+(m.h||'#')+'"'+(m.h?' target="_blank" rel="noopener noreferrer"':'')+' style="text-decoration:none"><div class="media-card'+(m.img?' has-media-img':'')+'">'+imgHtml+'<div class="media-card-text"><p class="outlet">'+m.o+'</p><h3>'+m.t+'</h3></div></div></a>';
+    return '<a class="media-item" href="'+(m.h||'#')+'"'+(m.h?' target="_blank" rel="noopener noreferrer"':'')+' style="text-decoration:none"><div class="media-card'+(m.img?' has-media-img':'')+'">'+imgHtml+'<div class="media-card-text"><p class="outlet">'+m.o+'</p><h3>'+m.t+'</h3>'+(m.credit?'<p class="card-credit">'+m.credit+'</p>':'')+'</div></div></a>';
   };
   document.getElementById('media-list').innerHTML = media.map(mediaCard).join('');
 }
