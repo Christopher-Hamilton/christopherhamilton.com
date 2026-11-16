@@ -1,4 +1,4 @@
-name: Weekly publication check
+name: Weekly publication check (monthly link check)
 
 on:
   schedule:
@@ -16,18 +16,35 @@ jobs:
       - uses: actions/checkout@v4
       - name: Compare ORCID and OpenAlex with js/data.js
         run: python3 .github/scripts/check_new_pubs.py new-pubs.md
+      - name: Monthly broken-link check (first Monday, or a manual run)
+        run: |
+          if [ "$(date -u +%d)" -le 7 ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            python3 .github/scripts/check_links.py broken-links.md
+            touch link-check-ran
+          fi
       - name: Open or update the issue
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           title="New publications to add to the website"
           existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number')
-          if [ -f new-pubs.md ]; then
+          # Weeks without a link check keep the last "Broken links" section in the issue
+          if [ ! -f link-check-ran ] && [ -n "$existing" ]; then
+            gh issue view "$existing" --json body --jq .body | awk '/<!-- broken-links -->/{f=1} f' > broken-links.md
+            [ -s broken-links.md ] || rm broken-links.md
+          fi
+          : > issue.md
+          [ -f new-pubs.md ] && cat new-pubs.md >> issue.md
+          if [ -f broken-links.md ]; then
+            [ -s issue.md ] && printf '\n\n' >> issue.md
+            cat broken-links.md >> issue.md
+          fi
+          if [ -s issue.md ]; then
             if [ -n "$existing" ]; then
-              gh issue edit "$existing" --body-file new-pubs.md
+              gh issue edit "$existing" --body-file issue.md
             else
-              gh issue create --title "$title" --body-file new-pubs.md
+              gh issue create --title "$title" --body-file issue.md
             fi
           elif [ -n "$existing" ]; then
-            gh issue close "$existing" --comment "All works linked to the ORCID are now on the site."
+            gh issue close "$existing" --comment "All works linked to the ORCID are now on the site, and no links are broken."
           fi
