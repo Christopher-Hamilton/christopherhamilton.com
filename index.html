@@ -38,6 +38,8 @@
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
+  <!-- Without JavaScript, show content that would otherwise fade in -->
+  <noscript><style>.reveal,.stagger-item,.fade-in{opacity:1!important;transform:none!important;animation:none!important}</style></noscript>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -113,6 +115,7 @@
 <a href="#main-content" class="skip-link">Skip to main content</a>
 <div class="progress-bar" id="progress-bar"></div>
 
+<header class="site-header">
 <nav class="nav" id="main-nav" aria-label="Main navigation">
   <a href="#home" class="nav-logo">C.W. <span class="accent">Hamilton</span></a>
   <div class="nav-links">
@@ -124,9 +127,9 @@
     <a href="#data" data-page="data">Data and Resources</a>
     <a href="#media" data-page="media">Media and Gallery</a>
   </div>
-  <button class="nav-hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
+  <button type="button" class="nav-hamburger" id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">&#9776;</button>
 </nav>
-<div class="mobile-menu" id="mobile-menu">
+<nav class="mobile-menu" id="mobile-menu" aria-label="Main menu">
   <a href="#home" data-page="home">Home</a>
   <a href="#research" data-page="research">Research</a>
   <a href="#publications" data-page="publications">Publications</a>
@@ -134,10 +137,12 @@
   <a href="#opportunities" data-page="opportunities">Opportunities</a>
   <a href="#data" data-page="data">Data and Resources</a>
   <a href="#media" data-page="media">Media and Gallery</a>
-</div>
+</nav>
+</header>
+<div class="sr-only" id="route-announcer" aria-live="polite" aria-atomic="true"></div>
 
+<main id="main-content">
 <!-- ===== HOME PAGE ===== -->
-<div id="main-content"></div>
 <div id="page-home" class="page">
   <div class="hero">
     <div class="hero-bg" style="background-image:url('images/hero.webp')"></div>
@@ -172,7 +177,7 @@
     <div class="grid-pubs" id="latest-pubs"></div>
     <div id="latest-extra" style="display:none;margin-top:12px" class="grid-pubs"></div>
     <div style="text-align:center;margin-top:20px">
-      <button class="view-prev-btn" id="view-prev-btn" onclick="togglePrevious()"><span class="arrow">&#9656;</span> View Previous</button>
+      <button type="button" class="view-prev-btn" id="view-prev-btn" onclick="togglePrevious()" aria-expanded="false" aria-controls="latest-extra"><span class="arrow" aria-hidden="true">&#9656;</span> <span class="btn-label">Show earlier publications and news</span></button>
     </div>
   </div>
 
@@ -219,7 +224,7 @@
           <img src="images/profile-2.webp" srcset="images/sm/profile-2.webp 400w, images/profile-2.webp 600w" sizes="(max-width: 768px) 120px, 240px" alt="Christopher Hamilton at volcanic vent">
         </div>
         <p class="prose" style="margin-bottom:14px">I am a Professor at the Lunar and Planetary Laboratory (LPL) and Department of Geosciences at the University of Arizona.</p>
-        <p class="prose" style="margin-bottom:14px">My research as a <strong class="hl" style="cursor:default">volcanologist</strong> combines field observations, remote sensing, and mission development through planetary analog research, including studies of the 2014&#8211;2015 Holuhraun and 2021&#8211;2023 Fagradalsfjall eruptions in Iceland.</p>
+        <p class="prose" style="margin-bottom:14px">My research as a <strong style="color:var(--text)">volcanologist</strong> combines field observations, remote sensing, and mission development through planetary analog research, including studies of the 2014&#8211;2015 Holuhraun and 2021&#8211;2023 Fagradalsfjall eruptions in Iceland.</p>
         <p class="prose">My work has been featured by <a href="#media" data-page="media" class="hl">CNN</a>, <a href="#media" data-page="media" class="hl">BBC</a>, <a href="#media" data-page="media" class="hl">CBS 60 Minutes</a>, <a href="#media" data-page="media" class="hl">Channel 4</a>, and <a href="#media" data-page="media" class="hl">Netflix</a> documentaries.</p>
         <p class="prose" style="margin-top:14px">Ph.D. Geology and Geophysics, University of Hawai&#39;i at M&#257;noa<br>B.Sc. Earth Sciences (First Class Honors), Dalhousie University</p>
         <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:18px">
@@ -253,14 +258,14 @@
     <div class="page-banner-bg" style="background-image:url('images/research-banner.webp');background-position:center 55%"></div>
     <div class="page-banner-overlay"></div>
     <div class="page-banner-content">
-      <div><h2 class="section-heading">Research Projects</h2></div>
+      <div><h1 class="section-heading">Research Projects</h1></div>
     </div>
   </div>
   <div class="section">
     <p class="section-sub" style="max-width:none">Active and completed research in planetary volcanism, astrobiology, exploration technology, and mission development.</p>
-    <h3 class="section-divider">Active Projects</h3>
+    <h2 class="section-divider">Active Projects</h2>
     <div id="active-projects"></div>
-    <h3 class="section-divider" style="margin-top:40px">Completed Projects</h3>
+    <h2 class="section-divider" style="margin-top:40px">Completed Projects</h2>
     <div id="completed-projects"></div>
   </div>
 </div>
@@ -271,7 +276,7 @@
     <div class="page-banner-bg" style="background-image:url('images/pubs-banner.webp')"></div>
     <div class="page-banner-overlay"></div>
     <div class="page-banner-content">
-      <div><h2 class="section-heading">Publications</h2></div>
+      <div><h1 class="section-heading">Publications</h1></div>
     </div>
   </div>
   <div class="section">
@@ -283,20 +288,22 @@
     </div>
     <a href="https://scholar.google.com/citations?user=IbnKdFIAAAAJ&hl=en" target="_blank" rel="noopener noreferrer" class="scholar-link">Google Scholar Profile &#8599;</a><span class="scholar-asof">as of October 2026</span>
     <div id="pub-chart" class="chart-container"></div>
-    <input type="text" class="pub-search" id="pub-search" placeholder="Search by author, title, journal, or year...">
-    <div class="filter-chips" id="filter-chips">
-      <button class="filter-chip active" data-filter="all">All</button>
-      <button class="filter-chip" data-filter="first-author">First Author</button>
-      <button class="filter-chip" data-filter="student-led">Group Member Led</button>
-      <button class="filter-chip" data-filter="mars-filter">Mars</button>
-      <button class="filter-chip" data-filter="iceland-filter">Iceland</button>
-      <button class="filter-chip" data-filter="lava-filter">Lava</button>
-      <button class="filter-chip" data-filter="lunar-filter">Lunar</button>
-      <button class="filter-chip" data-filter="outer-filter">Outer Solar System</button>
-      <button class="filter-chip" data-filter="astro-filter">Astrobiology</button>
-      <button class="filter-chip" data-filter="tech-filter">Technology</button>
+    <label for="pub-search" class="sr-only">Search publications</label>
+    <input type="search" class="pub-search" id="pub-search" placeholder="Search by author, title, journal, or year..." aria-describedby="pub-count">
+    <div class="filter-chips" id="filter-chips" role="group" aria-label="Filter publications">
+      <button type="button" class="filter-chip active" data-filter="all">All</button>
+      <button type="button" class="filter-chip" data-filter="first-author">First Author</button>
+      <button type="button" class="filter-chip" data-filter="student-led">Group Member Led</button>
+      <button type="button" class="filter-chip" data-filter="mars-filter">Mars</button>
+      <button type="button" class="filter-chip" data-filter="iceland-filter">Iceland</button>
+      <button type="button" class="filter-chip" data-filter="lava-filter">Lava</button>
+      <button type="button" class="filter-chip" data-filter="lunar-filter">Lunar</button>
+      <button type="button" class="filter-chip" data-filter="outer-filter">Outer Solar System</button>
+      <button type="button" class="filter-chip" data-filter="astro-filter">Astrobiology</button>
+      <button type="button" class="filter-chip" data-filter="tech-filter">Technology</button>
     </div>
     <p class="pub-count" id="pub-count">Showing 74 publications</p>
+    <div class="sr-only" id="pub-status" role="status" aria-live="polite" aria-atomic="true"></div>
     <div id="pub-list"></div>
   </div>
 </div>
@@ -307,7 +314,7 @@
     <div class="page-banner-bg" style="background-image:url('images/opportunities-banner.webp');background-position:center 35%"></div>
     <div class="page-banner-overlay"></div>
     <div class="page-banner-content">
-      <div><h2 class="section-heading">Opportunities</h2></div>
+      <div><h1 class="section-heading">Opportunities</h1></div>
     </div>
   </div>
   <div class="section">
@@ -315,31 +322,31 @@
     <p class="prose" style="margin-bottom:16px">There are no project-specific vacancies at this time, but I am always open to hearing from potential collaborators at all career stages. The best first step is to <strong style="color:var(--accent)">send me an email</strong> at <a href="mailto:chamilton@arizona.edu?subject=Hamilton%20Lab%20Inquiry" class="hl">chamilton@arizona.edu</a> describing your background and interests.</p>
     <p class="prose" style="margin-bottom:24px">Above all, I am looking for three qualities: <strong style="color:var(--text)">Creativity</strong>, <strong style="color:var(--text)">Technical Capability</strong>, and <strong style="color:var(--text)">Independence</strong>.</p>
 
-    <p style="margin-bottom:24px"><a href="#" onclick="event.preventDefault();document.querySelector('[data-opptab=teaching]').click()" class="text-link">Take a course with me.</a></p>
+    <p style="margin-bottom:24px"><button type="button" class="text-link link-button" id="take-course" aria-controls="opptab-teaching">Take a course with me.</button></p>
 
-    <div class="data-tabs" id="opp-tabs" style="margin-bottom:24px">
-      <button class="data-tab active" data-opptab="research">Research</button>
-      <button class="data-tab" data-opptab="teaching">Teaching</button>
+    <div class="data-tabs" id="opp-tabs" style="margin-bottom:24px" aria-label="Opportunities">
+      <button type="button" class="data-tab active" data-opptab="research">Research</button>
+      <button type="button" class="data-tab" data-opptab="teaching">Teaching</button>
     </div>
 
     <div id="opptab-research" class="opp-tab-panel">
-    <div class="filter-chips" id="opp-filter-chips" style="margin-bottom:28px">
-      <button class="filter-chip active" data-opp="all">All</button>
-      <button class="filter-chip" data-opp="undergraduate">Undergraduate</button>
-      <button class="filter-chip" data-opp="graduate">Graduate</button>
-      <button class="filter-chip" data-opp="postdoctoral">Postdoctoral</button>
-      <button class="filter-chip" data-opp="technician">Technician/Staff</button>
+    <div class="filter-chips" id="opp-filter-chips" style="margin-bottom:28px" role="group" aria-label="Filter by career stage">
+      <button type="button" class="filter-chip active" data-opp="all">All</button>
+      <button type="button" class="filter-chip" data-opp="undergraduate">Undergraduate</button>
+      <button type="button" class="filter-chip" data-opp="graduate">Graduate</button>
+      <button type="button" class="filter-chip" data-opp="postdoctoral">Postdoctoral</button>
+      <button type="button" class="filter-chip" data-opp="technician">Technician/Staff</button>
     </div>
 
     <div class="opp-section" data-opp-cat="undergraduate">
-    <h3 class="section-divider">Undergraduate Students</h3>
+    <h2 class="section-divider">Undergraduate Students</h2>
     <p class="prose" style="margin-bottom:12px">I support undergraduate research through several pathways: independent study for course credit, paid internships through the <a href="https://spacegrant.arizona.edu/students/u-internships" target="_blank" rel="noopener noreferrer" class="hl">Arizona Space Grant</a> program, and Honors thesis advising through the Geosciences, Planetary Science, and Astronomy programs.</p>
     <p class="prose" style="margin-bottom:12px">I am open to working with students from a wide range of disciplines&#8212;from Art to Architecture&#8212;so reach out.</p>
     <p class="prose-small" style="margin-bottom:24px">Interested in planetary geosciences? Explore the <a href="https://lpl.arizona.edu/undergraduate/planetary-geos" target="_blank" rel="noopener noreferrer" style="color:var(--accent-light)">UA Undergraduate Program in Planetary Geosciences &#8599;</a></p>
     </div>
 
     <div class="opp-section" data-opp-cat="graduate">
-    <h3 class="section-divider">Graduate Students</h3>
+    <h2 class="section-divider">Graduate Students</h2>
     <p class="prose" style="margin-bottom:12px">Prospective graduate students should <strong style="color:var(--text)">contact me before applying</strong> to discuss research interests and fit. Formal applications are submitted through <a href="https://lpl.arizona.edu/admissions" target="_blank" rel="noopener noreferrer" class="hl">LPL Graduate Admissions</a>.</p>
     <p class="prose" style="margin-bottom:12px">Our primary research areas are:</p>
     <p class="prose" style="margin-bottom:12px;padding-left:16px"><strong style="color:var(--text)">Geologic Surface Processes</strong>&#8212;lava emplacement, magma&#8211;water interactions, volcano-tectonics, aeolian processes, megaflooding, impact cratering<br>
@@ -349,12 +356,12 @@
     </div>
 
     <div class="opp-section" data-opp-cat="postdoctoral">
-    <h3 class="section-divider">Postdoctoral Researchers</h3>
+    <h2 class="section-divider">Postdoctoral Researchers</h2>
     <p class="prose" style="margin-bottom:24px">Postdoctoral opportunities follow the same research areas and skill expectations as graduate positions, with additional emphasis on <strong style="color:var(--text)">advanced geophysical and computational methods</strong>, numerical modeling capabilities, and information technology skills. I encourage prospective postdoctoral researchers to reach out about fellowship opportunities and potential collaborations.</p>
     </div>
 
     <div class="opp-section" data-opp-cat="technician">
-    <h3 class="section-divider">Technicians and Staff</h3>
+    <h2 class="section-divider">Technicians and Staff</h2>
     <p class="prose" style="margin-bottom:12px">Our group benefits from technical expertise in several areas:</p>
     <p class="prose" style="margin-bottom:12px;padding-left:16px">Information Technology &#8226; Precision Surveying (GNSS, UAS, LiDAR, and Photogrammetry) &#8226; Astrobiology &#8226; Engineering &#8226; Laboratory Management</p>
     <p class="prose" style="margin-bottom:24px">Computational and engineering skills are highly desired&#8212;if it doesn&#8217;t exist, we&#8217;ll make it.</p>
@@ -364,7 +371,7 @@
     <div id="opptab-teaching" class="opp-tab-panel" style="display:none">
       <p class="lead" style="margin-bottom:20px">I regularly teach courses in planetary science, volcanology, and geoinformatics at the University of Arizona.</p>
 
-      <h3 class="section-divider">University of Arizona</h3>
+      <h2 class="section-divider">University of Arizona</h2>
 
       <div class="teaching-entry"><strong>Evolution of Planetary Surfaces</strong> <span class="teaching-years">2025</span><span class="team-role">PTYS 554 / GEOS 554 &#8226; Graduate Core Course &#8226; 3 Credits</span></div>
 
@@ -380,7 +387,7 @@
 
       <div class="teaching-entry"><strong>Remote Sensing of Planetary Surfaces</strong> <span class="teaching-years">2014</span><span class="team-role">PTYS 551 / GEOS 551 &#8226; Graduate &#8226; 3 Credits</span></div>
 
-      <h3 class="section-divider">Other Teaching</h3>
+      <h2 class="section-divider">Other Teaching</h2>
 
       <div class="teaching-entry"><strong>Keck Geology Consortium Summer Program</strong> <span class="teaching-years">2013, 2016</span><span class="team-role">Undergraduate field course &#8226; Volcanism in Iceland and New Mexico with Mars analogs</span></div>
 
@@ -404,42 +411,42 @@
     <div class="page-banner-bg" style="background-image:url('images/team-banner.webp');background-position:center 60%"></div>
     <div class="page-banner-overlay"></div>
     <div class="page-banner-content">
-      <div><h2 class="section-heading">Team</h2></div>
+      <div><h1 class="section-heading">Team</h1></div>
     </div>
   </div>
   <div class="section">
     <p class="section-sub">Current and former members of the Hamilton Research Group.</p>
 
-    <div class="data-tabs" id="team-tabs" style="margin-bottom:24px">
-      <button class="data-tab active" data-teamtab="current">Current Members</button>
-      <button class="data-tab" data-teamtab="alumni">Alumni</button>
+    <div class="data-tabs" id="team-tabs" style="margin-bottom:24px" aria-label="Team members">
+      <button type="button" class="data-tab active" data-teamtab="current">Current Members</button>
+      <button type="button" class="data-tab" data-teamtab="alumni">Alumni</button>
     </div>
 
     <div id="teamtab-current" class="team-tab-panel">
 
-    <h3 class="section-divider">Postdoctoral Researchers</h3>
+    <h2 class="section-divider">Postdoctoral Researchers</h2>
     <div class="team-entry"><span class="team-years">2024&#8211;Present</span><span class="team-info"><strong>Dr. Wesley Tucker</strong><span class="team-role">Finite element modeling of lava and conduit flow dynamics</span></span></div>
 
-    <h3 class="section-divider">Graduate Students</h3>
+    <h2 class="section-divider">Graduate Students</h2>
     <div class="team-entry"><span class="team-years">2025&#8211;Present</span><span class="team-info"><strong>Carter Mucha</strong><span class="team-role">Impact-induced hydrothermal systems. Ph.D. Student, Planetary Sciences</span></span></div>
     <div class="team-entry"><span class="team-years">2024&#8211;Present</span><span class="team-info"><strong>Joanna Hardesty</strong><span class="team-role">Cryomagma rheology and conduit flow. Ph.D. Student, Planetary Sciences</span></span></div>
     <div class="team-entry"><span class="team-years">2023&#8211;Present</span><span class="team-info"><strong>Madison Tuohy</strong><span class="team-role">The 2021&#8211;2023 Fagradalsfjall eruption, Iceland. Ph.D. Student, Geosciences</span><span class="team-award"><strong>NSF Graduate Research Fellowship</strong> &#8226; P.E.O. International Scholar Award &#8226; Montgomery and Associates Best Overall Talk &#8226; Bert S. Butler Scholarship &#8226; Spencer R. Titley Graduate Scholarship &#8226; John and Nancy Sumner Scholarship &#8226; Galileo Circle Award</span></span></div>
 
-    <h3 class="section-divider">Undergraduate Students</h3>
+    <h2 class="section-divider">Undergraduate Students</h2>
     <div class="team-entry"><span class="team-years">2024&#8211;Present</span><span class="team-info"><strong>Brianna Toy</strong><span class="team-role">Modeling lava emplacement dynamics. Astronomy</span><span class="team-award">NASA Arizona Space Grant Fellow</span></span></div>
 
     </div><!-- end current -->
 
     <div id="teamtab-alumni" class="team-tab-panel" style="display:none">
 
-    <h3 class="section-divider">Research Staff</h3>
+    <h2 class="section-divider">Research Staff</h2>
     <div class="team-entry"><span class="team-years">2022&#8211;2026</span><span class="team-info"><strong>Dr. Brett Carr</strong><span class="team-role">Staff Scientist. Volcanology, unoccupied aircraft systems (UAS), photogrammetry</span></span></div>
     <div class="team-entry"><span class="team-years">2021&#8211;2024</span><span class="team-info"><strong>Dr. Matthew Varnam</strong><span class="team-role">Postdoctoral Researcher. Gas fluxes from eruptions on the Earth, Moon, and Mars</span></span></div>
     <div class="team-entry"><span class="team-years">2014&#8211;2020</span><span class="team-info"><strong>Dr. Mike Sori</strong><span class="team-role">Postdoctoral Researcher, then Staff Scientist. Finite element modeling of ice and lava</span></span></div>
     <div class="team-entry"><span class="team-years">2014&#8211;2018</span><span class="team-info"><strong>Dr. Stephen Scheidt</strong><span class="team-role">Postdoctoral Researcher, then Staff Scientist. Photogrammetry and planetary data</span></span></div>
     <div class="team-entry"><span class="team-years">2014&#8211;2017</span><span class="team-info"><strong>Dr. Leon Palafox</strong><span class="team-role">Postdoctoral Researcher, then Staff Scientist. Machine learning and planetary data</span></span></div>
 
-    <h3 class="section-divider">Graduate Students</h3>
+    <h2 class="section-divider">Graduate Students</h2>
     <div class="team-entry"><span class="team-years">2025&#8211;2026</span><span class="team-info"><strong>Maddy Christensen</strong><span class="team-role">Lava-induced hydrothermal systems. Graduate Student, Planetary Sciences</span></span></div>
     <div class="team-entry"><span class="team-years">2020&#8211;2026</span><span class="team-info"><strong>Nathan Hadland</strong><span class="team-role">Terrestrial analogs for astrobiology. Ph.D., Planetary Sciences</span><span class="team-award"><strong>DoD NDSEG Fellowship</strong> &#8226; Lewis and Clark Fund Award &#8226; ARCS Foundation Scholarship Award &#8226; Arizona Space Grant Graduate Fellowship &#8226; Arizona Astrobiology Center Seed Grant &#8226; LPL Director&#8217;s Grant &#8226; GSA Graduate Student Grant &#8226; GSA International Geosciences Congress Travel Grant &#8226; Galileo Circle Award</span></span></div>
     <div class="team-entry"><span class="team-years">2018&#8211;2022</span><span class="team-info"><strong>Joana Voigt</strong><span class="team-role">Volcano&#8211;tectonics on Earth and Mars. Ph.D., Planetary Sciences</span><span class="team-award"><strong>NASA FINESST Fellowship</strong> &#8226; German Academic Exchange Service Scholarship &#8226; Zonta Amelia Earhart Fellowship &#8226; Gerard P. Kuiper Award &#8226; GSA Lipman Research Award &#8226; Galileo Circle Award</span></span></div>
@@ -447,14 +454,14 @@
     <div class="team-entry"><span class="team-years">2016&#8211;2019</span><span class="team-info"><strong>Amanda Stadermann</strong><span class="team-role">Lunar impact melt flows. M.Sc., Planetary Sciences</span><span class="team-award">Shirley D. Curson Education Plus Fund in Planetary Sciences and LPL &#8226; Galileo Circle Award</span></span></div>
     <div class="team-entry"><span class="team-years">2016&#8211;2017</span><span class="team-info"><strong>L&#233;a Bonnefoy</strong><span class="team-role">Landscape evolution. Graduate Student, Planetary Sciences</span><span class="team-award">Carson Fellowship</span></span></div>
 
-    <h3 class="section-divider">Undergraduate Honors Students</h3>
+    <h2 class="section-divider">Undergraduate Honors Students</h2>
     <div class="team-entry"><span class="team-years">2024&#8211;2025</span><span class="team-info"><strong>Linae Larson</strong><span class="team-role">Impact-induced spallation on icy satellites. Astronomy</span></span></div>
     <div class="team-entry"><span class="team-years">2024&#8211;2025</span><span class="team-info"><strong>Samantha Lockwood</strong><span class="team-role">3D internal structure of pumice and habitability. Chemical Engineering</span></span></div>
     <div class="team-entry"><span class="team-years">2020&#8211;2022</span><span class="team-info"><strong>Alexia Kubas</strong><span class="team-role">Geological mapping and secondary cratering of Giordano Bruno Crater. Astronomy</span></span></div>
     <div class="team-entry"><span class="team-years">2017&#8211;2018</span><span class="team-info"><strong>Anna Schuh</strong><span class="team-role">Pit crater formation on Mars. Geosciences</span></span></div>
     <div class="team-entry"><span class="team-years">2015&#8211;2016</span><span class="team-info"><strong>Jade Bowers</strong><span class="team-role">Explosive lava&#8211;water interactions in Elysium Planitia. Geosciences</span></span></div>
 
-    <h3 class="section-divider">Undergraduate Interns</h3>
+    <h2 class="section-divider">Undergraduate Interns</h2>
     <div class="team-entry"><span class="team-years">2022&#8211;2023</span><span class="team-info"><strong>Justin Klingele</strong><span class="team-role">X-ray computed tomography of pumice. Astronomy</span></span></div>
     <div class="team-entry"><span class="team-years">2020&#8211;2021</span><span class="team-info"><strong>Michael Debbins</strong><span class="team-role">Small UAS development. Aerospace and Mechanical Engineering</span></span></div>
     <div class="team-entry" data-no-pubs><span class="team-years">2016&#8211;2017</span><span class="team-info"><strong>Connor Williams</strong><span class="team-role">Small UAS development. Aerospace and Mechanical Engineering</span></span></div>
@@ -463,7 +470,7 @@
     <div class="team-entry"><span class="team-years">2014&#8211;2015</span><span class="team-info"><strong>Alexander Alvarez</strong><span class="team-role">Landform detection using support vector machines. Biomedical Engineering</span></span></div>
     <div class="team-entry"><span class="team-years">2014&#8211;2015</span><span class="team-info"><strong>Mark Buxton</strong><span class="team-role">Visualization of planetary surfaces in 3D using virtual reality. Computer Science</span></span></div>
 
-    <h3 class="section-divider">Engineering Capstone: Mobile Watchtowers for Volcano Remote Sensing</h3>
+    <h2 class="section-divider">Engineering Capstone: Mobile Watchtowers for Volcano Remote Sensing</h2>
     <div class="team-entry"><span class="team-years">2014&#8211;2015</span><span class="team-info"><strong>Chirag Agarwal, Eugene Balaguer, Kenneth Barnett, Walker Bowman, Lejla Prijic, Jason Yob</strong><span class="team-role">Departments of Electrical, Mechanical, and Systems and Industrial Engineering</span></span></div>
 
     </div><!-- end alumni -->
@@ -477,14 +484,14 @@
     <div class="page-banner-bg" style="background-image:url('images/data-banner.webp')"></div>
     <div class="page-banner-overlay"></div>
     <div class="page-banner-content">
-      <div><h2 class="section-heading">Data and Resources</h2></div>
+      <div><h1 class="section-heading">Data and Resources</h1></div>
     </div>
   </div>
   <div class="section">
     <p class="section-sub">Publicly available datasets and white papers.</p>
-    <div class="data-tabs" id="data-tabs">
-      <button class="data-tab active" data-tab="datasets">Datasets</button>
-      <button class="data-tab" data-tab="whitepapers">White Papers</button>
+    <div class="data-tabs" id="data-tabs" aria-label="Data and resources">
+      <button type="button" class="data-tab active" data-tab="datasets">Datasets</button>
+      <button type="button" class="data-tab" data-tab="whitepapers">White Papers</button>
     </div>
     <div id="tab-datasets" class="data-tab-panel active">
       <div id="datasets-list"></div>
@@ -501,42 +508,56 @@
     <div class="page-banner-bg" style="background-image:url('images/gallery-dji0717.webp');background-position:center 48%"></div>
     <div class="page-banner-overlay"></div>
     <div class="page-banner-content">
-      <div><h2 class="section-heading">Media and Gallery</h2></div>
+      <div><h1 class="section-heading">Media and Gallery</h1></div>
     </div>
   </div>
   <div class="section">
     <p class="section-sub">Selected media coverage and field photography.</p>
-    <div class="data-tabs" id="media-tabs">
-      <button class="data-tab active" data-mtab="coverage">Media Coverage</button>
-      <button class="data-tab" data-mtab="gallery">Gallery</button>
+    <div class="data-tabs" id="media-tabs" aria-label="Media and gallery">
+      <button type="button" class="data-tab active" data-mtab="coverage">Media Coverage</button>
+      <button type="button" class="data-tab" data-mtab="gallery">Gallery</button>
     </div>
     <div id="mtab-coverage" class="media-tab-panel">
+      <h2 class="sr-only">Media coverage</h2>
       <div class="grid-media" id="media-list"></div>
       <div style="text-align:center;margin-top:20px" id="media-toggle-wrap">
-        <button class="view-prev-btn" id="media-toggle-btn" onclick="toggleMedia()"><span class="arrow">&#9656;</span> View Previous</button>
+        <button type="button" class="view-prev-btn" id="media-toggle-btn" onclick="toggleMedia()" aria-expanded="false" aria-controls="media-list"><span class="arrow" aria-hidden="true">&#9656;</span> <span class="btn-label">Show earlier media coverage</span></button>
       </div>
     </div>
     <div id="mtab-gallery" class="media-tab-panel" style="display:none">
       <p class="section-sub" style="margin-bottom:24px">Field photography from volcanic terrains in Iceland and beyond.</p>
       <div class="gallery-grid">
-        <div class="gallery-item wide"><img style="object-position:center 22%" src="images/gallery-fagradalsfjall2.webp" srcset="images/sm/gallery-fagradalsfjall2.webp 400w, images/gallery-fagradalsfjall2.webp 1600w" sizes="(max-width: 768px) 100vw, 66vw" alt="Fagradalsfjall eruption with lava flows and onlookers" loading="lazy"><div class="gallery-caption">Fagradalsfjall eruption, Reykjanes Peninsula, Iceland</div></div>
-        <div class="gallery-item"><img src="images/gallery-eruption.webp" srcset="images/sm/gallery-eruption.webp 400w, images/gallery-eruption.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="Fagradalsfjall eruption with lava channels, Iceland" loading="lazy"><div class="gallery-caption">Fagradalsfjall eruption with lava channels, Iceland</div></div>
-        <div class="gallery-item"><img src="images/gallery-embassy.webp" srcset="images/sm/gallery-embassy.webp 400w, images/gallery-embassy.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="RAVEN field camp at sunset, Icelandic Highlands" loading="lazy"><div class="gallery-caption">RAVEN field camp at sunset, Icelandic Highlands</div></div>
-        <div class="gallery-item"><img src="images/gallery-tent.webp" srcset="images/sm/gallery-tent.webp 400w, images/gallery-tent.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="RAVEN field tent on Holuhraun lava flow-field, Iceland" loading="lazy"><div class="gallery-caption">RAVEN field tent on Holuhraun lava flow-field, Iceland</div></div>
-        <div class="gallery-item"><img src="images/gallery-raven1.webp" srcset="images/sm/gallery-raven1.webp 400w, images/gallery-raven1.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="MESR rover and drone during RAVEN field operations" loading="lazy"><div class="gallery-caption">MESR rover and drone during RAVEN field operations</div></div>
-        <div class="gallery-item"><img src="images/gallery-8943.webp" srcset="images/sm/gallery-8943.webp 400w, images/gallery-8943.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="MESR rover on Mars-analog volcanic terrain, Iceland" loading="lazy"><div class="gallery-caption">MESR rover on Mars-analog terrain, Iceland</div></div>
-        <div class="gallery-item wide"><img src="images/gallery-holuhraun-steam.webp" srcset="images/sm/gallery-holuhraun-steam.webp 400w, images/gallery-holuhraun-steam.webp 1600w" sizes="(max-width: 768px) 100vw, 66vw" alt="Aerial view of Holuhraun lava flow-field with steam vents, Iceland" loading="lazy"><div class="gallery-caption">Aerial view of Holuhraun lava flow-field, Iceland</div></div>
-        <div class="gallery-item"><img src="images/gallery-9058.webp" srcset="images/sm/gallery-9058.webp 400w, images/gallery-9058.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="Remote operation of a rover in Iceland from NASA MSFC" loading="lazy"><div class="gallery-caption">Remote operation of a rover in Iceland from the NASA MSFC (Huntsville, Alabama) using LiDAR navigation</div></div>
-        <div class="gallery-item"><img src="images/gallery-9290.webp" srcset="images/sm/gallery-9290.webp 400w, images/gallery-9290.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="UAS survey over Holuhraun lava flow-field, Iceland" loading="lazy"><div class="gallery-caption">UAS survey over Holuhraun lava flow-field, Iceland</div></div>
-        <div class="gallery-item"><img src="images/gallery-strata.webp" srcset="images/sm/gallery-strata.webp 400w, images/gallery-strata.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="Examining volcanic sediment stratigraphy in the field" loading="lazy"><div class="gallery-caption">Examining volcanic sediment stratigraphy in the field</div></div>
-        <div class="gallery-item wide"><img src="images/gallery-holuhraun-vent.webp" srcset="images/sm/gallery-holuhraun-vent.webp 400w, images/gallery-holuhraun-vent.webp 1600w" sizes="(max-width: 768px) 100vw, 66vw" alt="Aerial view of Holuhraun eruption vent and lava channels, Iceland" loading="lazy"><div class="gallery-caption">Holuhraun eruption vent and lava channels, Iceland</div></div>
-        <div class="gallery-item"><img src="images/gallery-cage.webp" srcset="images/sm/gallery-cage.webp 400w, images/gallery-cage.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="Field safety testing, Fagradalsfjall, Iceland" loading="lazy"><div class="gallery-caption">Field safety testing, Fagradalsfjall, Iceland</div></div>
+        <figure class="gallery-item wide"><button type="button" class="gallery-btn" aria-haspopup="dialog"><img style="object-position:center 22%" src="images/gallery-fagradalsfjall2.webp" srcset="images/sm/gallery-fagradalsfjall2.webp 400w, images/gallery-fagradalsfjall2.webp 1600w" sizes="(max-width: 768px) 100vw, 66vw" alt="Steaming spatter cones feed glowing lava flows across a dark lava field, with a line of people watching from the grassy plain in the foreground" loading="lazy"><span class="sr-only"> (view larger)</span></button><figcaption class="gallery-caption">Fagradalsfjall eruption, Reykjanes Peninsula, Iceland</figcaption></figure>
+        <figure class="gallery-item"><button type="button" class="gallery-btn" aria-haspopup="dialog"><img src="images/gallery-eruption.webp" srcset="images/sm/gallery-eruption.webp 400w, images/gallery-eruption.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="Glowing lava channels run down snow-dusted slopes below a fountaining vent and a steam plume, with two small figures on the hillside" loading="lazy"><span class="sr-only"> (view larger)</span></button><figcaption class="gallery-caption">Fagradalsfjall eruption with lava channels, Iceland</figcaption></figure>
+        <figure class="gallery-item"><button type="button" class="gallery-btn" aria-haspopup="dialog"><img src="images/gallery-embassy.webp" srcset="images/sm/gallery-embassy.webp 400w, images/gallery-embassy.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="An orange sunset sky over a camp of red, orange and white dome tents, blue shipping containers and rows of solar panels laid on the ground, with two people standing nearby" loading="lazy"><span class="sr-only"> (view larger)</span></button><figcaption class="gallery-caption">RAVEN field camp at sunset, Icelandic Highlands</figcaption></figure>
+        <figure class="gallery-item"><button type="button" class="gallery-btn" aria-haspopup="dialog"><img src="images/gallery-tent.webp" srcset="images/sm/gallery-tent.webp 400w, images/gallery-tent.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="An orange-and-white dome tent and a line of expedition trucks on a flat plain of black sand scattered with lava boulders, under a grey cloudy sky" loading="lazy"><span class="sr-only"> (view larger)</span></button><figcaption class="gallery-caption">RAVEN field tent on Holuhraun lava flow-field, Iceland</figcaption></figure>
+        <figure class="gallery-item"><button type="button" class="gallery-btn" aria-haspopup="dialog"><img src="images/gallery-raven1.webp" srcset="images/sm/gallery-raven1.webp 400w, images/gallery-raven1.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="A white four-wheeled rover with a camera mast drives across black volcanic sand while a drone flies overhead" loading="lazy"><span class="sr-only"> (view larger)</span></button><figcaption class="gallery-caption">MESR rover and drone during RAVEN field operations</figcaption></figure>
+        <figure class="gallery-item"><button type="button" class="gallery-btn" aria-haspopup="dialog"><img src="images/gallery-8943.webp" srcset="images/sm/gallery-8943.webp 400w, images/gallery-8943.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="Front view of a white wheeled rover with a camera mast and solar panel, parked on grey volcanic sand under a cloudy sky" loading="lazy"><span class="sr-only"> (view larger)</span></button><figcaption class="gallery-caption">MESR rover on Mars-analog terrain, Iceland</figcaption></figure>
+        <figure class="gallery-item wide"><button type="button" class="gallery-btn" aria-haspopup="dialog"><img src="images/gallery-holuhraun-steam.webp" srcset="images/sm/gallery-holuhraun-steam.webp 400w, images/gallery-holuhraun-steam.webp 1600w" sizes="(max-width: 768px) 100vw, 66vw" alt="Aerial view of a dark lava field covered in billowing white steam, with a long plume drifting along the horizon" loading="lazy"><span class="sr-only"> (view larger)</span></button><figcaption class="gallery-caption">Aerial view of Holuhraun lava flow-field, Iceland</figcaption></figure>
+        <figure class="gallery-item"><button type="button" class="gallery-btn" aria-haspopup="dialog"><img src="images/gallery-9058.webp" srcset="images/sm/gallery-9058.webp 400w, images/gallery-9058.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="A small black four-wheeled rover carrying a clear box of electronics on gravelly volcanic ground, with dark hills behind" loading="lazy"><span class="sr-only"> (view larger)</span></button><figcaption class="gallery-caption">Remote operation of a rover in Iceland from the NASA MSFC (Huntsville, Alabama) using LiDAR navigation</figcaption></figure>
+        <figure class="gallery-item"><button type="button" class="gallery-btn" aria-haspopup="dialog"><img src="images/gallery-9290.webp" srcset="images/sm/gallery-9290.webp 400w, images/gallery-9290.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="A large multirotor drone hovers above a flat, dark lava plain, with blue mountains on the horizon under an overcast sky" loading="lazy"><span class="sr-only"> (view larger)</span></button><figcaption class="gallery-caption">UAS survey over Holuhraun lava flow-field, Iceland</figcaption></figure>
+        <figure class="gallery-item"><button type="button" class="gallery-btn" aria-haspopup="dialog"><img src="images/gallery-strata.webp" srcset="images/sm/gallery-strata.webp 400w, images/gallery-strata.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="A hand in a bright green sleeve points to thin, alternating dark and light layers of volcanic sediment in a cut bank" loading="lazy"><span class="sr-only"> (view larger)</span></button><figcaption class="gallery-caption">Examining volcanic sediment stratigraphy in the field</figcaption></figure>
+        <figure class="gallery-item wide"><button type="button" class="gallery-btn" aria-haspopup="dialog"><img src="images/gallery-holuhraun-vent.webp" srcset="images/sm/gallery-holuhraun-vent.webp 400w, images/gallery-holuhraun-vent.webp 1600w" sizes="(max-width: 768px) 100vw, 66vw" alt="Aerial view of an erupting vent: a glowing lava pond inside a dark cone, white steam billowing to one side and an orange lava channel flowing away behind" loading="lazy"><span class="sr-only"> (view larger)</span></button><figcaption class="gallery-caption">Holuhraun eruption vent and lava channels, Iceland</figcaption></figure>
+        <figure class="gallery-item"><button type="button" class="gallery-btn" aria-haspopup="dialog"><img src="images/gallery-cage.webp" srcset="images/sm/gallery-cage.webp 400w, images/gallery-cage.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" alt="A smiling, bearded person in a green jacket and high-visibility vest crouches inside a metal wire cage on rocky ground beside a dark lava flow" loading="lazy"><span class="sr-only"> (view larger)</span></button><figcaption class="gallery-caption">Field safety testing, Fagradalsfjall, Iceland</figcaption></figure>
       </div>
     </div>
   </div>
 </div>
 
-<button class="back-to-top" id="back-to-top" aria-label="Back to top" title="Back to top">&#9650;</button>
+</main>
+
+<button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top" title="Back to top">&#9650;</button>
+
+<!-- Gallery lightbox (a modal dialog; Esc closes, arrow keys step through the photos) -->
+<dialog class="lightbox" id="lightbox" aria-labelledby="lightbox-caption">
+  <figure class="lightbox-figure">
+    <img id="lightbox-img" alt="">
+    <figcaption class="lightbox-caption"><span id="lightbox-caption"></span> <span class="lightbox-count" id="lightbox-count"></span></figcaption>
+  </figure>
+  <button type="button" class="lightbox-btn lightbox-prev" id="lightbox-prev" aria-label="Previous photo"><span aria-hidden="true">&#8249;</span></button>
+  <button type="button" class="lightbox-btn lightbox-next" id="lightbox-next" aria-label="Next photo"><span aria-hidden="true">&#8250;</span></button>
+  <button type="button" class="lightbox-btn lightbox-close" id="lightbox-close" aria-label="Close photo viewer"><span aria-hidden="true">&#215;</span></button>
+</dialog>
 
 <footer class="footer">
   <div class="footer-grid">
@@ -545,12 +566,12 @@
       <p class="footer-desc">Planetary volcanism, astrobiology, and exploration technology.</p>
     </div>
     <div>
-      <h4 class="footer-heading">Contact</h4>
+      <h2 class="footer-heading">Contact</h2>
       <p class="footer-contact"><a href="mailto:chamilton@arizona.edu?subject=Hamilton%20Lab%20Inquiry" class="footer-link" style="display:inline;margin:0">chamilton@arizona.edu</a></p>
       <p class="footer-contact-addr">Lunar and Planetary Laboratory<br>University of Arizona<br>1629 E. University Blvd.<br>Tucson, AZ 85721 USA</p>
     </div>
-    <div>
-      <h4 class="footer-heading">Pages</h4>
+    <nav aria-labelledby="footer-pages-heading">
+      <h2 class="footer-heading" id="footer-pages-heading">Pages</h2>
       <a href="#home" class="footer-link" data-page="home">Home</a>
       <a href="#research" class="footer-link" data-page="research">Research</a>
       <a href="#publications" class="footer-link" data-page="publications">Publications</a>
@@ -558,7 +579,7 @@
       <a href="#opportunities" class="footer-link" data-page="opportunities">Opportunities</a>
       <a href="#data" class="footer-link" data-page="data">Data and Resources</a>
       <a href="#media" class="footer-link" data-page="media">Media and Gallery</a>
-    </div>
+    </nav>
   </div>
   <div class="footer-bottom">Copyright <span id="copyright-year">2026</span> Christopher W. Hamilton &#8212; christopherhamilton.com<span id="last-updated"></span></div>
 </footer>
@@ -620,7 +641,11 @@ const filterSets = {
   'tech-filter': p => /\buas\b|unoccupied aircraft|rover|helicopter|drone|slam|lidar|panther|raven|remote sensing|hyperspectral|cnn|automated detection/i.test(p.a+' '+p.t+' '+p.j),
 };
 
+// Visitors who ask their system for less motion: no parallax, rotation or smooth scrolling
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)');
+
 // NAV
+let firstNavigation = true;
 function navigate(page) {
   document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
   const target = document.getElementById('page-' + page);
@@ -628,10 +653,19 @@ function navigate(page) {
   const navLink = document.querySelector('.nav-links a[data-page="' + page + '"]');
   document.title = navLink && page !== 'home' ? navLink.textContent + ' — Christopher W. Hamilton' : 'Christopher W. Hamilton — Planetary Volcanism and Exploration';
   document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(a => {
-    a.classList.toggle('active', a.dataset.page === page);
+    const current = a.dataset.page === page;
+    a.classList.toggle('active', current);
+    if (current) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   });
-  document.getElementById('mobile-menu').classList.remove('open');
+  setMobileMenu(false);
   window.scrollTo(0, 0);
+  // After a page change (not the first load): move focus to the new page's heading and announce its title
+  if (!firstNavigation && target) {
+    const h1 = target.querySelector('h1');
+    if (h1) { h1.setAttribute('tabindex', '-1'); h1.focus({ preventScroll: true }); }
+    document.getElementById('route-announcer').textContent = document.title;
+  }
+  firstNavigation = false;
   setTimeout(() => { initReveal(); initStagger(); layoutMedia(); sizeRavenLogo(); }, 100);
 }
 
@@ -656,8 +690,18 @@ document.querySelector('.skip-link').addEventListener('click', (e) => {
   page.setAttribute('tabindex', '-1');
   page.focus();
 });
+// Phone menu: reports open/closed; Escape closes it and returns focus to the button
+function setMobileMenu(open) {
+  document.getElementById('mobile-menu').classList.toggle('open', open);
+  document.getElementById('hamburger').setAttribute('aria-expanded', open);
+}
 document.getElementById('hamburger').addEventListener('click', () => {
-  document.getElementById('mobile-menu').classList.toggle('open');
+  setMobileMenu(!document.getElementById('mobile-menu').classList.contains('open'));
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape' || !document.getElementById('mobile-menu').classList.contains('open')) return;
+  setMobileMenu(false);
+  document.getElementById('hamburger').focus();
 });
 
 // SCROLL REVEAL
@@ -687,6 +731,7 @@ function initStagger() {
 // PARALLAX
 function initParallax() {
   window.addEventListener('scroll', () => {
+    if (REDUCED_MOTION.matches) return;
     const scrollY = window.scrollY;
     const heroBg = document.querySelector('#page-home .hero-bg');
     if (heroBg && document.getElementById('page-home').style.display !== 'none') {
@@ -732,9 +777,9 @@ const latestItems = [
 function pubCard(item) {
   const m = item.src.match(/^(.*),\s*(\d{4})$/);
   const venue = m ? m[1] : item.src, year = m ? m[2] : '';
-  const text = '<div class="lc-text"><h4>'+item.t+'</h4><p>'+item.a+'</p></div>';
+  const text = '<div class="lc-text"><h3>'+item.t+'</h3><p>'+item.a+'</p></div>';
   if (item.img) {
-    return '<a href="'+item.href+'" target="_blank" rel="noopener noreferrer" style="text-decoration:none"><div class="card latest-card has-thumb"><div class="lc-thumb" style="background-image:url(\''+item.img+'\');background-position:'+(item.pos||'center')+'"></div><div class="lc-text"><p class="lc-src">'+venue+(year?', '+year:'')+'</p><h4>'+item.t+'</h4><p>'+item.a+'</p></div></div></a>';
+    return '<a href="'+item.href+'" target="_blank" rel="noopener noreferrer" style="text-decoration:none"><div class="card latest-card has-thumb"><div class="lc-thumb" style="background-image:url(\''+item.img+'\');background-position:'+(item.pos||'center')+'"></div><div class="lc-text"><p class="lc-src">'+venue+(year?', '+year:'')+'</p><h3>'+item.t+'</h3><p>'+item.a+'</p></div></div></a>';
   }
   return '<a href="'+item.href+'" target="_blank" rel="noopener noreferrer" style="text-decoration:none"><div class="card latest-card"><div class="lc-meta"><span class="lc-year">'+year+'</span>'+venue+'</div>'+text+'</div></a>';
 }
@@ -751,6 +796,8 @@ function togglePrevious() {
   extra.style.display = showing ? 'none' : 'grid';
   extra.style.marginTop = '14px';
   btn.classList.toggle('open', !showing);
+  btn.setAttribute('aria-expanded', !showing);
+  btn.querySelector('.btn-label').textContent = (showing ? 'Show' : 'Hide') + ' earlier publications and news';
 }
 
 // RAVEN logo: match the height of the focus-issue box, keep aspect ratio (CSS caps the width)
@@ -775,7 +822,10 @@ function layoutMedia() {
 }
 function toggleMedia() {
   mediaExpanded = !mediaExpanded;
-  document.getElementById('media-toggle-btn').classList.toggle('open', mediaExpanded);
+  const btn = document.getElementById('media-toggle-btn');
+  btn.classList.toggle('open', mediaExpanded);
+  btn.setAttribute('aria-expanded', mediaExpanded);
+  btn.querySelector('.btn-label').textContent = (mediaExpanded ? 'Hide' : 'Show') + ' earlier media coverage';
   layoutMedia();
 }
 window.addEventListener('resize', layoutMedia, { passive: true });
@@ -840,12 +890,33 @@ function renderHighlights() {
     const pubsHtml = h.relatedPubs ? h.relatedPubs.map(rp =>
       '<div class="related-pub"><p class="rp-title">'+((pubs.find(p => p.d === rp.d) || {}).t || '')+'</p><p class="rp-authors">'+rp.a+'</p>'+(rp.d?'<a href="https://doi.org/'+rp.d+'" target="_blank" rel="noopener noreferrer" class="rp-doi" onclick="event.stopPropagation()">doi:'+rp.d+'</a>':'')+'</div>'
     ).join('') : '';
-    const viewMore = h.filter ? '<a class="view-more-link" href="#publications" onclick="event.preventDefault();event.stopPropagation();showPubFilter(\''+h.filter+'\')">View more &#8594;</a>' : '';
-    return '<div class="card research-card stagger-item" onclick="toggleCard(this)"><div class="card-img-wrap"><div class="card-img" style="background-image:url(\''+h.img+'\');'+imgStyle+'"></div></div><div class="card-body"><h3 class="card-title">'+h.title+'</h3><p class="card-desc">'+h.desc+'</p><div class="card-tags">'+h.tags.map(t=>'<span class="card-tag">'+t+'</span>').join('')+'</div><div class="expand-indicator"><span class="arrow expand-arrow">&#9656;</span> Learn more</div></div><div class="card-detail"><div class="cd-clip"><div class="cd-body"><p>'+h.detail+'</p>'+(pubsHtml?'<p class="card-detail-heading">Related Publications</p>'+pubsHtml+viewMore:'')+'</div></div></div></div>';
+    const chip = h.filter && document.querySelector('#filter-chips .filter-chip[data-filter="'+h.filter+'"]');
+    const topic = chip ? chip.textContent.trim() : '';
+    const viewMore = h.filter ? '<a class="view-more-link" href="#publications" onclick="event.preventDefault();event.stopPropagation();showPubFilter(\''+h.filter+'\')">View more '+topic+' publications <span aria-hidden="true">&#8594;</span></a>' : '';
+    // The title is the toggle button; the rest of the card still opens it on click (links excepted)
+    return '<div class="card research-card stagger-item"><div class="card-img-wrap"><div class="card-img" style="background-image:url(\''+h.img+'\');'+imgStyle+'"></div></div><div class="card-body"><h3 class="card-title"><button type="button" class="card-toggle" aria-expanded="false" aria-controls="hl-detail-'+i+'">'+h.title+'</button></h3><p class="card-desc">'+h.desc+'</p><div class="card-tags">'+h.tags.map(t=>'<span class="card-tag">'+t+'</span>').join('')+'</div><div class="expand-indicator" aria-hidden="true"><span class="arrow expand-arrow">&#9656;</span> Learn more</div></div><div class="card-detail" id="hl-detail-'+i+'" inert><div class="cd-clip"><div class="cd-body"><p>'+h.detail+'</p>'+(pubsHtml?'<p class="card-detail-heading">Related Publications</p>'+pubsHtml+viewMore:'')+'</div></div></div></div>';
   }).join('');
 }
 
-function toggleCard(el) { el.classList.toggle('open'); }
+// Disclosure cards: one real button per card reports open/closed; .open stays on the card for the CSS.
+// A click anywhere else on the card (outside links and buttons) also toggles it.
+function setDisclosure(card, open) {
+  const btn = card.querySelector('[aria-expanded]');
+  const panel = btn && document.getElementById(btn.getAttribute('aria-controls'));
+  card.classList.toggle('open', open);
+  if (btn) btn.setAttribute('aria-expanded', open);
+  if (panel) panel.inert = !open;
+}
+function initDisclosures(container, cardSelector) {
+  container.addEventListener('click', (e) => {
+    const card = e.target.closest(cardSelector);
+    if (!card || !container.contains(card)) return;
+    if (e.target.closest('a[href]')) return;
+    if (e.target.closest('button') && !e.target.closest('button').matches('[aria-controls]')) return;
+    if (!e.target.closest('button') && window.getSelection && String(window.getSelection())) return;
+    setDisclosure(card, !card.classList.contains('open'));
+  });
+}
 
 // Open Publications with one topic filter chip selected
 function showPubFilter(filter) {
@@ -863,19 +934,15 @@ function getBadgeClass(role) {
 }
 
 function renderProjects() {
-  // Active projects — all compact with role rail
+  // Compact cards with role rail; the title is the toggle button, the funding source is the panel
+  const projectCard = (p, id) =>
+    '<div class="compact-card stagger-item '+getRoleClass(p[0])+'"><span class="badge cc-badge '+getBadgeClass(p[0])+'">'+p[0]+'</span><button type="button" class="cc-title" aria-expanded="false" aria-controls="'+id+'">'+p[1]+'</button><span class="cc-arrow" aria-hidden="true">&#9656;</span><div class="cc-detail" id="'+id+'">'+p[2]+'</div></div>';
   const activeContainer = document.getElementById('active-projects');
   activeContainer.classList.add('stagger-container');
-  activeContainer.innerHTML = activeProjects.map(p =>
-    '<div class="compact-card stagger-item '+getRoleClass(p[0])+'" onclick="this.classList.toggle(\'open\')"><span class="badge cc-badge '+getBadgeClass(p[0])+'">'+p[0]+'</span><span class="cc-title">'+p[1]+'</span><span class="cc-arrow">&#9656;</span><div class="cc-detail">'+p[2]+'</div></div>'
-  ).join('');
-
-  // Completed projects — all compact
+  activeContainer.innerHTML = activeProjects.map((p, i) => projectCard(p, 'proj-active-'+i)).join('');
   const completedContainer = document.getElementById('completed-projects');
   completedContainer.classList.add('stagger-container');
-  completedContainer.innerHTML = completedProjects.map(p =>
-    '<div class="compact-card stagger-item '+getRoleClass(p[0])+'" onclick="this.classList.toggle(\'open\')"><span class="badge cc-badge '+getBadgeClass(p[0])+'">'+p[0]+'</span><span class="cc-title">'+p[1]+'</span><span class="cc-arrow">&#9656;</span><div class="cc-detail">'+p[2]+'</div></div>'
-  ).join('');
+  completedContainer.innerHTML = completedProjects.map((p, i) => projectCard(p, 'proj-done-'+i)).join('');
 }
 
 // PUBLICATIONS
@@ -893,29 +960,30 @@ function renderPubChart() {
   const years = Object.keys(yearly).sort();
   const maxN = Math.max(...Object.values(yearly));
   document.getElementById('pub-chart').innerHTML =
-    '<h3 class="section-heading h-sub" style="margin-bottom:16px">Publications per Year</h3><div class="chart-bars">'+
+    '<h2 class="section-heading h-sub" style="margin-bottom:16px">Publications per Year</h2><div class="chart-scroll"><div class="chart-bars">'+
     years.map(y => {
       const h = Math.max(.25, (yearly[y]/maxN)*7.5);
-      return '<div class="chart-bar-group" data-year="'+y+'" onclick="filterByYear(\''+y+'\')"><span class="chart-bar-count">'+yearly[y]+'</span><div class="chart-bar" style="height:'+h+'rem"></div><span class="chart-bar-year">'+y+'</span></div>';
-    }).join('')+'</div><div class="chart-legend"><span><span class="chart-legend-dot"></span> Papers/year (click bar to filter)</span></div>';
+      return '<button type="button" class="chart-bar-group" data-year="'+y+'" aria-pressed="false" aria-label="'+y+': '+yearly[y]+' paper'+(yearly[y]!==1?'s':'')+'" onclick="filterByYear(\''+y+'\')"><span class="chart-bar-count" aria-hidden="true">'+yearly[y]+'</span><span class="chart-bar" style="height:'+h+'rem"></span><span class="chart-bar-year" aria-hidden="true">'+y+'</span></button>';
+    }).join('')+'</div></div><div class="chart-legend"><span><span class="chart-legend-dot"></span> Papers/year (select a bar to filter)</span></div>';
 }
 
 let activeChartYear = null;
+// Bars show (and report) which year filter is on
+function syncChartBars() {
+  document.querySelectorAll('.chart-bar-group').forEach(g => {
+    const on = g.dataset.year === activeChartYear;
+    g.classList.toggle('active', on);
+    g.setAttribute('aria-pressed', on);
+  });
+}
 function filterByYear(year) {
   const search = document.getElementById('pub-search');
-  if (activeChartYear === year) {
-    activeChartYear = null;
-    search.value = '';
-    renderPubs('');
-    document.querySelectorAll('.chart-bar-group').forEach(g => g.classList.remove('active'));
-  } else {
-    activeChartYear = year;
-    search.value = '';
-    renderPubs('');
-    document.querySelectorAll('.chart-bar-group').forEach(g => g.classList.toggle('active', g.dataset.year === year));
-  }
+  activeChartYear = activeChartYear === year ? null : year;
+  search.value = '';
   clearActiveChips();
   if (!activeChartYear) document.querySelector('#filter-chips .filter-chip[data-filter="all"]').classList.add('active');
+  renderPubs('');
+  syncChartBars();
 }
 
 function renderPubs(query) {
@@ -934,11 +1002,22 @@ function renderPubs(query) {
     filtered = pubs.filter(p => !q || (p.a+' '+p.t+' '+p.j+' '+p.y).toLowerCase().includes(q));
   }
   if (activeChartYear) filtered = filtered.filter(p => String(p.y) === activeChartYear);
-  document.getElementById('pub-count').textContent = 'Showing '+filtered.length+' publication'+(filtered.length!==1?'s':'');
+  // Count line names what is being shown; screen readers hear it once typing pauses
+  let scope = '';
+  if (q === 'first-author' || q === 'student-led' || filterSets[q]) {
+    const chip = document.querySelector('#filter-chips .filter-chip[data-filter="'+q+'"]');
+    scope = chip ? ' in '+chip.textContent.trim() : '';
+  } else if (q) scope = ' for \u2018'+query.trim()+'\u2019';
+  if (activeChartYear) scope += ' from '+activeChartYear;
+  const countText = 'Showing '+filtered.length+' publication'+(filtered.length!==1?'s':'')+scope;
+  document.getElementById('pub-count').textContent = countText;
+  clearTimeout(renderPubs.announce);
+  if (renderPubs.ran) renderPubs.announce = setTimeout(() => { document.getElementById('pub-status').textContent = countText; }, 700);
+  renderPubs.ran = true;
   let lastYear = null;
   document.getElementById('pub-list').innerHTML = filtered.map((p,i) => {
     let yh = '';
-    if (p.y !== lastYear) { yh = '<h3 class="pub-year-heading"'+(i>0?' style="margin-top:28px"':'')+'>'+p.y+'</h3>'; lastYear = p.y; }
+    if (p.y !== lastYear) { yh = '<h2 class="pub-year-heading"'+(i>0?' style="margin-top:28px"':'')+'>'+p.y+'</h2>'; lastYear = p.y; }
     const url = pubUrl(p);
     const doi = url ? '<a href="'+url+'" target="_blank" rel="noopener noreferrer" class="doi">'+(isDoi(p.d) ? 'doi:'+p.d : url.replace('https://','').split('/')[0])+'</a>' : '';
     const faClass = isFirstAuthor(p.a) || isHamiltonCoFirst(p.d) ? ' first-author' : '';
@@ -975,7 +1054,7 @@ function initFilterChips() {
       const wasActive = chip.classList.contains('active');
       clearActiveChips();
       activeChartYear = null;
-      document.querySelectorAll('.chart-bar-group').forEach(g => g.classList.remove('active'));
+      syncChartBars();
       if (wasActive || filter === 'all') {
         document.querySelector('#filter-chips .filter-chip[data-filter="all"]').classList.add('active');
         search.value = '';
@@ -1021,7 +1100,7 @@ function renderDataPage() {
   const mediaCard = m => {
     const bgStyle = m.bg ? 'background-color:'+m.bg+';' : '';
     const imgHtml = m.img ? '<div class="media-card-img" style="'+bgStyle+'background-image:url(\''+m.img+'\');background-position:'+(m.pos||'center')+'"></div>' : '';
-    return '<a class="media-item" href="'+(m.h||'#')+'"'+(m.h?' target="_blank" rel="noopener noreferrer"':'')+' style="text-decoration:none"><div class="media-card'+(m.img?' has-media-img':'')+'">'+imgHtml+'<div class="media-card-text"><p class="outlet">'+m.o+'</p><h4>'+m.t+'</h4></div></div></a>';
+    return '<a class="media-item" href="'+(m.h||'#')+'"'+(m.h?' target="_blank" rel="noopener noreferrer"':'')+' style="text-decoration:none"><div class="media-card'+(m.img?' has-media-img':'')+'">'+imgHtml+'<div class="media-card-text"><p class="outlet">'+m.o+'</p><h3>'+m.t+'</h3></div></div></a>';
   };
   document.getElementById('media-list').innerHTML = media.map(mediaCard).join('');
 }
@@ -1030,7 +1109,7 @@ document.getElementById('pub-search').addEventListener('input', (e) => {
   clearActiveChips();
   if (!e.target.value) document.querySelector('#filter-chips .filter-chip[data-filter="all"]').classList.add('active');
   activeChartYear = null;
-  document.querySelectorAll('.chart-bar-group').forEach(g => g.classList.remove('active'));
+  syncChartBars();
   renderPubs(e.target.value);
 });
 
@@ -1042,7 +1121,11 @@ function initBackToTop() {
     btn.classList.toggle('visible', window.scrollY > 400);
   }, { passive: true });
   btn.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: REDUCED_MOTION.matches ? 'auto' : 'smooth' });
+    // The button hides at the top, so give keyboard focus to the page heading
+    const page = Array.from(document.querySelectorAll('.page')).find(p => p.style.display !== 'none');
+    const h1 = page && page.querySelector('h1');
+    if (h1) { h1.setAttribute('tabindex', '-1'); h1.focus({ preventScroll: true }); }
   });
 }
 
@@ -1093,30 +1176,137 @@ function initOppChips() {
   });
 }
 
-// ARIA roles for all tab groups
+// ARIA tabs for all tab groups: tab and panel linked, roving tabindex, arrow/Home/End keys.
+// Tab list id -> [data attribute on the tab, panel id prefix]
+const TAB_PANELS = {'data-tabs':['tab','tab-'], 'opp-tabs':['opptab','opptab-'], 'team-tabs':['teamtab','teamtab-'], 'media-tabs':['mtab','mtab-']};
 function initTabAria() {
   document.querySelectorAll('.data-tabs').forEach(list => {
+    const conf = TAB_PANELS[list.id];
+    if (!conf) return;
     list.setAttribute('role', 'tablist');
-    const tabs = list.querySelectorAll('.data-tab');
-    const sync = () => tabs.forEach(t => t.setAttribute('aria-selected', t.classList.contains('active')));
-    tabs.forEach(t => t.setAttribute('role', 'tab'));
+    const tabs = Array.from(list.querySelectorAll('.data-tab'));
+    tabs.forEach(t => {
+      const panel = document.getElementById(conf[1] + t.dataset[conf[0]]);
+      t.setAttribute('role', 'tab');
+      if (!panel) return;
+      t.id = 'tabbtn-' + panel.id;
+      t.setAttribute('aria-controls', panel.id);
+      panel.setAttribute('role', 'tabpanel');
+      panel.setAttribute('aria-labelledby', t.id);
+      // A panel with nothing focusable inside is itself a tab stop
+      if (!panel.querySelector('a[href],button,input')) panel.tabIndex = 0;
+    });
+    const sync = () => tabs.forEach(t => {
+      const on = t.classList.contains('active');
+      t.setAttribute('aria-selected', on);
+      t.tabIndex = on ? 0 : -1;
+    });
     sync();
     new MutationObserver(sync).observe(list, { subtree: true, attributeFilter: ['class'] });
+    list.addEventListener('keydown', (e) => {
+      const i = tabs.indexOf(document.activeElement);
+      let n = {ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1}[e.key];
+      if (i < 0 || n === undefined) return;
+      e.preventDefault();
+      n = (n + tabs.length) % tabs.length;
+      tabs[n].focus();
+      tabs[n].click();
+    });
+  });
+  // "Take a course with me." selects the Teaching tab
+  const course = document.getElementById('take-course');
+  if (course) course.addEventListener('click', () => {
+    const tab = document.querySelector('#opp-tabs [data-opptab="teaching"]');
+    tab.click();
+    tab.focus();
   });
 }
-initTabAria();
 
-// PROFILE PHOTO ROTATION - handles all portrait circles
+// FILTER CHIPS report whether they are on
+function initChipState() {
+  document.querySelectorAll('.filter-chips').forEach(group => {
+    const sync = () => group.querySelectorAll('.filter-chip').forEach(c => c.setAttribute('aria-pressed', c.classList.contains('active')));
+    sync();
+    new MutationObserver(sync).observe(group, { subtree: true, attributeFilter: ['class'] });
+  });
+}
+
+// PROFILE PHOTO ROTATION - handles all portrait circles.
+// Every 20 s; paused on hover or focus and while the tab is hidden; off for reduced motion.
+// Only the visible photo is exposed to screen readers.
 function initProfileRotation() {
   document.querySelectorAll('#profile-circle, #hero-portrait').forEach(circle => {
     const imgs = circle.querySelectorAll('img');
+    let current = 0, paused = false;
+    const show = i => imgs.forEach((img, j) => {
+      img.classList.toggle('active', j === i);
+      if (j === i) img.removeAttribute('aria-hidden'); else img.setAttribute('aria-hidden', 'true');
+    });
+    show(0);
     if (imgs.length < 2) return;
-    let current = 0;
+    circle.addEventListener('mouseenter', () => { paused = true; });
+    circle.addEventListener('mouseleave', () => { paused = false; });
+    circle.addEventListener('focusin', () => { paused = true; });
+    circle.addEventListener('focusout', () => { paused = false; });
     setInterval(() => {
-      imgs[current].classList.remove('active');
+      if (paused || document.hidden || REDUCED_MOTION.matches) return;
       current = (current + 1) % imgs.length;
-      imgs[current].classList.add('active');
+      show(current);
     }, 20000);
+  });
+}
+
+// Links that open a new tab: say so to screen readers, and keep the arrow from being read aloud
+function markNewTabLinks() {
+  document.querySelectorAll('a[target="_blank"]:not([data-newtab])').forEach(a => {
+    a.setAttribute('data-newtab', '');
+    if (a.innerHTML.includes('\u2197')) a.innerHTML = a.innerHTML.replace(/\u2197/g, '<span aria-hidden="true">\u2197</span>');
+    a.insertAdjacentHTML('beforeend', '<span class="sr-only"> (opens in new tab)</span>');
+  });
+}
+
+// GALLERY LIGHTBOX: modal dialog, Esc closes, arrow keys step, focus returns to the photo that opened it.
+// Does not touch location.hash (page views are counted on hash changes).
+function initLightbox() {
+  const dlg = document.getElementById('lightbox');
+  const items = Array.from(document.querySelectorAll('.gallery-item'));
+  if (!dlg || !dlg.showModal || !items.length) return;
+  const img = document.getElementById('lightbox-img');
+  let index = 0, opener = null;
+  const show = i => {
+    index = (i + items.length) % items.length;
+    const src = items[index].querySelector('img');
+    img.src = src.getAttribute('src');
+    img.alt = src.alt;
+    document.getElementById('lightbox-caption').textContent = items[index].querySelector('figcaption').textContent;
+    document.getElementById('lightbox-count').textContent = (index + 1) + ' of ' + items.length;
+  };
+  items.forEach((item, i) => item.querySelector('.gallery-btn').addEventListener('click', (e) => {
+    opener = e.currentTarget;
+    show(i);
+    document.documentElement.classList.add('lightbox-open');
+    dlg.showModal();
+    document.getElementById('lightbox-close').focus();
+  }));
+  document.getElementById('lightbox-prev').addEventListener('click', () => show(index - 1));
+  document.getElementById('lightbox-next').addEventListener('click', () => show(index + 1));
+  document.getElementById('lightbox-close').addEventListener('click', () => dlg.close());
+  dlg.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); show(index - 1); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); show(index + 1); }
+    else if (e.key === 'Tab') {
+      // Keep Tab inside the dialog
+      const f = Array.from(dlg.querySelectorAll('button'));
+      const k = f.indexOf(document.activeElement);
+      if (e.shiftKey && k <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && k === f.length - 1) { e.preventDefault(); f[0].focus(); }
+    }
+  });
+  // A click on the dark backdrop (outside the photo and buttons) closes it
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener('close', () => {
+    document.documentElement.classList.remove('lightbox-open');
+    if (opener) opener.focus();
   });
 }
 
@@ -1153,9 +1343,12 @@ function initTeamPubs() {
       return authors.includes(sLower + ',') || authors.includes(sLower + ' ') || authors.endsWith(sLower);
     });
     if (matching.length === 0) return;
-    nameEl.innerHTML = fullName + ' <span class="team-expand">&#9656;</span><span class="team-pub-count">' + matching.length + ' publication' + (matching.length !== 1 ? 's' : '') + '</span>';
+    // The name is the toggle button; the panel is hidden from everyone while closed
+    const panelId = 'team-pubs-' + document.querySelectorAll('.team-pubs-panel').length;
+    nameEl.innerHTML = '<button type="button" class="team-toggle" aria-expanded="false" aria-controls="' + panelId + '">' + fullName + ' <span class="team-expand" aria-hidden="true">&#9656;</span><span class="team-pub-count">' + matching.length + ' publication' + (matching.length !== 1 ? 's' : '') + '</span></button>';
     const panel = document.createElement('div');
     panel.className = 'team-pubs-panel';
+    panel.id = panelId;
     panel.innerHTML = matching.map(p => {
       const url = pubUrl(p);
       const inner = '<span class="tp-title">' + formatAuthorsShort(p.a, p.y) + ' ' + p.t + '</span><div class="tp-journal">' + p.j + '</div>';
@@ -1163,21 +1356,8 @@ function initTeamPubs() {
     }).join('');
     entry.appendChild(panel);
     entry.classList.add('has-pubs');
-    entry.setAttribute('tabindex', '0');
-    entry.setAttribute('aria-expanded', 'false');
-    entry.addEventListener('click', function(e) {
-      if (e.target.closest('a[href]')) return;
-      this.classList.toggle('open');
-      this.setAttribute('aria-expanded', this.classList.contains('open'));
-    });
-    entry.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        this.classList.toggle('open');
-        this.setAttribute('aria-expanded', this.classList.contains('open'));
-      }
-    });
   });
+  document.querySelectorAll('.team-tab-panel').forEach(p => initDisclosures(p, '.team-entry.has-pubs'));
 }
 
 // FOOTER: copyright year and last-updated date
@@ -1194,6 +1374,10 @@ document.addEventListener('DOMContentLoaded', () => {
   renderDataPage(); initFilterChips(); initDataTabs(); handleHash();
   initReveal(); initStagger(); initBackToTop(); initParallax(); initProgressBar();
   initProfileRotation(); initOppChips(); initTeamPubs();
+  initDisclosures(document.getElementById('research-highlights'), '.research-card');
+  initDisclosures(document.getElementById('active-projects'), '.compact-card');
+  initDisclosures(document.getElementById('completed-projects'), '.compact-card');
+  initTabAria(); initChipState(); initLightbox(); markNewTabLinks();
   sizeRavenLogo(); window.addEventListener('resize', sizeRavenLogo, { passive: true });
 });
 </script>
