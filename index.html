@@ -524,16 +524,24 @@
     </div>
   </div>
   <div class="section">
-    <p class="section-sub">Publicly available datasets and white papers.</p>
+    <p class="section-sub">Publicly available datasets, white papers, and outreach articles.</p>
     <div class="data-tabs" id="data-tabs" aria-label="Data and resources">
       <button type="button" class="data-tab active" data-tab="datasets">Datasets</button>
       <button type="button" class="data-tab" data-tab="whitepapers">White Papers</button>
+      <button type="button" class="data-tab" data-tab="outreach">Outreach</button>
+      <button type="button" class="data-tab" data-tab="chapters">Book Chapters</button>
     </div>
     <div id="tab-datasets" class="data-tab-panel active">
       <div id="datasets-list"></div>
     </div>
     <div id="tab-whitepapers" class="data-tab-panel">
       <div id="whitepapers-list"></div>
+    </div>
+    <div id="tab-outreach" class="data-tab-panel">
+      <div id="outreach-list"></div>
+    </div>
+    <div id="tab-chapters" class="data-tab-panel">
+      <div id="chapters-list"></div>
     </div>
   </div>
 </div> 
@@ -1188,6 +1196,10 @@ function renderDataPage() {
   }
   renderEntries(datasets, 'datasets-list');
   renderEntries(whitepapers, 'whitepapers-list');
+  renderEntries(outreach, 'outreach-list');
+  // Book Chapters stays out of the page until there is at least one entry
+  if (bookChapters.length) renderEntries(bookChapters, 'chapters-list');
+  else { document.querySelector('#data-tabs [data-tab="chapters"]').remove(); document.getElementById('tab-chapters').remove(); }
 
   // Media cards - all rendered, CSS truncates to ~4 rows
   const mediaCard = m => {

@@ -154,7 +154,6 @@ const datasets = [
 ];
 
 const whitepapers = [
-{y:"2021",a:"Duhamel, S. and C.W. Hamilton",t:"How microbes in Iceland can teach us about possible life on Mars.",j:"Futurum, 7",d:"10.33424/FUTURUM112"},
 {y:"2020",a:"Aleinov, I. et al., including C.W. Hamilton",t:"Lunar near-surface volatile sample return.",j:"White Paper for NASA Artemis III Mission",d:"lpi",h:"https://www.lpi.usra.edu/announcements/artemis/whitepapers/2035.pdf"},
 {y:"2020",a:"Dundas, C.M. et al., including C.W. Hamilton",t:"Current activity on the martian surface: A key subject for future exploration.",j:"Decadal Survey White Paper",d:"10.3847/25c2cfeb.72861191"},
 {y:"2020",a:"Kerber, L. et al., including C.W. Hamilton",t:"The importance of planetary volcanism and key investigations for the next decade.",j:"Decadal Survey White Paper",d:"10.3847/25c2cfeb.cdd57ef9"},
@@ -166,6 +165,15 @@ const whitepapers = [
 {y:"2019",a:"de Kleer, K. et al., including C.W. Hamilton",t:"Tidal heating: Lessons from Io and the Jovian System.",j:"Keck Institute for Space Studies",d:"kiss",h:"https://www.kiss.caltech.edu/final_reports/tidal_heating_final_report.pdf"},
 {y:"2018",a:"Henning, W.G. et al., including C.W. Hamilton",t:"Highly volcanic exoplanets, lava worlds, and magma ocean worlds.",j:"NAS Exoplanet Science Strategy White Paper",d:"arxiv",h:"https://arxiv.org/abs/1804.05110"},
 {y:"2015",a:"Hamilton, C.W.",t:"Team gets firsthand look at the new Holuhraun eruption site.",j:"Eos, 96",d:"10.1029/2015EO041197"},
+];
+
+const outreach = [
+{y:"2021",a:"Duhamel, S. and C.W. Hamilton",t:"How microbes in Iceland can teach us about possible life on Mars.",j:"Futurum, 7",d:"10.33424/FUTURUM112"},
+];
+
+// Book chapters: shown in their own tab once this list has an entry. Same fields as datasets, e.g.
+// {y:"2027",a:"Surname, I. and C.W. Hamilton",t:"Chapter title.",j:"In: Editor, A. (Ed.), Book Title, Publisher, pp. 1–20",d:"10.xxxx/xxxxx"},
+const bookChapters = [
 ];
 
 const media = [
