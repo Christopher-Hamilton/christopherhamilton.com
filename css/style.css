@@ -554,7 +554,7 @@ html[data-start-page="research"] #page-research,html[data-start-page="publicatio
 .latest-card .lc-meta{font-family:var(--mono);font-size:var(--fs-label);color:var(--accent-small);letter-spacing:.04em;text-transform:uppercase;line-height:1.45;padding-top:3px;border-right:1px solid var(--border);padding-right:14px;min-width:0}
 .latest-card .lc-year{display:block;font-size:1.25rem;font-family:'Archivo Expanded','Source Sans 3',sans-serif;font-stretch:112%;font-weight:800;letter-spacing:-.01em;color:var(--accent);margin-bottom:2px}
 .latest-card h3{font-size:var(--fs-title);font-weight:600;color:var(--text);line-height:1.4;margin-bottom:4px}
-.latest-card p{font-size:var(--fs-detail);color:var(--muted);line-height:1.5}.latest-card p.card-credit,.media-card .card-credit{font-size:var(--fs-label);color:var(--muted);line-height:1.4;margin-top:.35rem}
+.latest-card p{font-size:var(--fs-detail);color:var(--muted);line-height:1.5}
 .latest-card .lc-thumb{background-size:cover;background-position:center;min-height:8rem;transition:transform .5s}
 .latest-card.has-thumb:hover .lc-thumb{transform:scale(1.03)}
 @media(max-width:768px){.grid-pubs{grid-template-columns:1fr}.latest-card,.latest-card.has-thumb{grid-template-columns:1fr;gap:8px}.latest-card .lc-meta{border-right:none;padding-right:0}.latest-card .lc-thumb{aspect-ratio:16/9;min-height:0}}

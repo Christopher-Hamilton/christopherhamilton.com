@@ -304,11 +304,11 @@
   <div class="section">
     <p class="section-sub"><span id="pub-total">74</span> completed peer-reviewed articles.</p>
     <div class="scholar-metrics">
-      <div class="scholar-metric"><span class="metric-value">3,264</span><span class="metric-label">Citations</span></div>
+      <div class="scholar-metric"><span class="metric-value">3,290</span><span class="metric-label">Citations</span></div>
       <div class="scholar-metric"><span class="metric-value">32</span><span class="metric-label">h-index</span></div>
       <div class="scholar-metric"><span class="metric-value">63</span><span class="metric-label">i10-index</span></div>
     </div>
-    <a href="https://scholar.google.com/citations?user=IbnKdFIAAAAJ&hl=en" target="_blank" rel="noopener noreferrer" class="scholar-link">Google Scholar Profile &#8599;</a><span class="scholar-asof">as of October 2026</span>
+    <a href="https://scholar.google.com/citations?user=IbnKdFIAAAAJ&hl=en" target="_blank" rel="noopener noreferrer" class="scholar-link">Google Scholar Profile &#8599;</a><span class="scholar-asof">as of November 2026</span>
     <div id="pub-chart" class="chart-container"></div>
     <label for="pub-search" class="sr-only">Search publications</label>
     <input type="search" class="pub-search" id="pub-search" placeholder="Search by author, title, journal, or year..." aria-describedby="pub-count">
@@ -644,7 +644,7 @@
 <script>
 // LAST UPDATED: change this date (YYYY-MM-DD) whenever the site content is updated.
 // Hard-coded on purpose: document.lastModified is unreliable on GitHub Pages.
-const LAST_UPDATED = '2026-11-15';
+const LAST_UPDATED = '2026-11-16';
 // CV UPDATED: month of the current cv/Hamilton_CV.pdf (YYYY-MM); shown next to every "CV (PDF)" link.
 // The /update-cv routine changes this when it rebuilds the PDF.
 const CV_UPDATED = '2026-11';
@@ -853,10 +853,11 @@ const latestItems = [
 function pubCard(item) {
   const m = item.src.match(/^(.*),\s*(\d{4})$/);
   const venue = m ? m[1] : item.src, year = m ? m[2] : '';
-  const credit = item.credit ? '<p class="card-credit">'+item.credit+'</p>' : '';
-  const text = '<div class="lc-text"><h3>'+item.t+'</h3><p>'+item.a+'</p>'+credit+'</div>';
+  // Image credits show as a hover tooltip on the image (and a screen-reader label), not in the caption
+  const thumbCredit = item.credit ? ' title="'+item.credit+'" role="img" aria-label="'+item.credit+'"' : '';
+  const text = '<div class="lc-text"><h3>'+item.t+'</h3><p>'+item.a+'</p></div>';
   if (item.img) {
-    return '<a href="'+item.href+'" target="_blank" rel="noopener noreferrer" style="text-decoration:none"><div class="card latest-card has-thumb"><div class="lc-thumb" style="background-image:url(\''+item.img+'\');background-position:'+(item.pos||'center')+'"></div><div class="lc-text"><p class="lc-src">'+venue+(year?', '+year:'')+'</p><h3>'+item.t+'</h3><p>'+item.a+'</p>'+credit+'</div></div></a>';
+    return '<a href="'+item.href+'" target="_blank" rel="noopener noreferrer" style="text-decoration:none"><div class="card latest-card has-thumb"><div class="lc-thumb"'+thumbCredit+' style="background-image:url(\''+item.img+'\');background-position:'+(item.pos||'center')+'"></div><div class="lc-text"><p class="lc-src">'+venue+(year?', '+year:'')+'</p><h3>'+item.t+'</h3><p>'+item.a+'</p></div></div></a>';
   }
   return '<a href="'+item.href+'" target="_blank" rel="noopener noreferrer" style="text-decoration:none"><div class="card latest-card"><div class="lc-meta"><span class="lc-year">'+year+'</span>'+venue+'</div>'+text+'</div></a>';
 }
@@ -1208,8 +1209,8 @@ function renderDataPage() {
   // Media cards - all rendered, CSS truncates to ~4 rows
   const mediaCard = m => {
     const bgStyle = m.bg ? 'background-color:'+m.bg+';' : '';
-    const imgHtml = m.img ? '<div class="media-card-img" style="'+bgStyle+'background-image:url(\''+m.img+'\');background-position:'+(m.pos||'center')+'"></div>' : '';
-    return '<a class="media-item" href="'+(m.h||'#')+'"'+(m.h?' target="_blank" rel="noopener noreferrer"':'')+' style="text-decoration:none"><div class="media-card'+(m.img?' has-media-img':'')+'">'+imgHtml+'<div class="media-card-text"><p class="outlet">'+m.o+'</p><h3>'+m.t+'</h3>'+(m.credit?'<p class="card-credit">'+m.credit+'</p>':'')+'</div></div></a>';
+    const imgHtml = m.img ? '<div class="media-card-img"'+(m.credit?' title="'+m.credit+'" role="img" aria-label="'+m.credit+'"':'')+' style="'+bgStyle+'background-image:url(\''+m.img+'\');background-position:'+(m.pos||'center')+'"></div>' : '';
+    return '<a class="media-item" href="'+(m.h||'#')+'"'+(m.h?' target="_blank" rel="noopener noreferrer"':'')+' style="text-decoration:none"><div class="media-card'+(m.img?' has-media-img':'')+'">'+imgHtml+'<div class="media-card-text"><p class="outlet">'+m.o+'</p><h3>'+m.t+'</h3></div></div></a>';
   };
   document.getElementById('media-list').innerHTML = media.map(mediaCard).join('');
 }
