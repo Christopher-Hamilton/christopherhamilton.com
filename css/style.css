@@ -412,7 +412,7 @@ h1[tabindex="-1"]:focus{outline:none}
 /* FIRST-AUTHOR - no visual indicator, used for filtering only */
 
 /* FILTER CHIPS */
-.filter-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.filter-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}.pub-search+.filter-chips{margin-top:1rem}
 .filter-chip{font-family:var(--mono);font-size:var(--fs-ui);color:var(--dim);padding:6px 14px;border:1px solid var(--border);border-radius:20px;background:transparent;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.03em}
 .filter-chip:hover{border-color:rgba(232,98,30,.4);color:var(--text)}
 .filter-chip.active{border-color:var(--accent);color:var(--accent);background:rgba(232,98,30,.08)}
