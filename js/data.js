@@ -56,8 +56,8 @@ const completedProjects = [
 ];
 
 const pubs = [
-{y:2026,a:"Carrasco-Herrera, R., A. Bouquet, J.A. Noble, G. Danger, F. Duvernay, N. Park, E.L. Shock, K.E. Miller, C.R. Glein, J.H. Waite, and C.W. Hamilton",t:"Electron irradiation of methanol ices: Implications for organic chemical diversity on Europa’s surface.",j:"Icarus, 456, 117136, pp. 1–13",d:"10.1016/j.icarus.2026.117136"},
 {y:2026,a:"Kristinsson, T.H., S.T. Peters, J.R.C. Voigt, G. Steinbrügge, C.W. Hamilton, S. Diniega, J. Williams, G. Alfonso, and A. Romero-Wolf",t:"In situ demonstration of passive radar using HF Jovian bursts as a source for echo detection.",j:"IEEE Transactions on Geoscience and Remote Sensing",d:"10.1109/TGRS.2026.3751587"},
+{y:2026,a:"Carrasco-Herrera, R., A. Bouquet, J.A. Noble, G. Danger, F. Duvernay, N. Park, E.L. Shock, K.E. Miller, C.R. Glein, J.H. Waite, and C.W. Hamilton",t:"Electron irradiation of methanol ices: Implications for organic chemical diversity on Europa’s surface.",j:"Icarus, 456, 117136, pp. 1–13",d:"10.1016/j.icarus.2026.117136"},
 {y:2026,a:"Hadland, N., C.W. Hamilton, P. Schroedl, F. Calabrese, J. Marlow, and S. Duhamel",t:"Microbial dispersal from a hyperactive sandsheet in the Icelandic Highland.",j:"Science of the Total Environment, 1025, 181659, pp. 1–15",d:"10.1016/j.scitotenv.2026.181659"},
 {y:2026,a:"Carr, B.B., M.R. Patrick, H.R. Dietterich, M.H. Zoeller, C.E. Parcheta, D.T. Downs, P.A. Nadeau, and C.W. Hamilton",t:"Growth of a passive lava lake during the 2020–2021 eruption of Kīlauea volcano, Hawaii.",j:"Bulletin of Volcanology, 88(1), pp. 1–17",d:"10.1007/s00445-025-01867-4"},
 {y:2025,a:"Spurling, R.C., S. Nerozzi, and C.W. Hamilton",t:"Crater-based dating of Hebrus Valles and Hephaestus Fossae, Mars.",j:"The Planetary Science Journal, 6(12), 307, pp. 1–14",d:"10.3847/PSJ/ae0721"},
