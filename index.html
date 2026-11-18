@@ -171,11 +171,6 @@
             <span class="affiliation-chip">Professor, Department of Geosciences, University of Arizona</span>
             <span class="affiliation-chip">Adjunct Professor, Institute of Earth Sciences, University of Iceland</span>
           </div>
-          <div class="hero-actions">
-            <a href="#publications" class="hero-btn hero-btn-primary">Publications</a>
-            <a href="#opportunities" class="hero-btn">Join the lab</a>
-            <a href="mailto:chamilton@arizona.edu?subject=Hamilton%20Lab%20Inquiry" class="hero-btn">Contact</a>
-          </div>
         </div>
         <div class="hero-portrait" id="hero-portrait">
           <img src="images/profile-3.webp" srcset="images/sm/profile-3.webp 400w, images/profile-3.webp 600w" sizes="(max-width: 768px) 160px, 300px" alt="Christopher Hamilton at Fagradalsfjall" class="active">
@@ -247,7 +242,7 @@
         <p class="prose">My work has been featured by <a href="#media/coverage" class="hl">CNN</a>, <a href="#media/coverage" class="hl">BBC</a>, <a href="#media/coverage" class="hl">CBS 60 Minutes</a>, <a href="#media/coverage" class="hl">Channel 4</a>, and <a href="#media/coverage" class="hl">Netflix</a> documentaries.</p>
         <p class="prose" style="margin-top:14px">Ph.D. Geology and Geophysics, University of Hawai&#39;i at M&#257;noa<br>B.Sc. Earth Sciences (First Class Honors), Dalhousie University</p>
         <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:18px">
-          <a href="cv/Hamilton_CV.pdf" class="link-btn">CV (PDF)<span class="cv-updated"></span></a>
+          <a href="cv/Hamilton_CV.pdf" class="link-btn cv-link">CV (PDF)</a>
           <a href="https://orcid.org/0000-0001-9731-517X" target="_blank" rel="noopener noreferrer" class="link-btn">ORCID &#8599;</a>
           <a href="https://scholar.google.com/citations?user=IbnKdFIAAAAJ&hl=en" target="_blank" rel="noopener noreferrer" class="link-btn">Google Scholar &#8599;</a>
           <a href="https://ui.adsabs.harvard.edu/search/q=orcid%3A0000-0001-9731-517X" target="_blank" rel="noopener noreferrer" class="link-btn">NASA ADS &#8599;</a>
@@ -431,12 +426,12 @@
       <h2 class="section-heading h-sub" style="margin-bottom:10px">How to reach out</h2>
       <p class="prose" style="margin-bottom:10px">Send me an email with a brief description of your background and what draws you to our work. It helps to include:</p>
       <ul class="reach-list">
-        <li>your research interests, and which project or research area you would like to work on;</li>
-        <li>your relevant skills and experience;</li>
-        <li>your CV or resume;</li>
-        <li>your timeline, such as when you would like to start;</li>
-        <li>any fellowships you hold or plan to apply for;</li>
-        <li>the subject line &#8220;Hamilton Lab Inquiry&#8221; (the button below adds it for you).</li>
+        <li>Your research interests, and which project or research area you would like to work on</li>
+        <li>Your relevant skills and experience</li>
+        <li>Your CV or resume</li>
+        <li>Your timeline, such as when you would like to start</li>
+        <li>Any fellowships you hold or plan to apply for</li>
+        <li>The subject line &#8220;Hamilton Lab Inquiry&#8221; (the button below adds it for you)</li>
       </ul>
       <a href="mailto:chamilton@arizona.edu?subject=Hamilton%20Lab%20Inquiry" class="link-btn-lg">chamilton@arizona.edu &#8599;</a>
     </div>
@@ -594,7 +589,7 @@
       <h2 class="section-divider">For Journalists</h2>
       <p class="prose" style="margin-bottom:12px">Christopher W. Hamilton is a Professor at the Lunar and Planetary Laboratory and Department of Geosciences, University of Arizona, and an Adjunct Professor at the Institute of Earth Sciences, University of Iceland. He studies volcanic processes on Earth and across the Solar System, from active eruptions in Iceland to lava plains on Mars, Venus, the Moon, and Io.</p>
       <p class="prose" style="margin-bottom:12px"><strong style="color:var(--text)">Media contact:</strong> <a href="mailto:chamilton@arizona.edu" class="hl">chamilton@arizona.edu</a>, including permission to reuse any image on this site.</p>
-      <a href="cv/Hamilton_CV.pdf" class="link-btn">CV (PDF)<span class="cv-updated"></span></a>
+      <a href="cv/Hamilton_CV.pdf" class="link-btn cv-link">CV (PDF)</a>
     </div>
   </div>
 </div>
@@ -624,7 +619,7 @@
       <h2 class="footer-heading">Contact</h2>
       <p class="footer-contact"><a href="mailto:chamilton@arizona.edu?subject=Hamilton%20Lab%20Inquiry" class="footer-link" style="display:inline;margin:0">chamilton@arizona.edu</a></p>
       <p class="footer-contact-addr">Lunar and Planetary Laboratory<br>University of Arizona<br>1629 E. University Blvd.<br>Tucson, AZ 85721 USA</p>
-      <p class="footer-contact footer-cv"><a href="cv/Hamilton_CV.pdf" class="footer-link" style="display:inline;margin:0">CV (PDF)<span class="cv-updated"></span></a></p>
+      <p class="footer-contact footer-cv"><a href="cv/Hamilton_CV.pdf" class="footer-link cv-link" style="display:inline;margin:0">CV (PDF)</a></p>
     </div>
     <nav aria-labelledby="footer-pages-heading">
       <h2 class="footer-heading" id="footer-pages-heading">Pages</h2>
@@ -644,7 +639,7 @@
 // LAST UPDATED: change this date (YYYY-MM-DD) whenever the site content is updated.
 // Hard-coded on purpose: document.lastModified is unreliable on GitHub Pages.
 const LAST_UPDATED = '2026-11-16';
-// CV UPDATED: month of the current cv/Hamilton_CV.pdf (YYYY-MM); shown next to every "CV (PDF)" link.
+// CV UPDATED: month of the current cv/Hamilton_CV.pdf (YYYY-MM); shown as the hover tooltip on every "CV (PDF)" link.
 // The /update-cv routine changes this when it rebuilds the PDF.
 const CV_UPDATED = '2026-11';
 
@@ -761,7 +756,13 @@ function handleHash() {
 }
 window.addEventListener('hashchange', handleHash);
 document.querySelectorAll('[data-page]').forEach(el => {
-  el.addEventListener('click', (e) => { e.preventDefault(); location.hash = el.dataset.page; });
+  el.addEventListener('click', (e) => {
+    e.preventDefault();
+    setMobileMenu(false);
+    // The page already showing: the address does not change (no hashchange), so just go back to its top
+    if (location.hash.replace('#', '') === el.dataset.page) window.scrollTo(0, 0);
+    else location.hash = el.dataset.page;
+  });
 });
 // Skip link: move focus to the visible page without changing the address
 document.querySelector('.skip-link').addEventListener('click', (e) => {
@@ -778,6 +779,12 @@ function setMobileMenu(open) {
 }
 document.getElementById('hamburger').addEventListener('click', () => {
   setMobileMenu(!document.getElementById('mobile-menu').classList.contains('open'));
+});
+// A tap outside the open menu closes it
+document.addEventListener('click', (e) => {
+  if (!document.getElementById('mobile-menu').classList.contains('open')) return;
+  if (e.target.closest('#mobile-menu, #hamburger')) return;
+  setMobileMenu(false);
 });
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape' || !document.getElementById('mobile-menu').classList.contains('open')) return;
@@ -1449,7 +1456,7 @@ function initFooterDates() {
   const d = new Date(LAST_UPDATED + 'T12:00:00Z');
   document.getElementById('last-updated').innerHTML = ' &#8212; Last updated <time datetime="' + LAST_UPDATED + '">' + d.toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric', timeZone:'UTC'}) + '</time>';
   const cv = new Date(CV_UPDATED + '-15T12:00:00Z').toLocaleDateString('en-US', {year:'numeric', month:'long', timeZone:'UTC'});
-  document.querySelectorAll('.cv-updated').forEach(el => { el.innerHTML = ', updated <time datetime="' + CV_UPDATED + '">' + cv + '</time>'; });
+  document.querySelectorAll('.cv-link').forEach(el => { el.title = 'Updated ' + cv; });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
