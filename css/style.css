@@ -476,7 +476,7 @@ html[data-start-page="research"] #page-research,html[data-start-page="publicatio
 @media(max-width:400px){.data-tab{padding:10px 10px 8px;white-space:normal;text-align:left}}
 
 /* PROFILE PHOTO CIRCLE */
-.profile-circle{width:180px;height:180px;border-radius:50%;overflow:hidden;border:3px solid var(--accent);margin-bottom:16px;position:relative;background:var(--bg-deep)}
+.profile-circle{width:220px;height:220px;border-radius:50%;overflow:hidden;border:3px solid var(--accent);margin-bottom:16px;position:relative;background:var(--bg-deep)}
 .profile-circle img{width:100%;height:100%;object-fit:cover;object-position:center;position:absolute;inset:0;opacity:0;transition:opacity 1.5s ease}
 .profile-circle img.active{opacity:1}
 
@@ -502,7 +502,7 @@ html[data-start-page="research"] #page-research,html[data-start-page="publicatio
 @media(hover:none){.gallery-item .gallery-caption{opacity:1}}
 
 @media(max-width:768px){
-  .profile-circle{width:140px;height:140px}
+  .profile-circle{width:220px;height:220px}
   .scholar-metrics{gap:16px}
   .scholar-metric .metric-value{font-size:1.5rem}
   .gallery-grid{grid-template-columns:1fr}
