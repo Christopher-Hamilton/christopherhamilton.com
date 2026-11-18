@@ -252,7 +252,7 @@ h1,h2,h3{text-wrap:balance}h4,p{text-wrap:pretty}
 .grid-2{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr;gap:24px}
 .hero{min-height:26.25rem;padding:60px 16px 32px}
 .hero-layout{flex-direction:column;align-items:flex-start}.hero-text-col{align-self:stretch}
-.hero-portrait{width:160px;height:160px;align-self:flex-start;order:-1;margin-bottom:16px}
+.hero-portrait{width:220px;height:220px;align-self:flex-start;order:-1;margin-bottom:16px}
 .section{padding:32px 16px}.nav{padding:0 16px}
 .grid-cards{grid-template-columns:1fr}
 .grid-media{grid-template-columns:1fr}
