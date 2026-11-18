@@ -212,7 +212,7 @@ h1,h2,h3{text-wrap:balance}h4,p{text-wrap:pretty}
 
 /* FOOTER */
 .footer{border-top:1px solid var(--border);background:var(--bg-deep);padding:36px 24px 28px}
-.footer-grid{max-width:960px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:24px}
+.footer-grid{max-width:960px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr;gap:24px}
 .footer-logo{font-family:'Archivo Expanded','Source Sans 3',sans-serif;font-stretch:112%;font-weight:800;font-size:1.0625rem;text-transform:uppercase;margin-bottom:8px;transform:scaleX(var(--syne-scale));transform-origin:left}
 .footer-desc{color:var(--muted);font-size:var(--fs-detail);line-height:1.5;max-width:280px}
 .footer-heading{font-family:'Source Sans 3',sans-serif;font-size:1.125rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text);margin-bottom:10px}
@@ -224,7 +224,7 @@ h1,h2,h3{text-wrap:balance}h4,p{text-wrap:pretty}
 
 /* CONTENT FOR APPLICANTS, JOURNALISTS AND READERS */
 
-.footer-cv{margin-top:10px}
+
 .reach-out{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:24px 28px;margin-top:20px}
 .reach-list{list-style:none;margin:0 0 18px;padding:0;max-width:66ch}
 .reach-list li{position:relative;padding-left:1.4em;margin-bottom:6px;font-size:var(--fs-prose);line-height:1.5;color:var(--text-body)}
