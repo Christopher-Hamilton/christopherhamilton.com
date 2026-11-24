@@ -459,13 +459,13 @@ const SITES = {
   hawaii: ['Kīlauea, Hawaiʻi', 19.41, -155.28], lapalma: ['La Palma, Canary Islands', 28.61, -17.87],
   arizona: ['San Francisco volcanic field, Arizona', 35.36, -111.5], biosphere2: ['Biosphere 2, Arizona', 32.58, -110.85],
   utah: ['Wildcat Hills, Utah', 38.5, -113.3], newmexico: ['El Malpais, New Mexico', 34.9, -107.95],
-  alaska: ['Seward Peninsula, Alaska', 65.5, -164.3], deathvalley: ['Dante’s View, Death Valley, California', 36.2206, -116.7267],
+  alaska: ['Seward Peninsula, Alaska', 65.5, -164.3], deathvalley: ['Death Valley, California', 36.2206, -116.7267],
   nz: ['New Zealand', -36.85, 174.76],
   elysium: ['Elysium Planitia', 3, 154.7], amazonis: ['Amazonis Planitia', 24.8, -164], athabasca: ['Athabasca Valles', 8.6, 155],
   hebrus: ['Hebrus Valles', 20, 126.6], hrad: ['Hrad Vallis', 34, 141], tharsis: ['Tharsis', 2, -112],
   copernicus: ['Copernicus crater', 9.6, -20.1], southpole: ['Lunar south pole', -89, 0], gruithuisen: ['Gruithuisen domes', 36.3, -40.5],
   // used by publications only
-  askja: ['Askja, Iceland', 65.03, -16.75], laki: ['Laki, Iceland', 64.07, -18.23], kverkfjoll: ['Kverkfjöll, Iceland', 64.65, -16.68],
+  askja: ['Askja, Iceland', 65.03, -16.75], langjokull: ['Langjökull, Iceland', 64.63, -20.27], laki: ['Laki, Iceland', 64.07, -18.23], kverkfjoll: ['Kverkfjöll, Iceland', 64.65, -16.68],
   myvatn: ['Mývatn, Iceland', 65.6, -17.0], idaho: ['Craters of the Moon, Idaho', 43.42, -113.52],
   cerberus: ['Cerberus Fossae', 9.2, 164.3], aristarchus: ['Aristarchus Plateau', 26, -51], marius: ['Marius Hills', 13.4, -55.9],
   loki: ['Loki Patera', 13, 51], pele: ['Pele', -18.7, 104.9], ahuna: ['Ahuna Mons', -10.5, -43.9], occator: ['Occator crater', 19.8, -120.7]
@@ -478,7 +478,7 @@ const TAGS = [
   ['Linking cryovolcanism', [['europa']]],
   ['The role of dynamic topography', [['earth']]],
   ['The magmatic evolution of Elysium', [['mars', 'elysium']]],
-  ['PANTHER', [['earth', 'deathvalley']]],
+  ['PANTHER', [['earth', 'deathvalley'], ['earth', 'askja'], ['earth', 'iceland'], ['earth', 'langjokull'], ['earth', 'reykjanes']]],
   ['From olivine to feldspar', [['mars']]],
   ['Rheology and eruptibility of three-phase', [['europa']]],
   ['VERITAS', [['venus'], ['earth', 'iceland']]],
@@ -527,7 +527,7 @@ const TAGS = [
 // Papers and conference abstracts on the globes: worlds and sites are read from the title (js/topic-map-data.js).
 // A title can name several worlds (an Iceland analog for Mars is listed on both); it is plotted only where it names a site.
 const PUB_SITES = [
-  [/holuhraun|dyngjusand/i, 'earth', 'iceland'], [/askja/i, 'earth', 'askja'], [/laki|eldgj/i, 'earth', 'laki'],
+  [/holuhraun|dyngjusand/i, 'earth', 'iceland'], [/askja/i, 'earth', 'askja'], [/langj[oö]kull/i, 'earth', 'langjokull'], [/laki|eldgj/i, 'earth', 'laki'],
   [/kverkfj/i, 'earth', 'kverkfjoll'], [/m[yý]vatn/i, 'earth', 'myvatn'], [/hekla/i, 'earth', 'hekla'],
   [/fagradalsfjall|reykjanes|geldingadal|sundhn/i, 'earth', 'reykjanes'], [/k[iī]lauea|hawai|mauna ulu|mauna loa/i, 'earth', 'hawaii'],
   [/la palma|cumbre vieja/i, 'earth', 'lapalma'], [/el malpais|new mexico/i, 'earth', 'newmexico'], [/seward|alaska/i, 'earth', 'alaska'],
