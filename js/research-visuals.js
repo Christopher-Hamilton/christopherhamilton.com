@@ -31,7 +31,8 @@ function buildTopicMap(root) {
   const TYPE_NAME = {p: 'Paper', a: 'Conference abstract', d: 'Dataset'};
   const state = {active: null, q: '', year: 9999, abs: true, ds: true, labels: false, view: 'map', focus: null};   // theme labels off by default (owner)
   root.classList.add('tm-nolabels');
-  IT.forEach(it => { it.lc = (it.ti + ' ' + (it.v || '')).toLowerCase(); });
+  const unesc = t => t && t.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');   // some venues arrive HTML-escaped
+  IT.forEach(it => { it.ti = unesc(it.ti); it.v = unesc(it.v); it.lc = (it.ti + ' ' + (it.v || '')).toLowerCase(); });
   const nbr = IT.map(() => []);
   TM.links.forEach(([a, b]) => { nbr[a].push(b); nbr[b].push(a); });
   const wrap = (s, n) => { const w = s.split(' '), out = ['']; w.forEach(x => { const l = out.length - 1; if ((out[l] + ' ' + x).trim().length > n && out[l]) out.push(x); else out[l] = (out[l] + ' ' + x).trim(); }); return out; };
@@ -48,7 +49,8 @@ function buildTopicMap(root) {
   }
 
   // themes with at least one paper on screen: their labels show (owner: labels arrive with a theme's first paper)
-  const litThemes = () => new Set(IT.filter((it, i) => it.t === 'p' && vis(i) >= 2).map(it => it.c));
+  const litThemes = () => { const f = state.focus; state.focus = null;          // hovering one dot should not hide labels
+    const r = new Set(IT.filter((it, i) => it.t === 'p' && vis(i) >= 2).map(it => it.c)); state.focus = f; return r; };
 
   // ---- tooltip
   function showTip(x, y, i) {
@@ -72,7 +74,7 @@ function buildTopicMap(root) {
   const defs = el('defs', {}, map);
   const clipR = el('rect', {x: DX0 - 26, y: 6, width: DX1 - DX0 + 52, height: MH - 12}, el('clipPath', {id: 'tm-clip'}, defs));
   const mData = el('g', {'clip-path': 'url(#tm-clip)'}, map), mT = el('g', {}, mData);
-  const gA = el('g', {}, mT), gP = el('g', {}, mT);
+  const gLk = el('g', {class: 'tm-mlinks', 'aria-hidden': 'true'}, mT), gA = el('g', {}, mT), gP = el('g', {}, mT);
   const gLead = el('g', {'aria-hidden': 'true', class: 'tm-leads'}, map), gLab = el('g', {class: 'tm-labs'}, map);
   const mDots = IT.map((it, i) => {
     const p = isP(i), ds = isD(i), d = el('circle', {cx: MX(it.x), cy: MY(it.yy), class: 'tm-dot ' + (p ? 'tm-paper' : ds ? 'tm-ds' : 'tm-abs')}, p || ds ? gP : gA);
@@ -203,10 +205,25 @@ function buildTopicMap(root) {
     const cx = (xs[0] + xs[xs.length - 1]) / 2, cy = (ys[0] + ys[ys.length - 1]) / 2;
     zoomMap({s, tx: (DX0 + DX1) / 2 - cx * s, ty: (DY0 + DY1) / 2 - cy * s});
   }
-  map.addEventListener('mouseover', e => { const i = e.target.__i; if (i !== undefined) { const b = e.target.getBoundingClientRect(); showTip(b.left + b.width / 2, b.top + b.height / 2, i); } });
-  map.addEventListener('mouseout', e => { if (e.target.__i !== undefined) hideTip(); });
-  map.addEventListener('focusin', e => { const i = e.target.__i; if (i !== undefined) { const b = e.target.getBoundingClientRect(); showTip(b.left, b.top, i); } });
-  map.addEventListener('focusout', hideTip);
+  // pointing at a dot draws its links to its most similar items (the network's connections, one item at a time)
+  function linkFocus(i) {
+    gLk.textContent = '';
+    state.focus = i;
+    if (i !== null) {
+      const w = map.getBoundingClientRect().width, k = MW / w / zoom.s;
+      nbr[i].forEach(j => {
+        if (!vis(j)) return;
+        const wgt = (TM.links.find(([a, b]) => (a === i && b === j) || (a === j && b === i)) || [0, 0, .3])[2];
+        const l = el('line', {x1: MX(IT[i].x), y1: MY(IT[i].yy), x2: MX(IT[j].x), y2: MY(IT[j].yy)}, gLk);
+        l.style.strokeWidth = (1.5 + wgt * 2.5) * k + 'px'; l.style.opacity = (.55 + wgt * .45).toFixed(2);
+      });
+    }
+    paintMap();
+  }
+  map.addEventListener('mouseover', e => { const i = e.target.__i; if (i !== undefined) { const b = e.target.getBoundingClientRect(); showTip(b.left + b.width / 2, b.top + b.height / 2, i); linkFocus(i); } });
+  map.addEventListener('mouseout', e => { if (e.target.__i !== undefined) { hideTip(); linkFocus(null); } });
+  map.addEventListener('focusin', e => { const i = e.target.__i; if (i !== undefined) { const b = e.target.getBoundingClientRect(); showTip(b.left, b.top, i); linkFocus(i); } });
+  map.addEventListener('focusout', () => { hideTip(); linkFocus(null); });
   map.addEventListener('click', e => { if (e.target.__i !== undefined) { open(e.target.__i); return; } const g = e.target.closest('.tm-lab'); if (g) select(g.__c); });
   map.addEventListener('keydown', e => { if (e.target.__i !== undefined && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); open(e.target.__i); } });
 

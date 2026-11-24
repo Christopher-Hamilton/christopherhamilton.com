@@ -864,4 +864,6 @@ a.wd-ptitle:hover{text-decoration-color:var(--accent)}
 .tm-spin[hidden]{display:none}
 .tm-spin:hover{border-color:var(--accent)}
 .tm-spin:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tm-mlinks line{stroke:#F5F0EB;stroke-linecap:round;pointer-events:none}
+.tm-mlinks{filter:drop-shadow(0 0 2px rgba(0,0,0,.8))}
 
