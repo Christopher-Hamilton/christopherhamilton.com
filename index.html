@@ -277,6 +277,18 @@
   </div>
   <div class="section">
     <p class="section-sub" style="max-width:none">Active and completed research in planetary volcanism, astrobiology, exploration technology, and mission development.</p>
+    <section class="research-worlds" id="research-worlds" aria-labelledby="worlds-heading">
+      <h2 class="section-divider" id="worlds-heading">Research Worlds</h2>
+      <p class="rv-intro">Choose a world to see the projects that study it. Markers show field and study sites; drag the globe, or use the arrow keys, to turn it.</p>
+      <div class="wd-tabs" role="tablist" aria-label="Planetary bodies"></div>
+      <div class="wd-body">
+        <div class="wd-globe-col">
+          <div class="wd-globe" tabindex="0" aria-label="Globe. Use the arrow keys to turn it."><canvas aria-hidden="true"></canvas><div class="wd-tip" aria-hidden="true"></div></div>
+          <p class="wd-credit">Maps: NASA (public domain)</p>
+        </div>
+        <div class="wd-list" id="wd-panel" role="tabpanel" aria-live="polite"></div>
+      </div>
+    </section>
     <h2 class="section-divider">Active Projects</h2>
     <div id="active-projects"></div>
     <h2 class="section-divider" style="margin-top:40px">Completed Projects</h2>
@@ -302,6 +314,21 @@
     </div>
     <a href="https://scholar.google.com/citations?user=IbnKdFIAAAAJ&hl=en" target="_blank" rel="noopener noreferrer" class="scholar-link">Google Scholar Profile &#8599;</a><span class="scholar-asof">as of November 2026</span>
     <div id="pub-chart" class="chart-container"></div>
+    <section class="topic-map" id="topic-map" aria-labelledby="topic-map-heading">
+      <h2 class="section-divider" id="topic-map-heading">Research Map</h2>
+      <p class="rv-intro">All <span class="tm-counts">papers and conference abstracts</span>, arranged so that work on similar topics sits close together. Coloured dots are peer-reviewed papers; small grey dots are conference abstracts. Hover for a title, select a paper to open it, or choose a theme to highlight it.</p>
+      <div class="tm-controls">
+        <label><input type="checkbox" class="tm-toggle" checked> Show conference abstracts</label>
+        <span class="tm-key" aria-hidden="true"><span><i class="tm-key-paper"></i>Paper</span><span><i class="tm-key-abs"></i>Conference abstract</span></span>
+      </div>
+      <div class="tm-stage">
+        <svg viewBox="0 0 1000 640" role="group" aria-label="Topic map of papers and conference abstracts, grouped into research themes"></svg>
+        <div class="tm-tip" role="status"></div>
+      </div>
+      <ul class="tm-legend" aria-label="Research themes (papers · conference abstracts)"></ul>
+      <p class="tm-note">Each item’s title and abstract are compared by their vocabulary, grouped into themes, and laid out in two dimensions. Nearness means similar topics; distances between far-apart groups carry no meaning.</p>
+    </section>
+    <h2 class="section-divider">All Publications</h2>
     <label for="pub-search" class="sr-only">Search publications</label>
     <input type="search" class="pub-search" id="pub-search" placeholder="Search by author, title, journal, or year..." aria-describedby="pub-count">
     <div class="filter-chips" id="filter-chips" role="group" aria-label="Filter publications">
@@ -624,7 +651,7 @@
 <script>
 // LAST UPDATED: change this date (YYYY-MM-DD) whenever the site content is updated.
 // Hard-coded on purpose: document.lastModified is unreliable on GitHub Pages.
-const LAST_UPDATED = '2026-11-17';
+const LAST_UPDATED = '2026-11-23';
 // CV UPDATED: month of the current cv/Hamilton_CV.pdf (YYYY-MM); shown as the hover tooltip on every "CV (PDF)" link.
 // The /update-cv routine changes this when it rebuilds the PDF.
 const CV_UPDATED = '2026-11';
@@ -711,6 +738,16 @@ function navigate(page) {
   }
   firstNavigation = false;
   setTimeout(() => { initReveal(); initStagger(); layoutMedia(); sizeRavenLogo(); }, 100);
+  // Research map (Publications) and Research worlds (Research): their script loads on the first visit to either page
+  if (page === 'publications' || page === 'research') {
+    if (window.initResearchVisuals) window.initResearchVisuals(page);
+    else if (!document.getElementById('rv-script')) {
+      const s = document.createElement('script');
+      s.id = 'rv-script'; s.src = 'js/research-visuals.js';
+      s.onload = () => window.initResearchVisuals(currentPage ? currentPage.id.replace('page-', '') : page);
+      document.head.appendChild(s);
+    }
+  }
 }
 
 // The tab named after the page in the address (#media/gallery), or null
