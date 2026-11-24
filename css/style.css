@@ -67,7 +67,9 @@ h1,h2,h3{text-wrap:balance}h4,p{text-wrap:pretty}
 .mobile-menu a{font-family:'Source Sans 3',sans-serif;font-weight:600;font-size:1.0625rem;letter-spacing:.03em;text-transform:uppercase;color:var(--dim);padding:12px 0;transform:scaleX(var(--syne-scale));transform-origin:left;display:inline-block;min-height:44px}
 .mobile-menu a.active{color:var(--text)}
 /* Hamburger below the width where the seven nav links fit (em, so it follows the reader's text size) */
-@media(max-width:87.5em){.nav-links{display:none}.nav-hamburger{display:flex}.mobile-menu.open{display:flex}}
+/* compact tabs for laptop widths; the menu button only below 992 px (owner: tabs are easy to miss behind the menu on desktop) */
+@media(max-width:87.5em){.nav-links{gap:14px}.nav-links a{font-size:.75rem;letter-spacing:.01em}.nav-logo{font-size:.9375rem}.nav{padding:0 20px}}
+@media(max-width:62em){.nav-links{display:none}.nav-hamburger{display:flex}.mobile-menu.open{display:flex}}
 
 /* HERO */
 .hero{min-height:35rem;display:flex;align-items:center;position:relative;padding:80px 24px 48px;overflow:hidden}
