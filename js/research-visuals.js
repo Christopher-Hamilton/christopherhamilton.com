@@ -394,7 +394,8 @@ function buildTopicMap(root) {
     b.innerHTML = '<i aria-hidden="true"></i><span></span><small></small>';
     const i = b.querySelector('i'); i.style.background = c.color; i.textContent = c.num;
     b.querySelector('span').textContent = c.name;
-    b.querySelector('small').textContent = c.papers + ' · ' + (c.n - c.papers);
+    b.querySelector('small').innerHTML = '<b class="tm-np"></b> · <span class="tm-na"></span>';   // papers in white, abstracts in grey
+    b.querySelector('.tm-np').textContent = c.papers; b.querySelector('.tm-na').textContent = c.n - c.papers;
     b.setAttribute('aria-label', c.name + ': ' + c.papers + ' papers, ' + (c.n - c.papers) + ' conference abstracts. Select to highlight this theme and list its papers.');
     b.addEventListener('click', () => select(c.id));
     li.appendChild(b); legend.appendChild(li);
