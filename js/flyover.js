@@ -17,7 +17,8 @@ const FLYOVERS = {
     title: 'Baugur, the main vent of the 2014–2015 Holuhraun eruption',
     sub: 'The spatter cone and lava channel a year after the eruption ended',
     base: 'images/flyover/vent-2016',
-    credit: 'Merged terrestrial LiDAR and UAS point cloud from 2016: Sutton, Richardson, Whelley, Scheidt and Hamilton (2023), doi.org/10.25422/azu.data.19680372 (CC BY-NC-SA 4.0), gridded to 1 m for the web. The point cloud carries no photographic colour, so the surface is shown as shaded relief.',
+    hi: true,          // a 0.5 m mesh for larger screens (vent-2016-hi.*); phones get the 1 m mesh
+    credit: 'Merged terrestrial LiDAR and UAS point cloud from 2016: Sutton, Richardson, Whelley, Scheidt and Hamilton (2023), doi.org/10.25422/azu.data.19680372 (CC BY-NC-SA 4.0), gridded to 0.5–1 m for the web (0.25 m relief shading). The point cloud carries no photographic colour, so the surface is shown as shaded relief.',
     exag: 1
   }
 };
@@ -82,8 +83,8 @@ async function start(F, cv, load, ui) {
   if (!gl || !gl.getExtension('OES_element_index_uint')) { load.textContent = 'Your browser cannot show this 3D view.'; return; }
   const big = Math.min(window.innerWidth, window.innerHeight) > 700 && gl.getParameter(gl.MAX_TEXTURE_SIZE) >= 4096;
   const [meta, buf, img] = await Promise.all([
-    fetch(F.base + '.json').then(r => r.json()),
-    fetch(F.base + '.bin').then(r => r.arrayBuffer()),
+    fetch(F.base + (big && F.hi ? '-hi' : '') + '.json').then(r => r.json()),
+    fetch(F.base + (big && F.hi ? '-hi' : '') + '.bin').then(r => r.arrayBuffer()),
     new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = F.base + '-' + (big ? 4096 : 2048) + '.jpg'; })
   ]);
   const R = meta.rows, Cn = meta.cols, H = new Uint16Array(buf), N = R * Cn;
@@ -141,13 +142,13 @@ function controls(s, ui) {
   cv.onpointerdown = e => { cv.setPointerCapture(e.pointerId); ptr.set(e.pointerId, [e.clientX, e.clientY]); setPlay(false);
     if (ptr.size === 2) { const [a, b] = [...ptr.values()]; pinch = {d: Math.hypot(a[0] - b[0], a[1] - b[1]), dist: s.dist}; drag = null; } else drag = {x: e.clientX, y: e.clientY, yaw: s.yaw, pitch: s.pitch}; };
   cv.onpointermove = e => { if (!ptr.has(e.pointerId)) return; ptr.set(e.pointerId, [e.clientX, e.clientY]);
-    if (pinch && ptr.size === 2) { const [a, b] = [...ptr.values()]; s.dist = Math.max(.25, Math.min(2.5, pinch.dist * pinch.d / Math.hypot(a[0] - b[0], a[1] - b[1]))); return; }
+    if (pinch && ptr.size === 2) { const [a, b] = [...ptr.values()]; s.dist = Math.max(.12, Math.min(2.5, pinch.dist * pinch.d / Math.hypot(a[0] - b[0], a[1] - b[1]))); return; }
     if (drag) { s.yaw = drag.yaw - (e.clientX - drag.x) * .006; s.pitch = Math.max(.08, Math.min(1.45, drag.pitch + (e.clientY - drag.y) * .005)); } };
   cv.onpointerup = cv.onpointercancel = e => { ptr.delete(e.pointerId); pinch = null; drag = null; };
-  cv.onwheel = ui ? e => { e.preventDefault(); setPlay(false); s.dist = Math.max(.25, Math.min(2.5, s.dist * Math.exp(e.deltaY * .0012))); } : null;
+  cv.onwheel = ui ? e => { e.preventDefault(); setPlay(false); s.dist = Math.max(.12, Math.min(2.5, s.dist * Math.exp(e.deltaY * .0012))); } : null;
   cv.onkeydown = e => { const k = {ArrowLeft: [-.1, 0], ArrowRight: [.1, 0], ArrowUp: [0, .06], ArrowDown: [0, -.06]}[e.key];
     if (k) { e.preventDefault(); setPlay(false); s.yaw += k[0]; s.pitch = Math.max(.08, Math.min(1.45, s.pitch + k[1])); }
-    if (e.key === '+' || e.key === '=') s.dist = Math.max(.25, s.dist / 1.2); if (e.key === '-') s.dist = Math.min(2.5, s.dist * 1.2); };
+    if (e.key === '+' || e.key === '=') s.dist = Math.max(.12, s.dist / 1.2); if (e.key === '-') s.dist = Math.min(2.5, s.dist * 1.2); };
 }
 
 function loop(s) {
@@ -163,7 +164,7 @@ function loop(s) {
     gl.viewport(0, 0, w, h); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     const tgt = [0, s.rel * s.ex * .4, 0];
     const eye = [tgt[0] + s.dist * Math.cos(s.pitch) * Math.sin(s.yaw), tgt[1] + s.dist * Math.sin(s.pitch), tgt[2] + s.dist * Math.cos(s.pitch) * Math.cos(s.yaw)];
-    const m = mul(persp(.85, w / h, .01, 10), lookAt(eye, tgt, [0, 1, 0]));
+    const m = mul(persp(.85, w / h, .004, 10), lookAt(eye, tgt, [0, 1, 0]));
     gl.uniformMatrix4fv(s.U('m'), false, new Float32Array(m)); gl.uniform1f(s.U('ex'), s.ex); gl.uniform1f(s.U('far'), s.dist + 1.2);
     gl.drawElements(gl.TRIANGLES, s.n, gl.UNSIGNED_INT, 0);
     loop(s);
