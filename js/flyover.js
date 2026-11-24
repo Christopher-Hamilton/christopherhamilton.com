@@ -5,10 +5,10 @@
 (function () {
 'use strict';
 const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)');
-const V = '?v=20261124d';   // bump when terrain or image files change, so browsers fetch the new ones
+const V = '?v=20261124e';   // bump when terrain or image files change, so browsers fetch the new ones
 const FLYOVERS = {
   hotsprings2015: {
-    title: 'Holuhraun lava margin and hot springs, Iceland',
+    title: 'Holuhraun lava margin (Hot Springs), Iceland',
     sub: 'Where the 2014–2015 lava flow-field meets the braided channels of the Jökulsá á Fjöllum',
     base: 'images/flyover/hotsprings-2015',
     credit: 'Orthomosaic and digital terrain model from an unoccupied aircraft system (UAS) survey in 2015 by C.W. Hamilton and S.P. Scheidt.',

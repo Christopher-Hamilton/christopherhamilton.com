@@ -856,7 +856,7 @@ function initWorlds(root) {
   }
   const pubsFor = (k, t) => pubs.filter(p => p.t === t && p.bodies.has(k)).sort((a, b) => b.y - a.y);
   // 3D flyovers from the group's own UAS surveys (js/flyover.js, loaded on first use)
-  const FLY = [{id: 'vent2016', body: 'earth', label: 'Holuhraun main vent (Baugur)'}, {id: 'hotsprings2015', body: 'earth', label: 'Holuhraun lava margin'}];
+  const FLY = [{id: 'vent2016', body: 'earth', label: 'Holuhraun main vent (Baugur)'}, {id: 'hotsprings2015', body: 'earth', label: 'Holuhraun lava margin (Hot Springs)'}];
   const flyBox = root.querySelector('.wd-fly');
   function openFly(id) {
     if (window.openFlyover) { window.openFlyover(id); return; }
