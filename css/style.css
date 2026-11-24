@@ -272,6 +272,9 @@ h1,h2,h3{text-wrap:balance}h4,p{text-wrap:pretty}
 .link-btn,.link-btn-lg{min-height:2.75rem;display:inline-flex;align-items:center}
 .view-prev-btn,.filter-chip,.data-tab,.abs-toggle{min-height:2.75rem}
 .filter-chip{display:inline-flex;align-items:center}
+/* Small links and toggles: an invisible strip above and below enlarges the tap area to ~44 px without moving anything */
+.nav-logo,.related-pub .rp-doi,.data-entry .link,.scholar-link,.card-toggle,.compact-card .cc-title,.team-toggle{position:relative}
+.nav-logo::before,.related-pub .rp-doi::before,.data-entry .link::before,.scholar-link::before,.card-toggle::before,.compact-card .cc-title::before,.team-toggle::before{content:"";position:absolute;left:0;right:0;top:-9px;bottom:-9px}
 }
 @keyframes fadeInUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 .fade-in{animation:fadeInUp .7s ease-out both}
@@ -474,6 +477,9 @@ html[data-start-page="research"] #page-research,html[data-start-page="publicatio
 /* Narrow screens: the chart scrolls sideways instead of squeezing bars under 24 px */
 @media(max-width:600px){.chart-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}.chart-bar-year{writing-mode:vertical-rl;transform:rotate(180deg);transform-origin:center;margin-top:6px}.chart-legend{margin-top:1rem}}
 @media(max-width:400px){.data-tab{padding:10px 10px 8px;white-space:normal;text-align:left}}
+/* Phones: keep all three tabs inside the row so the last one is never clipped */
+@media(max-width:480px){.data-tab{padding-left:10px;padding-right:10px}}
+@media(max-width:340px){.data-tab{padding-left:6px;padding-right:6px;letter-spacing:0}}
 
 /* PROFILE PHOTO CIRCLE */
 .profile-circle{width:220px;height:220px;border-radius:50%;overflow:hidden;border:3px solid var(--accent);margin-bottom:16px;position:relative;background:var(--bg-deep)}
