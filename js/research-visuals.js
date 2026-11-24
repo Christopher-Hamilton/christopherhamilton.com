@@ -61,11 +61,12 @@ function buildTopicMap(root) {
   const open = i => { if (IT[i].u) window.open(IT[i].u, '_blank', 'noopener'); };
 
   /* ================= 2D MAP: points, labels in the margins with leader lines ================= */
-  const MW = 1240, MH = 680, DX0 = 300, DX1 = 940, DY0 = 34, DY1 = 646;
+  const MW = 1240, MH = 640, DY0 = 30, DY1 = 610;
+  let DX0 = 300, DX1 = 940, mode = 'margin';      // the plot area widens when the labels move onto the plot
   const map = $('.tm-map');
   const MX = v => DX0 + v * (DX1 - DX0), MY = v => DY0 + v * (DY1 - DY0);
   const defs = el('defs', {}, map);
-  el('rect', {x: DX0 - 26, y: 6, width: DX1 - DX0 + 52, height: MH - 12}, el('clipPath', {id: 'tm-clip'}, defs));
+  const clipR = el('rect', {x: DX0 - 26, y: 6, width: DX1 - DX0 + 52, height: MH - 12}, el('clipPath', {id: 'tm-clip'}, defs));
   const mData = el('g', {'clip-path': 'url(#tm-clip)'}, map), mT = el('g', {}, mData);
   const gA = el('g', {}, mT), gP = el('g', {}, mT);
   const gLead = el('g', {'aria-hidden': 'true', class: 'tm-leads'}, map), gLab = el('g', {class: 'tm-labs'}, map);
@@ -92,30 +93,56 @@ function buildTopicMap(root) {
   const toScreen = i => [MX(IT[i].x) * zoom.s + zoom.tx, MY(IT[i].yy) * zoom.s + zoom.ty];
   function layoutMap() {
     const w = map.getBoundingClientRect().width; if (!w) return;
-    narrow = w < 640;
-    if (!narrow) {      // margin labels need room: if the longest line would not fit beside the plot, use numbers instead
-      const k0 = MW / w; let widest = 0;
-      anchors.forEach(A => A.lines.forEach(t => { t.removeAttribute('display'); t.style.fontSize = (16 * k0) + 'px'; widest = Math.max(widest, t.getComputedTextLength()); }));
-      if (widest + 64 * k0 > DX0) narrow = true;
+    const k = MW / w;
+    // three ways to label: names in the margins with leader lines (wide), names on the plot (medium), numbers (phones)
+    let widest = 0;
+    anchors.forEach(A => A.lines.forEach(t => { t.removeAttribute('display'); t.style.fontSize = (16 * k) + 'px'; widest = Math.max(widest, t.getComputedTextLength()); }));
+    const m = w < 430 ? 'num' : widest + 64 * k > 300 ? 'onplot' : 'margin';
+    if (m !== mode) {
+      mode = m; [DX0, DX1] = m === 'margin' ? [300, 940] : [40, 1200];
+      clipR.setAttribute('x', DX0 - 26); clipR.setAttribute('width', DX1 - DX0 + 52);
+      mDots.forEach(d => { d.setAttribute('cx', MX(IT[d.__i].x)); d.setAttribute('cy', MY(IT[d.__i].yy)); });
     }
-    root.classList.toggle('tm-narrow', narrow);
-    map.setAttribute('viewBox', narrow ? (DX0 - 26) + ' 0 ' + (DX1 - DX0 + 52) + ' ' + MH : '0 0 ' + MW + ' ' + MH);
-    const k = (narrow ? DX1 - DX0 + 52 : MW) / w;
+    narrow = mode === 'num';
+    root.classList.toggle('tm-narrow', narrow); root.classList.toggle('tm-onplot', mode === 'onplot');
+    map.setAttribute('viewBox', '0 0 ' + MW + ' ' + MH);
     mDots.forEach(d => d.setAttribute('r', (isP(d.__i) ? 7 : isD(d.__i) ? 5.5 : 4) * k / zoom.s));
     mDots.forEach(d => d.style.strokeWidth = (isP(d.__i) ? 2 : isD(d.__i) ? 2.5 : 0) * k / zoom.s);
-    const fs = 16 * k, lh = 19 * k;
+    const fs = (mode === 'onplot' ? 15 : 16) * k, lh = fs * 1.2;
     const sides = {L: [], R: []};
     anchors.forEach(A => {
       const [ax, ay] = toScreen(A.a); A.ax = ax; A.ay = ay;
       A.lines.forEach(t => { t.style.fontSize = fs + 'px'; });
       A.h = A.lines.length * lh;
-      if (!narrow) sides[ax < (DX0 + DX1) / 2 ? 'L' : 'R'].push(A);
+      if (mode === 'margin') sides[ax < (DX0 + DX1) / 2 ? 'L' : 'R'].push(A);
     });
-    if (narrow) {      // numbered badges on the points themselves; names are in the legend
+    if (mode === 'num') {      // numbered badges on the points themselves; names are in the legend
       anchors.forEach(A => {
         A.g.setAttribute('transform', 'translate(' + A.ax + ',' + (A.ay - 18 * k) + ')');
         A.sw.setAttribute('r', 12 * k); A.num.style.fontSize = (13 * k) + 'px'; A.lead.setAttribute('d', '');
         A.lines.forEach(t => t.setAttribute('display', 'none'));
+      });
+      return;
+    }
+    if (mode === 'onplot') {   // names just above each theme's group, nudged apart so they never overlap
+      const B = anchors.map(A => {
+        const ys = IT.map((it, i) => i).filter(i => IT[i].c === A.c.id).map(i => toScreen(i)[1]).sort((a, b) => a - b);
+        const top = ys[Math.floor(ys.length * .12)] || A.ay;
+        const wd = Math.max(...A.lines.map(t => t.getComputedTextLength())) + 10 * k;
+        return {A, x: A.ax, y: top - 12 * k - A.h, w: wd, h: A.h};
+      });
+      for (let it = 0; it < 80; it++) {
+        let moved = false;
+        for (let i = 0; i < B.length; i++) for (let j = i + 1; j < B.length; j++) {
+          const a = B[i], b = B[j], ox = (a.w + b.w) / 2 - Math.abs(a.x - b.x), oy = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y) + 4 * k;
+          if (ox > 0 && oy > 0) { const up = a.y <= b.y ? a : b, dn = up === a ? b : a; up.y -= oy / 2; dn.y += oy / 2; moved = true; }
+        }
+        B.forEach(b => { b.x = Math.max(b.w / 2 + 6 * k, Math.min(MW - b.w / 2 - 6 * k, b.x)); b.y = Math.max(4 * k, Math.min(MH - b.h - 4 * k, b.y)); });
+        if (!moved) break;
+      }
+      B.forEach(({A, x, y}) => {
+        A.g.removeAttribute('transform'); A.num.style.fontSize = '0'; A.sw.setAttribute('r', 0); A.lead.setAttribute('d', '');
+        A.lines.forEach((t, j) => { t.removeAttribute('display'); t.setAttribute('x', x); t.setAttribute('y', y + (j + .82) * lh); t.setAttribute('text-anchor', 'middle'); t.style.strokeWidth = (4 * k) + 'px'; });
       });
       return;
     }
@@ -130,7 +157,7 @@ function buildTopicMap(root) {
       }
       L.forEach(A => {
         const right = s === 'R', tx = right ? DX1 + 44 : DX0 - 44;
-        A.lines.forEach((t, j) => { t.removeAttribute('display'); t.setAttribute('x', right ? tx + 16 * k : tx - 16 * k); t.setAttribute('y', A.y + (j + .8) * lh); t.setAttribute('text-anchor', right ? 'start' : 'end'); });
+        A.lines.forEach((t, j) => { t.removeAttribute('display'); t.setAttribute('x', right ? tx + 16 * k : tx - 16 * k); t.setAttribute('y', A.y + (j + .8) * lh); t.setAttribute('text-anchor', right ? 'start' : 'end'); t.style.strokeWidth = ''; });
         A.sw.setAttribute('cx', tx); A.sw.setAttribute('cy', A.y + .5 * lh); A.sw.setAttribute('r', 6 * k);
         A.g.removeAttribute('transform'); A.num.style.fontSize = '0';
         const ly = A.y + .5 * lh, inside = A.ax > DX0 - 20 && A.ax < DX1 + 20 && A.ay > 0 && A.ay < MH;
@@ -180,7 +207,7 @@ function buildTopicMap(root) {
   map.addEventListener('keydown', e => { if (e.target.__i !== undefined && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); open(e.target.__i); } });
 
   /* ================= NETWORK: each item linked to its most similar items; a live force layout you can drag ================= */
-  const net = $('.tm-net'), NW = 1000, NH = 680;
+  const net = $('.tm-net'), NW = 1000, NH = 600;
   const nL = el('g', {class: 'tm-links'}, net), nA = el('g', {}, net), nP = el('g', {}, net), nLab = el('g', {'aria-hidden': 'true'}, net);
   const P = IT.map(it => ({x: 60 + it.x * (NW - 120), y: 40 + it.yy * (NH - 80), vx: 0, vy: 0, hx: 60 + it.x * (NW - 120), hy: 40 + it.yy * (NH - 80), fixed: false}));
   const nLines = TM.links.map(([a, b, w]) => { const l = el('line', {}, nL); l.style.opacity = (.12 + (w - .25) * .6).toFixed(2); l.__a = a; l.__b = b; return l; });
@@ -813,7 +840,7 @@ function initWorlds(root) {
 
   // ---- papers and conference abstracts (js/topic-map-data.js), placed by their titles
   let pubs = [];
-  const show = {proj: true, pap: true, ds: true, abs: false};
+  const show = {proj: true, pap: true, ds: true, abs: true};   // conference abstracts on by default (owner)
   function loadPubs() {
     const go = () => { pubs = window.topicMap.items.map(it => ({...it, ...placePub(it)})); counts(); if (body) select(body, true); };
     if (window.topicMap) { go(); return; }
@@ -833,7 +860,7 @@ function initWorlds(root) {
     list.forEach(f => { const b = document.createElement('button'); b.type = 'button'; b.className = 'wd-flybtn'; b.textContent = f.label; b.addEventListener('click', () => openFly(f.id)); flyBox.appendChild(b); });
   }
   const toggles = root.querySelector('.wd-show');
-  toggles.innerHTML = '<label><input type="checkbox" data-k="proj" checked> <i class="wd-key-proj" aria-hidden="true"></i>Projects</label><label><input type="checkbox" data-k="pap" checked> <i class="wd-key-pap" aria-hidden="true"></i>Papers</label><label><input type="checkbox" data-k="ds" checked> <i class="wd-key-ds" aria-hidden="true"></i>Datasets</label><label><input type="checkbox" data-k="abs"> <i class="wd-key-abs" aria-hidden="true"></i>Conference abstracts</label>';
+  toggles.innerHTML = '<label><input type="checkbox" data-k="proj" checked> <i class="wd-key-proj" aria-hidden="true"></i>Projects</label><label><input type="checkbox" data-k="pap" checked> <i class="wd-key-pap" aria-hidden="true"></i>Papers</label><label><input type="checkbox" data-k="ds" checked> <i class="wd-key-ds" aria-hidden="true"></i>Datasets</label><label><input type="checkbox" data-k="abs" checked> <i class="wd-key-abs" aria-hidden="true"></i>Conference abstracts</label>';
   toggles.addEventListener('change', e => { show[e.target.dataset.k] = e.target.checked; counts(); if (body) select(body, true); });
 
   // ---- tabs: All (the full project lists), then one per world
