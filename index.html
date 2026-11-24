@@ -278,21 +278,23 @@
   <div class="section">
     <p class="section-sub" style="max-width:none">Active and completed research in planetary volcanism, astrobiology, exploration technology, and mission development.</p>
     <section class="research-worlds" id="research-worlds" aria-labelledby="worlds-heading">
-      <h2 class="section-divider" id="worlds-heading">Research Worlds</h2>
-      <p class="rv-intro">Choose a world to see the projects that study it. Markers show field and study sites; drag the globe, or use the arrow keys, to turn it.</p>
-      <div class="wd-tabs" role="tablist" aria-label="Planetary bodies"></div>
+      <h2 class="section-divider" id="worlds-heading">Projects</h2>
+      <p class="rv-intro">All lists every project. Choose a world to see the projects that study it on a globe: drag or use the arrow keys to turn it, and zoom with the buttons, a pinch, or + and −. Numbered markers group nearby study sites; select one to zoom in.</p>
+      <div class="wd-tabs" role="tablist" aria-label="Projects by world"></div>
+      <div class="wd-all" id="wd-all-panel" role="tabpanel" aria-labelledby="wd-tab-all">
+        <h3 class="wd-all-h">Active Projects</h3>
+        <div id="active-projects"></div>
+        <h3 class="wd-all-h">Completed Projects</h3>
+        <div id="completed-projects"></div>
+      </div>
       <div class="wd-body">
         <div class="wd-globe-col">
-          <div class="wd-globe" tabindex="0" aria-label="Globe. Use the arrow keys to turn it."><canvas aria-hidden="true"></canvas><div class="wd-tip" aria-hidden="true"></div></div>
-          <p class="wd-credit">Maps: NASA (public domain)</p>
+          <div class="wd-globe" tabindex="0" aria-label="Globe. Arrow keys turn it; plus and minus zoom."><canvas aria-hidden="true"></canvas><div class="wd-tip" aria-hidden="true"></div></div>
+          <div class="wd-zoom" role="group" aria-label="Zoom"></div>
         </div>
         <div class="wd-list" id="wd-panel" role="tabpanel" aria-live="polite"></div>
       </div>
     </section>
-    <h2 class="section-divider">Active Projects</h2>
-    <div id="active-projects"></div>
-    <h2 class="section-divider" style="margin-top:40px">Completed Projects</h2>
-    <div id="completed-projects"></div>
   </div>
 </div>
 
@@ -316,16 +318,25 @@
     <div id="pub-chart" class="chart-container"></div>
     <section class="topic-map" id="topic-map" aria-labelledby="topic-map-heading">
       <h2 class="section-divider" id="topic-map-heading">Research Map</h2>
-      <p class="rv-intro">All <span class="tm-counts">papers and conference abstracts</span>, arranged so that work on similar topics sits close together. Coloured dots are peer-reviewed papers; small grey dots are conference abstracts. Hover for a title, select a paper to open it, or choose a theme to highlight it.</p>
+      <p class="rv-intro">All <span class="tm-counts">papers and conference abstracts</span>, arranged so that work on similar topics sits close together. Coloured dots are peer-reviewed papers; small grey dots are conference abstracts. Hover for a title and select a paper to open it. Choose a theme to zoom in and list its papers, search the titles, or press Play to watch the work build up year by year.</p>
       <div class="tm-controls">
+        <label class="tm-find"><span class="sr-only">Find in titles</span><input type="search" class="tm-q" placeholder="Find a word, e.g. Holuhraun" autocomplete="off"></label>
+        <span class="tm-qcount" aria-live="polite"></span>
         <label><input type="checkbox" class="tm-toggle" checked> Show conference abstracts</label>
         <span class="tm-key" aria-hidden="true"><span><i class="tm-key-paper"></i>Paper</span><span><i class="tm-key-abs"></i>Conference abstract</span></span>
       </div>
       <div class="tm-stage">
         <svg viewBox="0 0 1000 640" role="group" aria-label="Topic map of papers and conference abstracts, grouped into research themes"></svg>
         <div class="tm-tip" role="status"></div>
+        <button type="button" class="tm-back" hidden>&larr; All themes</button>
+      </div>
+      <div class="tm-time">
+        <button type="button" class="tm-play" aria-pressed="false">Play</button>
+        <label class="tm-range"><span class="sr-only">Show work up to year</span><input type="range" class="tm-year" step="1"></label>
+        <output class="tm-yr"></output>
       </div>
       <ul class="tm-legend" aria-label="Research themes (papers · conference abstracts)"></ul>
+      <div class="tm-panel" hidden></div>
       <p class="tm-note">Each item’s title and abstract are compared by their vocabulary, grouped into themes, and laid out in two dimensions. Nearness means similar topics; distances between far-apart groups carry no meaning.</p>
     </section>
     <h2 class="section-divider">All Publications</h2>
@@ -867,16 +878,16 @@ function initScrollEffects() {
 // LATEST PUBS
 const latestItems = [
   {href:"https://doi.org/10.1109/TGRS.2026.3751587",src:"IEEE Transactions on Geoscience and Remote Sensing, 2026",t:"In situ demonstration of passive radar using HF Jovian bursts as a source for echo detection",a:"Kristinsson, Peters, Voigt, Steinbr\u00fcgge, Hamilton, Diniega, Williams, Alfonso, and Romero-Wolf",img:"images/pub-sm/pub-jupiter.webp",credit:"Image: NASA/JPL-Caltech/SwRI/MSSS, G. Eichst\u00e4dt"},
-  {href:"https://doi.org/10.1016/j.icarus.2026.117136",src:"Icarus, 2026",t:"Electron irradiation of methanol ices: Implications for organic chemical diversity on Europa\u2019s surface",a:"Carrasco-Herrera, Bouquet, Noble, Danger, Duvernay, Park, Shock, Miller, Glein, Waite, and Hamilton",img:"images/pub-sm/pub-europa.webp"},
+  {href:"https://doi.org/10.1016/j.icarus.2026.117136",src:"Icarus, 2026",t:"Electron irradiation of methanol ices: Implications for organic chemical diversity on Europa\u2019s surface",a:"Carrasco-Herrera, Bouquet, Noble, Danger, Duvernay, Park, Shock, Miller, Glein, Waite, and Hamilton",img:"images/pub-md/pub-europa.webp"},
   {href:"cv/Hamilton_CV.pdf",src:"News, 2026",t:"Promoted to Professor",a:"Lunar and Planetary Laboratory and Department of Geosciences, University of Arizona"},
-  {href:"https://doi.org/10.1007/s00445-025-01867-4",src:"Bulletin of Volcanology, 2026",t:"Growth of a passive lava lake during the 2020\u20132021 eruption of K\u012blauea volcano, Hawaii",a:"Carr, Patrick, Dietterich, Zoeller, Parcheta, Downs, Nadeau, and Hamilton",img:"images/pub-sm/pub-lavalake.webp",pos:"center 65%"},
-  {href:"https://doi.org/10.1016/j.scitotenv.2026.181659",src:"Science of the Total Environment, 2026",t:"Microbial dispersal from a hyperactive sandsheet in the Icelandic Highland",a:"Hadland, Hamilton, Schroedl, Calabrese, Marlow, and Duhamel",img:"images/pub-sm/pub-sandsheet.webp",pos:"35% center"},
-  {href:"https://doi.org/10.3847/PSJ/ae0721",src:"The Planetary Science Journal, 2025",t:"Crater-based dating of Hebrus Valles and Hephaestus Fossae, Mars",a:"Spurling, Nerozzi, and Hamilton",img:"images/pub-sm/pub-hephaestus1.webp"},
+  {href:"https://doi.org/10.1007/s00445-025-01867-4",src:"Bulletin of Volcanology, 2026",t:"Growth of a passive lava lake during the 2020\u20132021 eruption of K\u012blauea volcano, Hawaii",a:"Carr, Patrick, Dietterich, Zoeller, Parcheta, Downs, Nadeau, and Hamilton",img:"images/pub-md/pub-lavalake.webp",pos:"center 65%"},
+  {href:"https://doi.org/10.1016/j.scitotenv.2026.181659",src:"Science of the Total Environment, 2026",t:"Microbial dispersal from a hyperactive sandsheet in the Icelandic Highland",a:"Hadland, Hamilton, Schroedl, Calabrese, Marlow, and Duhamel",img:"images/pub-md/pub-sandsheet.webp",pos:"35% center"},
+  {href:"https://doi.org/10.3847/PSJ/ae0721",src:"The Planetary Science Journal, 2025",t:"Crater-based dating of Hebrus Valles and Hephaestus Fossae, Mars",a:"Spurling, Nerozzi, and Hamilton",img:"images/pub-md/pub-hephaestus1.webp"},
   {href:"https://doi.org/10.1038/s42003-025-09044-1",src:"Communications Biology, 2025",t:"Three eruptions at the Fagradalsfjall Volcano in Iceland show rapid and predictable microbial community establishment",a:"Hadland, Hamilton, Bj\u00f6rnsd\u00f3ttir, and Duhamel",img:"images/pub-sm/pub-fagradalsfjall-map.webp",credit:"Map: Hadland et al. (2025), Fig. 1, CC BY 4.0"},
   {href:"https://doi.org/10.1016/j.epsl.2025.119651",src:"Earth and Planetary Science Letters, 2025",t:"Warming, cooling, and surface ice accumulation initiated by the release of water from the Athabasca Valles flood lava eruption on Mars",a:"Hamid, Kerber, Varnam, Hamilton, and Clarke"},
-  {href:"https://news.arizona.edu/news/life-lava-how-microbes-colonize-new-habitats",src:"UArizona News, 2025",t:"Life on Lava: How Microbes Colonize New Habitats",a:"University of Arizona News feature",img:"images/pub-sm/pub-sampling.webp"},
+  {href:"https://news.arizona.edu/news/life-lava-how-microbes-colonize-new-habitats",src:"UArizona News, 2025",t:"Life on Lava: How Microbes Colonize New Habitats",a:"University of Arizona News feature",img:"images/pub-md/pub-sampling.webp"},
   {href:"https://doi.org/10.3847/PSJ/ae0b50",src:"The Planetary Science Journal, 2025",t:"Surface properties of sediments at the 2014\u20132015 Holuhraun lava flow-field: Insights from multiwavelength radar",a:"Perkins, Hibbard, Neish, Hamilton, and Campbell"},
-  {href:"https://lpl.arizona.edu/events/lpl-evening-lecture-series-2025-dr-christopher-hamilton",src:"LPL Evening Lecture Series, 2025",t:"Mars on Earth: Testing Tomorrow\u2019s Mars Missions in Iceland",a:"Christopher W. Hamilton",img:"images/pub-sm/pub-fountain.webp"},
+  {href:"https://lpl.arizona.edu/events/lpl-evening-lecture-series-2025-dr-christopher-hamilton",src:"LPL Evening Lecture Series, 2025",t:"Mars on Earth: Testing Tomorrow\u2019s Mars Missions in Iceland",a:"Christopher W. Hamilton",img:"images/pub-md/pub-fountain.webp"},
 ];
 
 function pubCard(item) {

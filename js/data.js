@@ -11,11 +11,11 @@ const activeProjects = [
 ["Collaborator","VERITAS: Venus Emissivity, Radio Science, InSAR, Topography, and Spectroscopy","NASA Discovery Program (PI: Sue Smrekar, Jet Propulsion Laboratory)"],
 ["Collaborator","Revealing the geologic history of Amazonis Planitia","NASA Mars Data Analysis Program (PI: Katie Stack, Jet Propulsion Laboratory)"],
 ["Collaborator","From Early Earth to Mars: Advancing an integrated ‘Landscape Terraformation Science’ with digital twinning of Biosphere 2","University of Arizona (PI: Scott Saleska)"],
-["Collaborator","Exploring the origin and eruption of silicic lunar volcanic deposits through the Wildcat Hills, Utah","NASA Solar System Workings (PI: Kristen Bennett, United States Geological Survey)"],
 ["Collaborator","Planetary data training workshops: 2024–2026","NASA Topical Workshops, Symposia, and Conferences (PI: David Williams, Arizona State University)"],
 ];
 
 const completedProjects = [
+["Collaborator","Exploring the origin and eruption of silicic lunar volcanic deposits through the Wildcat Hills, Utah","NASA Solar System Workings (PI: Kristen Bennett, United States Geological Survey)"],
 ["PI","Preparatory fieldwork for astrobiology research at the 2021 Cumbre Vieja eruption, La Palma","Arizona Astrobiology Center"],
 ["PI","RAVEN: Rover-Aerial Vehicle Exploration Network","NASA Planetary Science and Technology through Analog Research"],
 ["PI","Follow the light: Quantification of light-penetration into astrobiologically relevant media","Arizona Astrobiology Center"],
