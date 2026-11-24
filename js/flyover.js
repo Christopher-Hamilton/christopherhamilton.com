@@ -5,13 +5,15 @@
 (function () {
 'use strict';
 const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)');
+const V = '?v=20261124c';   // bump when terrain or image files change, so browsers fetch the new ones
 const FLYOVERS = {
   hotsprings2015: {
     title: 'Holuhraun lava margin and hot springs, Iceland',
     sub: 'Where the 2014–2015 lava flow-field meets the braided channels of the Jökulsá á Fjöllum',
     base: 'images/flyover/hotsprings-2015',
     credit: 'Orthomosaic and digital terrain model from an unoccupied aircraft system (UAS) survey in 2015 by C.W. Hamilton and S.P. Scheidt.',
-    exag: 2
+    exag: 1.5,
+    hi: true, tex8k: true
   },
   vent2016: {
     title: 'Baugur, the main vent of the 2014–2015 Holuhraun eruption',
@@ -40,7 +42,7 @@ const VS = 'attribute vec2 p;attribute float h;attribute vec2 g;uniform mat4 m;u
   'void main(){vec3 w=vec3(p.x,h*rel*ex,p.y);uv=vec2(p.x,p.y)*vec2(1.)/1.+.5;n=normalize(vec3(-g.x*ex,1.,-g.y*ex));gl_Position=m*vec4(w,1.);d=gl_Position.w;}';
 const FS = 'precision highp float;varying vec2 uv;varying vec3 n;varying float d;uniform sampler2D t;uniform vec3 sun,fog;uniform float far;' +
   'void main(){vec3 c=texture2D(t,uv).rgb;float l=max(dot(normalize(n),sun),0.);float sky=.5+.5*n.y;' +
-  'vec3 col=c*(.55+.25*sky*.5+.55*l);float f=smoothstep(far*.35,far,d);gl_FragColor=vec4(mix(col,fog,f*.75),1.);}';
+  'vec3 col=min(c*(.62+.12*sky+.42*l),vec3(1.));float f=smoothstep(far*.55,far*1.1,d);gl_FragColor=vec4(mix(col,fog,f*.3),1.);}';
 
 let dlg = null;
 
@@ -52,7 +54,7 @@ function build() {
     '<button type="button" class="fly-close" aria-label="Close 3D view">&times;</button></div>' +
     '<div class="fly-stage"><canvas tabindex="0" aria-label="3D terrain. Drag to orbit, scroll or pinch to zoom, arrow keys to turn."></canvas><p class="fly-load">Loading terrain…</p></div>' +
     '<div class="fly-bar"><button type="button" class="fly-play" aria-pressed="true">Pause flyover</button>' +
-    '<label class="fly-ex">Vertical exaggeration <input type="range" min="1" max="5" step="0.5"><output></output></label></div>' +
+    '<label class="fly-ex">Vertical exaggeration <input type="range" min="1" max="2" step="0.1"><output></output></label></div>' +
     '<p class="fly-credit"></p>';
   document.body.appendChild(dlg);
   dlg.querySelector('.fly-close').addEventListener('click', () => dlg.close());
@@ -83,9 +85,9 @@ async function start(F, cv, load, ui) {
   if (!gl || !gl.getExtension('OES_element_index_uint')) { load.textContent = 'Your browser cannot show this 3D view.'; return; }
   const big = Math.min(window.innerWidth, window.innerHeight) > 700 && gl.getParameter(gl.MAX_TEXTURE_SIZE) >= 4096;
   const [meta, buf, img] = await Promise.all([
-    fetch(F.base + (big && F.hi ? '-hi' : '') + '.json').then(r => r.json()),
-    fetch(F.base + (big && F.hi ? '-hi' : '') + '.bin').then(r => r.arrayBuffer()),
-    new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = F.base + '-' + (big ? 4096 : 2048) + '.jpg'; })
+    fetch(F.base + (big && F.hi ? '-hi' : '') + '.json' + V).then(r => r.json()),
+    fetch(F.base + (big && F.hi ? '-hi' : '') + '.bin' + V).then(r => r.arrayBuffer()),
+    new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = F.base + '-' + (big ? 4096 : 2048) + '.jpg' + V; })
   ]);
   const R = meta.rows, Cn = meta.cols, H = new Uint16Array(buf), N = R * Cn;
   const W = (Cn - 1) * meta.cell, D = (R - 1) * meta.cell, S = Math.max(W, D);   // site size in metres; model is scaled to S = 1
@@ -120,10 +122,15 @@ async function start(F, cv, load, ui) {
   gl.enable(gl.DEPTH_TEST);
   const U = n => gl.getUniformLocation(pr, n);
   const sun = [-.55, .5, -.4], sl = Math.hypot(...sun); gl.uniform3fv(U('sun'), sun.map(v => v / sl));
-  gl.uniform3fv(U('fog'), [.62, .66, .70]); gl.uniform1f(U('rel'), rel);
+  gl.uniform3fv(U('fog'), [.56, .57, .58]); gl.uniform1f(U('rel'), rel);
   load.hidden = true;
   const st = {id: F.base, gl, U, n: idx.length, cv, open: true, raf: 0, ex: F.exag || 2, yaw: .7, pitch: .5, dist: .95, fly: !REDUCED.matches, t: 0, last: 0, rel};
   cv.__fly = st;
+  // sharper photo for big screens with big-texture GPUs: swapped in once it arrives
+  if (F.tex8k && big && gl.getParameter(gl.MAX_TEXTURE_SIZE) >= 8192 && !window.matchMedia('(pointer: coarse)').matches) {
+    const im8 = new Image(); im8.onload = () => { if (cv.__fly !== st) return; gl.bindTexture(gl.TEXTURE_2D, tex); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, im8); gl.generateMipmap(gl.TEXTURE_2D); };
+    im8.src = F.base + '-8192.jpg' + V;
+  }
   controls(st, ui);
   loop(st);
   return st;
@@ -135,8 +142,8 @@ function controls(s, ui) {
   setPlay(s.fly);
   if (ui) {
     ui.play.onclick = () => setPlay(!s.fly);
-    ui.ex.value = s.ex; ui.out.textContent = '×' + s.ex;
-    ui.ex.oninput = () => { s.ex = +ui.ex.value; ui.out.textContent = '×' + s.ex; };
+    ui.ex.value = s.ex; ui.out.textContent = '×' + s.ex.toFixed(1);
+    ui.ex.oninput = () => { s.ex = +ui.ex.value; ui.out.textContent = '×' + s.ex.toFixed(1); };
   }
   let drag = null; const ptr = new Map(); let pinch = null;
   cv.onpointerdown = e => { cv.setPointerCapture(e.pointerId); ptr.set(e.pointerId, [e.clientX, e.clientY]); setPlay(false);
