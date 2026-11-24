@@ -454,7 +454,7 @@ const ORDER = ['earth', 'mars', 'moon', 'venus', 'io', 'europa', 'ceres'];
 const TEX = (k, hi) => 'images/globes/' + k + (hi ? '-8k' : '') + '.jpg';
 // Study sites: name, latitude, longitude (east positive). Approximate centres.
 const SITES = {
-  iceland: ['Holuhraun, Iceland', 64.87, -16.83], reykjanes: ['Reykjanes Peninsula, Iceland', 63.88, -22.45], fagradalsfjall: ['Fagradalsfjall, Iceland', 63.903, -22.267],
+  iceland: ['Holuhraun, Iceland', 64.87, -16.83], fagradalsfjall: ['Fagradalsfjall, Reykjanes Peninsula, Iceland', 63.903, -22.267],   // one site for all Reykjanes work (owner: be consistent)
   hekla: ['Hekla, Iceland', 63.99, -19.67],
   hawaii: ['Kīlauea, Hawaiʻi', 19.41, -155.28], lapalma: ['La Palma, Canary Islands', 28.61, -17.87],
   arizona: ['San Francisco volcanic field, Arizona', 35.36, -111.5], biosphere2: ['Biosphere 2, Arizona', 32.58, -110.85],
@@ -465,7 +465,9 @@ const SITES = {
   hebrus: ['Hebrus Valles', 20, 126.6], hrad: ['Hrad Vallis', 34, 141], tharsis: ['Tharsis', 2, -112],
   copernicus: ['Copernicus crater', 9.6, -20.1], southpole: ['Lunar south pole', -89, 0], gruithuisen: ['Gruithuisen domes', 36.3, -40.5],
   // used by publications only
-  askja: ['Askja, Iceland', 65.03, -16.75], langjokull: ['Langjökull, Iceland', 64.63, -20.27], rainbowbasin: ['Rainbow Basin Natural Area, California', 35.02, -117.03], raudholar: ['Rauðhólar, Iceland', 64.096, -21.745], laki: ['Laki, Iceland', 64.07, -18.23], kverkfjoll: ['Kverkfjöll, Iceland', 64.65, -16.68],
+  askja: ['Askja, Iceland', 65.03, -16.75], langjokull: ['Langjökull, Iceland', 64.63, -20.27], rainbowbasin: ['Rainbow Basin Natural Area, California', 35.02, -117.03], raudholar: ['Rauðhólar, Iceland', 64.096, -21.745],
+  obsidiandome: ['Obsidian Dome, California', 37.76, -119.02], poleta: ['Poleta Folds, California', 37.29, -118.13],
+  galena: ['Galena Creek rock glacier, Wyoming', 44.65, -109.79], laki: ['Laki, Iceland', 64.07, -18.23], kverkfjoll: ['Kverkfjöll, Iceland', 64.65, -16.68],
   myvatn: ['Mývatn, Iceland', 65.6, -17.0], idaho: ['Craters of the Moon, Idaho', 43.42, -113.52],
   cerberus: ['Cerberus Fossae', 9.2, 164.3], aristarchus: ['Aristarchus Plateau', 26, -51], marius: ['Marius Hills', 13.4, -55.9],
   loki: ['Loki Patera', 13, 51], pele: ['Pele', -18.7, 104.9], ahuna: ['Ahuna Mons', -10.5, -43.9], occator: ['Occator crater', 19.8, -120.7]
@@ -490,7 +492,7 @@ const TAGS = [
   ['RAVEN', [['earth', 'iceland'], ['earth', 'rainbowbasin'], ['mars']]],   // Holuhraun and Rainbow Basin (owner)
   ['Follow the light', [['earth']]],
   ['Infrastructure for planetary analog', [['earth', 'fagradalsfjall']]],
-  ['RAPID', [['earth', 'reykjanes']]],
+  ['RAPID', [['earth', 'fagradalsfjall']]],
   ['LIFE', [['earth', 'iceland']]],   // Holuhraun only (owner, Nov 24, 2026)
   ['Lunar impact melt', [['moon']]],
   ['Volcanism and interior heating processes on Io', [['io']]],
@@ -529,7 +531,7 @@ const TAGS = [
 const PUB_SITES = [
   [/holuhraun|dyngjusand/i, 'earth', 'iceland'], [/askja/i, 'earth', 'askja'], [/rau[ðd]h[oó]lar/i, 'earth', 'raudholar'], [/langj[oö]kull/i, 'earth', 'langjokull'], [/laki|eldgj/i, 'earth', 'laki'],
   [/kverkfj/i, 'earth', 'kverkfjoll'], [/m[yý]vatn/i, 'earth', 'myvatn'], [/hekla/i, 'earth', 'hekla'],
-  [/fagradalsfjall|geldingadal|sundhn/i, 'earth', 'fagradalsfjall'], [/reykjanes/i, 'earth', 'reykjanes'], [/k[iī]lauea|hawai|mauna ulu|mauna loa/i, 'earth', 'hawaii'],
+  [/fagradalsfjall|geldingadal|sundhn|reykjanes/i, 'earth', 'fagradalsfjall'], [/k[iī]lauea|hawai|mauna ulu|mauna loa/i, 'earth', 'hawaii'],
   [/la palma|cumbre vieja/i, 'earth', 'lapalma'], [/el malpais|new mexico/i, 'earth', 'newmexico'], [/seward|alaska/i, 'earth', 'alaska'],
   [/wildcat hills/i, 'earth', 'utah'], [/death valley|dante/i, 'earth', 'deathvalley'], [/craters of the moon|idaho/i, 'earth', 'idaho'],
   [/san francisco volcanic|sp crater/i, 'earth', 'arizona'], [/biosphere 2/i, 'earth', 'biosphere2'],
@@ -546,7 +548,12 @@ const PUB_BODIES = [
 ];
 // Sites the owner gave for items whose titles name no site (keyed by link)
 const PUB_EXTRA = {
-  'https://doi.org/10.1016/j.scitotenv.2026.181659': [['earth', 'iceland']]   // sandsheet microbial dispersal: Holuhraun
+  'https://doi.org/10.1016/j.scitotenv.2026.181659': [['earth', 'iceland']],   // sandsheet microbial dispersal: Holuhraun
+  'https://doi.org/10.3847/PSJ/ad55f4': [['earth', 'iceland']],                 // rover vs helicopter: Holuhraun
+  'https://doi.org/10.1089/ast.2021.0124': [['earth', 'iceland']],              // microbial response, hydrothermal: Holuhraun
+  // UAS drill/scoop samplers: Holuhraun and Askja; Galena Creek, Wyoming; Obsidian Dome and Poleta Folds, California (Chen et al. 2025, PSJ 6:153)
+  'https://doi.org/10.1061/9780784485736.030': [['earth', 'iceland'], ['earth', 'askja'], ['earth', 'galena'], ['earth', 'obsidiandome'], ['earth', 'poleta']],
+  'https://doi.org/10.3847/PSJ/adcfa1': [['earth', 'iceland'], ['earth', 'askja'], ['earth', 'galena'], ['earth', 'obsidiandome'], ['earth', 'poleta']]
 };
 function placePub(it) {
   const t = it.ti.replace(/craters of the moon/ig, 'Craters of the M00n')     // an Idaho park, not the Moon
