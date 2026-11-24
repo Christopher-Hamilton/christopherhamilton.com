@@ -459,7 +459,7 @@ const SITES = {
   hawaii: ['Kīlauea, Hawaiʻi', 19.41, -155.28], lapalma: ['La Palma, Canary Islands', 28.61, -17.87],
   arizona: ['San Francisco volcanic field, Arizona', 35.36, -111.5], biosphere2: ['Biosphere 2, Arizona', 32.58, -110.85],
   utah: ['Wildcat Hills, Utah', 38.5, -113.3], newmexico: ['El Malpais, New Mexico', 34.9, -107.95],
-  alaska: ['Seward Peninsula, Alaska', 65.5, -164.3], deathvalley: ['Death Valley, California', 36.22, -116.73],
+  alaska: ['Seward Peninsula, Alaska', 65.5, -164.3], deathvalley: ['Dante’s View, Death Valley, California', 36.2206, -116.7267],
   nz: ['New Zealand', -36.85, 174.76],
   elysium: ['Elysium Planitia', 3, 154.7], amazonis: ['Amazonis Planitia', 24.8, -164], athabasca: ['Athabasca Valles', 8.6, 155],
   hebrus: ['Hebrus Valles', 20, 126.6], hrad: ['Hrad Vallis', 34, 141], tharsis: ['Tharsis', 2, -112],
@@ -472,7 +472,7 @@ const SITES = {
 };
 // Worlds (and sites) for each project, matched by the start of its title in js/data.js
 const TAGS = [
-  ['From Arizona’s volcanoes', [['earth', 'arizona'], ['moon'], ['mars']]],
+  ['From Arizona’s volcanoes', [['earth'], ['moon'], ['mars']]],   // no single site (owner, Nov 24, 2026)
   ['Magmatic and tectonic processes in Amazonis', [['mars', 'amazonis']]],
   ['Simultaneous Localization', [['moon']]],
   ['Linking cryovolcanism', [['europa']]],
@@ -531,7 +531,7 @@ const PUB_SITES = [
   [/kverkfj/i, 'earth', 'kverkfjoll'], [/m[yý]vatn/i, 'earth', 'myvatn'], [/hekla/i, 'earth', 'hekla'],
   [/fagradalsfjall|reykjanes|geldingadal|sundhn/i, 'earth', 'reykjanes'], [/k[iī]lauea|hawai|mauna ulu|mauna loa/i, 'earth', 'hawaii'],
   [/la palma|cumbre vieja/i, 'earth', 'lapalma'], [/el malpais|new mexico/i, 'earth', 'newmexico'], [/seward|alaska/i, 'earth', 'alaska'],
-  [/wildcat hills/i, 'earth', 'utah'], [/death valley/i, 'earth', 'deathvalley'], [/craters of the moon|idaho/i, 'earth', 'idaho'],
+  [/wildcat hills/i, 'earth', 'utah'], [/death valley|dante/i, 'earth', 'deathvalley'], [/craters of the moon|idaho/i, 'earth', 'idaho'],
   [/san francisco volcanic|sp crater/i, 'earth', 'arizona'], [/biosphere 2/i, 'earth', 'biosphere2'],
   [/elysium/i, 'mars', 'elysium'], [/athabasca/i, 'mars', 'athabasca'], [/amazonis/i, 'mars', 'amazonis'], [/hrad/i, 'mars', 'hrad'],
   [/hebrus|hephaestus/i, 'mars', 'hebrus'], [/tharsis|arsia|pavonis|olympus mons/i, 'mars', 'tharsis'], [/cerberus/i, 'mars', 'cerberus'],
