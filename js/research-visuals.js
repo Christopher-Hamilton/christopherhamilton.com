@@ -465,7 +465,7 @@ const SITES = {
   hebrus: ['Hebrus Valles', 20, 126.6], hrad: ['Hrad Vallis', 34, 141], tharsis: ['Tharsis', 2, -112],
   copernicus: ['Copernicus crater', 9.6, -20.1], southpole: ['Lunar south pole', -89, 0], gruithuisen: ['Gruithuisen domes', 36.3, -40.5],
   // used by publications only
-  askja: ['Askja, Iceland', 65.03, -16.75], langjokull: ['Langjökull, Iceland', 64.63, -20.27], rainbowbasin: ['Rainbow Basin Natural Area, California', 35.02, -117.03], laki: ['Laki, Iceland', 64.07, -18.23], kverkfjoll: ['Kverkfjöll, Iceland', 64.65, -16.68],
+  askja: ['Askja, Iceland', 65.03, -16.75], langjokull: ['Langjökull, Iceland', 64.63, -20.27], rainbowbasin: ['Rainbow Basin Natural Area, California', 35.02, -117.03], raudholar: ['Rauðhólar, Iceland', 64.096, -21.745], laki: ['Laki, Iceland', 64.07, -18.23], kverkfjoll: ['Kverkfjöll, Iceland', 64.65, -16.68],
   myvatn: ['Mývatn, Iceland', 65.6, -17.0], idaho: ['Craters of the Moon, Idaho', 43.42, -113.52],
   cerberus: ['Cerberus Fossae', 9.2, 164.3], aristarchus: ['Aristarchus Plateau', 26, -51], marius: ['Marius Hills', 13.4, -55.9],
   loki: ['Loki Patera', 13, 51], pele: ['Pele', -18.7, 104.9], ahuna: ['Ahuna Mons', -10.5, -43.9], occator: ['Occator crater', 19.8, -120.7]
@@ -514,7 +514,7 @@ const TAGS = [
   ['Geologic mapping of Hrad', [['mars', 'hrad']]],
   ['Quantitative studies of lava flows and eruption', [['earth'], ['mars']]],
   ['Simulation of inflated', [['earth', 'newmexico'], ['mars']]],
-  ['External water', [['earth', 'iceland'], ['mars']]],
+  ['External water', [['earth', 'raudholar'], ['mars']]],   // field site Rauðhólar (owner, Nov 24, 2026)
   ['X-ray diffraction', [['mars'], ['moon']]],
   ['Pahoehoe lava on Mars and Earth', [['earth', 'newmexico'], ['mars']]],
   ['Tidal Heating', [['io']]],
@@ -527,7 +527,7 @@ const TAGS = [
 // Papers and conference abstracts on the globes: worlds and sites are read from the title (js/topic-map-data.js).
 // A title can name several worlds (an Iceland analog for Mars is listed on both); it is plotted only where it names a site.
 const PUB_SITES = [
-  [/holuhraun|dyngjusand/i, 'earth', 'iceland'], [/askja/i, 'earth', 'askja'], [/langj[oö]kull/i, 'earth', 'langjokull'], [/laki|eldgj/i, 'earth', 'laki'],
+  [/holuhraun|dyngjusand/i, 'earth', 'iceland'], [/askja/i, 'earth', 'askja'], [/rau[ðd]h[oó]lar/i, 'earth', 'raudholar'], [/langj[oö]kull/i, 'earth', 'langjokull'], [/laki|eldgj/i, 'earth', 'laki'],
   [/kverkfj/i, 'earth', 'kverkfjoll'], [/m[yý]vatn/i, 'earth', 'myvatn'], [/hekla/i, 'earth', 'hekla'],
   [/fagradalsfjall|geldingadal|sundhn/i, 'earth', 'fagradalsfjall'], [/reykjanes/i, 'earth', 'reykjanes'], [/k[iī]lauea|hawai|mauna ulu|mauna loa/i, 'earth', 'hawaii'],
   [/la palma|cumbre vieja/i, 'earth', 'lapalma'], [/el malpais|new mexico/i, 'earth', 'newmexico'], [/seward|alaska/i, 'earth', 'alaska'],
