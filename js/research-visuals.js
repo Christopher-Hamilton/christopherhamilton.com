@@ -27,8 +27,9 @@ function buildTopicMap(root) {
   const stage = $('.tm-stage'), tip = $('.tm-tip'), legend = $('.tm-legend'), panel = $('.tm-panel'), back = $('.tm-back');
   const qIn = $('.tm-q'), qOut = $('.tm-qcount'), yr = $('.tm-year'), yrOut = $('.tm-yr'), play = $('.tm-play'), viewTabs = $('.tm-views');
   const el = (n, a, p) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
-  const isP = i => IT[i].t === 'p';
-  const state = {active: null, q: '', year: 9999, abs: true, view: 'map', focus: null};
+  const isP = i => IT[i].t === 'p', isD = i => IT[i].t === 'd';   // paper, dataset (anything else is a conference abstract)
+  const TYPE_NAME = {p: 'Paper', a: 'Conference abstract', d: 'Dataset'};
+  const state = {active: null, q: '', year: 9999, abs: true, ds: true, view: 'map', focus: null};
   IT.forEach(it => { it.lc = (it.ti + ' ' + (it.v || '')).toLowerCase(); });
   const nbr = IT.map(() => []);
   TM.links.forEach(([a, b]) => { nbr[a].push(b); nbr[b].push(a); });
@@ -38,7 +39,7 @@ function buildTopicMap(root) {
   let words = [];
   function vis(i) {
     const it = IT[i];
-    if (it.y > state.year || (!state.abs && it.t !== 'p')) return 0;
+    if (it.y > state.year || (!state.abs && it.t === 'a') || (!state.ds && it.t === 'd')) return 0;
     const match = !words.length || words.every(w => it.lc.includes(w));
     if ((state.active !== null && it.c !== state.active) || !match) return 1;
     if (state.focus !== null && i !== state.focus && !nbr[state.focus].includes(i)) return 1;
@@ -50,7 +51,7 @@ function buildTopicMap(root) {
     const it = IT[i];
     tip.innerHTML = '<b></b><span></span>';
     tip.firstChild.textContent = it.ti;
-    tip.lastChild.textContent = (it.t === 'p' ? 'Paper' : 'Conference abstract') + ' · ' + (it.v ? it.v + ', ' : '') + it.y + ' · ' + byId[it.c].name;
+    tip.lastChild.textContent = TYPE_NAME[it.t] + ' · ' + (it.v ? it.v + ', ' : '') + it.y + ' · ' + byId[it.c].name;
     const r = stage.getBoundingClientRect(), w = Math.min(330, r.width - 20);
     let tx = x - r.left + 14; if (tx > r.width - w) tx = Math.max(6, x - r.left - w - 14);
     let ty = y - r.top + 14; if (ty > r.height - 100) ty = Math.max(6, y - r.top - 110);
@@ -69,8 +70,10 @@ function buildTopicMap(root) {
   const gA = el('g', {}, mT), gP = el('g', {}, mT);
   const gLead = el('g', {'aria-hidden': 'true', class: 'tm-leads'}, map), gLab = el('g', {class: 'tm-labs'}, map);
   const mDots = IT.map((it, i) => {
-    const p = isP(i), d = el('circle', {cx: MX(it.x), cy: MY(it.yy), class: 'tm-dot ' + (p ? 'tm-paper' : 'tm-abs')}, p ? gP : gA);
-    if (p) { d.setAttribute('fill', byId[it.c].color); d.setAttribute('tabindex', '0'); d.setAttribute('role', 'link'); d.setAttribute('aria-label', it.ti + ' (' + it.y + '), ' + byId[it.c].name); }
+    const p = isP(i), ds = isD(i), d = el('circle', {cx: MX(it.x), cy: MY(it.yy), class: 'tm-dot ' + (p ? 'tm-paper' : ds ? 'tm-ds' : 'tm-abs')}, p || ds ? gP : gA);
+    if (p) d.setAttribute('fill', byId[it.c].color);
+    if (ds) d.setAttribute('stroke', byId[it.c].color);     // datasets: rings in the theme colour
+    if (p || ds) { d.setAttribute('tabindex', '0'); d.setAttribute('role', 'link'); d.setAttribute('aria-label', TYPE_NAME[it.t] + ': ' + it.ti + ' (' + it.y + '), ' + byId[it.c].name); }
     d.__i = i; return d;
   });
   // label anchor: the paper nearest the theme's median position
@@ -89,11 +92,17 @@ function buildTopicMap(root) {
   const toScreen = i => [MX(IT[i].x) * zoom.s + zoom.tx, MY(IT[i].yy) * zoom.s + zoom.ty];
   function layoutMap() {
     const w = map.getBoundingClientRect().width; if (!w) return;
-    narrow = w < 640; root.classList.toggle('tm-narrow', narrow);
+    narrow = w < 640;
+    if (!narrow) {      // margin labels need room: if the longest line would not fit beside the plot, use numbers instead
+      const k0 = MW / w; let widest = 0;
+      anchors.forEach(A => A.lines.forEach(t => { t.removeAttribute('display'); t.style.fontSize = (16 * k0) + 'px'; widest = Math.max(widest, t.getComputedTextLength()); }));
+      if (widest + 64 * k0 > DX0) narrow = true;
+    }
+    root.classList.toggle('tm-narrow', narrow);
     map.setAttribute('viewBox', narrow ? (DX0 - 26) + ' 0 ' + (DX1 - DX0 + 52) + ' ' + MH : '0 0 ' + MW + ' ' + MH);
     const k = (narrow ? DX1 - DX0 + 52 : MW) / w;
-    mDots.forEach(d => d.setAttribute('r', (isP(d.__i) ? 7 : 4) * k / zoom.s));
-    mDots.forEach(d => d.style.strokeWidth = (isP(d.__i) ? 2 : 0) * k / zoom.s);
+    mDots.forEach(d => d.setAttribute('r', (isP(d.__i) ? 7 : isD(d.__i) ? 5.5 : 4) * k / zoom.s));
+    mDots.forEach(d => d.style.strokeWidth = (isP(d.__i) ? 2 : isD(d.__i) ? 2.5 : 0) * k / zoom.s);
     const fs = 16 * k, lh = 19 * k;
     const sides = {L: [], R: []};
     anchors.forEach(A => {
@@ -176,8 +185,9 @@ function buildTopicMap(root) {
   const P = IT.map(it => ({x: 60 + it.x * (NW - 120), y: 40 + it.yy * (NH - 80), vx: 0, vy: 0, hx: 60 + it.x * (NW - 120), hy: 40 + it.yy * (NH - 80), fixed: false}));
   const nLines = TM.links.map(([a, b, w]) => { const l = el('line', {}, nL); l.style.opacity = (.12 + (w - .25) * .6).toFixed(2); l.__a = a; l.__b = b; return l; });
   const nDots = IT.map((it, i) => {
-    const p = isP(i), d = el('circle', {class: 'tm-dot ' + (p ? 'tm-paper' : 'tm-abs')}, p ? nP : nA);
+    const p = isP(i), ds = isD(i), d = el('circle', {class: 'tm-dot ' + (p ? 'tm-paper' : ds ? 'tm-ds' : 'tm-abs')}, p || ds ? nP : nA);
     if (p) d.setAttribute('fill', byId[it.c].color);
+    if (ds) d.setAttribute('stroke', byId[it.c].color);
     d.__i = i; return d;
   });
   const nLabels = C.map(c => { const g = el('g', {class: 'tm-nlab'}, nLab); const t = el('text', {'text-anchor': 'middle', class: 'tm-label'}, g); t.textContent = c.name; const b = el('circle', {r: 12, fill: c.color}, g), n = el('text', {'text-anchor': 'middle', 'dominant-baseline': 'central', class: 'tm-numtxt'}, g); n.textContent = c.num; g.__c = c.id; return {g, t, b, n, c}; });
@@ -216,7 +226,7 @@ function buildTopicMap(root) {
   function sizeNet() {
     const w = net.getBoundingClientRect().width; if (!w) return;
     netK = NW / w; narrow = w < 640; root.classList.toggle('tm-narrow', narrow);
-    nDots.forEach(d => { d.setAttribute('r', (isP(d.__i) ? 6.5 : 3.5) * netK); d.style.strokeWidth = (isP(d.__i) ? 2 : 0) * netK; });
+    nDots.forEach(d => { d.setAttribute('r', (isP(d.__i) ? 6.5 : isD(d.__i) ? 5 : 3.5) * netK); d.style.strokeWidth = (isP(d.__i) ? 2 : isD(d.__i) ? 2.5 : 0) * netK; });
     nLines.forEach(l => { l.style.strokeWidth = netK + 'px'; });
     nLabels.forEach(L => { L.t.style.fontSize = (15 * netK) + 'px'; L.t.style.strokeWidth = (4 * netK) + 'px'; L.b.setAttribute('r', 11 * netK); L.n.style.fontSize = (12 * netK) + 'px'; });
   }
@@ -293,8 +303,9 @@ function buildTopicMap(root) {
     proj.forEach(p => {
       const v = vis(p.i); if (!v) return;
       const depth = (p.z - z0) / (z1 - z0 || 1), fade = .25 + .75 * depth;      // nearer = larger and brighter
-      const r = (isP(p.i) ? 6.5 : 3.2) * (.7 + .5 * depth) * (p.i === hov3 ? 1.5 : 1);
-      ctx.globalAlpha = (v === 1 ? .1 : isP(p.i) ? fade : fade * .6);
+      const r = (isP(p.i) ? 6.5 : isD(p.i) ? 5 : 3.2) * (.7 + .5 * depth) * (p.i === hov3 ? 1.5 : 1);
+      ctx.globalAlpha = (v === 1 ? .1 : isP(p.i) || isD(p.i) ? fade : fade * .6);
+      if (isD(p.i)) { ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, 6.2832); ctx.fillStyle = '#1E1A17'; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = v === 3 || p.i === hov3 ? '#fff' : byId[IT[p.i].c].color; ctx.stroke(); p.r = r; return; }
       ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, 6.2832);
       ctx.fillStyle = v === 3 && !isP(p.i) ? '#e9e2d8' : colorOf(p.i); ctx.fill();
       if (isP(p.i)) { ctx.lineWidth = v === 3 || p.i === hov3 ? 2 : 1.5; ctx.strokeStyle = v === 3 || p.i === hov3 ? '#fff' : '#1E1A17'; ctx.stroke(); }
@@ -373,13 +384,15 @@ function buildTopicMap(root) {
     paint();
     if (state.active === null) { panel.hidden = true; return; }
     const c = byId[id], items = IT.filter(i => i.c === id), papers = items.filter(i => i.t === 'p').sort((a, b) => b.y - a.y), yrs = items.map(i => i.y);
+    const dsets = items.filter(i => i.t === 'd').sort((a, b) => b.y - a.y), nAbs = items.length - papers.length - dsets.length;
     panel.innerHTML = '<h3></h3><p class="tm-psub"></p><ol></ol>';
     panel.querySelector('h3').textContent = c.name;
-    panel.querySelector('.tm-psub').textContent = papers.length + ' paper' + (papers.length === 1 ? '' : 's') + ' and ' + (items.length - papers.length) + ' conference abstracts, ' + Math.min(...yrs) + '–' + Math.max(...yrs) + (papers.length ? ':' : '.');
+    panel.querySelector('.tm-psub').textContent = papers.length + ' paper' + (papers.length === 1 ? '' : 's') + ', ' + nAbs + ' conference abstracts and ' + dsets.length + ' dataset' + (dsets.length === 1 ? '' : 's') + ', ' + Math.min(...yrs) + '–' + Math.max(...yrs) + (papers.length || dsets.length ? ':' : '.');
     const ol = panel.querySelector('ol');
-    papers.forEach(p => {
+    papers.concat(dsets).forEach(p => {
       const li = document.createElement('li'), a = document.createElement('a'), s = document.createElement('span');
-      a.href = p.u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = p.ti; s.textContent = p.y + (p.v ? ' · ' + p.v.split(',')[0] : '');
+      if (p.t === 'd') li.className = 'tm-li-ds';
+      a.href = p.u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = p.ti; s.textContent = (p.t === 'd' ? 'Dataset · ' : '') + p.y + (p.v ? ' · ' + p.v.split(',')[0] : '');
       li.append(a, s); ol.appendChild(li);
       const i = IT.indexOf(p);
       li.addEventListener('mouseenter', () => { mDots[i].classList.add('tm-ping'); nDots[i].classList.add('tm-ping'); });
@@ -395,8 +408,8 @@ function buildTopicMap(root) {
     const i = b.querySelector('i'); i.style.background = c.color; i.textContent = c.num;
     b.querySelector('span').textContent = c.name;
     b.querySelector('small').innerHTML = '<b class="tm-np"></b> · <span class="tm-na"></span>';   // papers in white, abstracts in grey
-    b.querySelector('.tm-np').textContent = c.papers; b.querySelector('.tm-na').textContent = c.n - c.papers;
-    b.setAttribute('aria-label', c.name + ': ' + c.papers + ' papers, ' + (c.n - c.papers) + ' conference abstracts. Select to highlight this theme and list its papers.');
+    b.querySelector('.tm-np').textContent = c.papers; b.querySelector('.tm-na').textContent = c.n - c.papers - (c.datasets || 0);
+    b.setAttribute('aria-label', c.name + ': ' + c.papers + ' papers, ' + (c.n - c.papers - (c.datasets || 0)) + ' conference abstracts, ' + (c.datasets || 0) + ' datasets. Select to highlight this theme and list its papers.');
     b.addEventListener('click', () => select(c.id));
     li.appendChild(b); legend.appendChild(li);
   });
@@ -423,8 +436,10 @@ function buildTopicMap(root) {
     timer = setInterval(() => { y++; setYear(y, !REDUCED.matches); if (y >= y1) stopPlay(); }, 520);
   });
   $('.tm-toggle').addEventListener('change', e => { state.abs = e.target.checked; paint(); });
+  $('.tm-toggle-ds').addEventListener('change', e => { state.ds = e.target.checked; paint(); });
   const nPap = IT.filter(i => i.t === 'p').length;
-  $('.tm-counts').textContent = nPap + ' papers and ' + (N - nPap) + ' conference abstracts';
+  const nDs = IT.filter(i => i.t === 'd').length;
+  $('.tm-counts').textContent = nPap + ' papers, ' + (N - nPap - nDs) + ' conference abstracts and ' + nDs + ' datasets';
   window.addEventListener('resize', () => { if (state.view === 'map') layoutMap(); if (state.view === 'net') sizeNet(); if (state.view === '3d') { size3(); draw3(); } });
   setView('map'); setYear(y1, false);
   // first view: the points fade in from left to right
@@ -531,10 +546,10 @@ const TAGS = [
 // Papers and conference abstracts on the globes: worlds and sites are read from the title (js/topic-map-data.js).
 // A title can name several worlds (an Iceland analog for Mars is listed on both); it is plotted only where it names a site.
 const PUB_SITES = [
-  [/holuhraun|dyngjusand/i, 'earth', 'iceland'], [/askja/i, 'earth', 'askja'], [/rau[ðd]h[oó]lar/i, 'earth', 'raudholar'], [/langj[oö]kull/i, 'earth', 'langjokull'], [/laki|eldgj/i, 'earth', 'laki'],
+  [/holuhraun|dyngjusand|baugur/i, 'earth', 'iceland'], [/askja/i, 'earth', 'askja'], [/rau[ðd]h[oó]lar/i, 'earth', 'raudholar'], [/langj[oö]kull/i, 'earth', 'langjokull'], [/laki|eldgj/i, 'earth', 'laki'],
   [/kverkfj/i, 'earth', 'kverkfjoll'], [/m[yý]vatn/i, 'earth', 'myvatn'], [/hekla/i, 'earth', 'hekla'],
   [/fagradalsfjall|geldingadal|sundhn|reykjanes/i, 'earth', 'fagradalsfjall'], [/k[iī]lauea|hawai|mauna ulu|mauna loa/i, 'earth', 'hawaii'],
-  [/la palma|cumbre vieja/i, 'earth', 'lapalma'], [/el malpais|new mexico/i, 'earth', 'newmexico'], [/seward|alaska/i, 'earth', 'alaska'],
+  [/la palma|cumbre vieja/i, 'earth', 'lapalma'], [/el malpais|new mexico|mccartys|zuni-bandera/i, 'earth', 'newmexico'], [/seward|alaska/i, 'earth', 'alaska'],
   [/wildcat hills/i, 'earth', 'utah'], [/death valley|dante/i, 'earth', 'deathvalley'], [/craters of the moon|idaho/i, 'earth', 'idaho'],
   [/san francisco volcanic|sp crater/i, 'earth', 'arizona'], [/biosphere 2/i, 'earth', 'biosphere2'],
   [/elysium/i, 'mars', 'elysium'], [/athabasca/i, 'mars', 'athabasca'], [/amazonis/i, 'mars', 'amazonis'], [/hrad/i, 'mars', 'hrad'],
@@ -552,7 +567,10 @@ const PUB_BODIES = [
 const PUB_EXTRA = {
   'https://doi.org/10.1016/j.scitotenv.2026.181659': [['earth', 'iceland']],   // sandsheet microbial dispersal: Holuhraun
   'https://doi.org/10.1029/2020GL090797': [['europa', 'manannan']],             // brine migration: Manannán crater
-  'https://doi.org/10.3847/PSJ/ad55f4': [['earth', 'iceland']],                 // rover vs helicopter: Holuhraun
+  'https://doi.org/10.3847/PSJ/ad55f4': [['earth', 'iceland']],
+  'https://doi.org/10.48577/jpl.DSFUSK': [['earth', 'deathvalley']],             // passive radar data: Dante’s View, Death Valley (TGRS paper)
+  'https://doi.org/10.25422/azu.data.27156978': [['earth', 'iceland']],         // RAVEN UAS surveys: Holuhraun (DataCite description)
+  'https://doi.org/10.25422/azu.data.26035837': [['earth', 'iceland'], ['earth', 'askja'], ['earth', 'fagradalsfjall']],   // VERITAS UAS surveys (DataCite)                 // rover vs helicopter: Holuhraun
   'https://doi.org/10.1089/ast.2021.0124': [['earth', 'iceland']],              // microbial response, hydrothermal: Holuhraun
   // UAS drill/scoop samplers: Holuhraun and Askja; Galena Creek, Wyoming; Obsidian Dome and Poleta Folds, California (Chen et al. 2025, PSJ 6:153)
   'https://doi.org/10.1061/9780784485736.030': [['earth', 'iceland'], ['earth', 'askja'], ['earth', 'galena'], ['earth', 'obsidiandome'], ['earth', 'poleta']],
@@ -697,7 +715,7 @@ function initWorlds(root) {
       const label = idx.length > 1 ? String(idx.length) : '';
       if (m.el.textContent !== label) m.el.textContent = label;
       m.el.classList.toggle('multi', idx.length > 1);
-      m.el.setAttribute('aria-label', g.map(s => s.name).join('; ') + ': ' + idx.length + ' ' + ({proj: 'project', pap: 'paper', abs: 'conference abstract'})[m.type || 'proj'] + (idx.length > 1 ? 's' : '') +
+      m.el.setAttribute('aria-label', g.map(s => s.name).join('; ') + ': ' + idx.length + ' ' + ({proj: 'project', pap: 'paper', abs: 'conference abstract', ds: 'dataset'})[m.type || 'proj'] + (idx.length > 1 ? 's' : '') +
         (g.length > 1 ? '. Activate to zoom in.' : ''));
     });
   }
@@ -795,7 +813,7 @@ function initWorlds(root) {
 
   // ---- papers and conference abstracts (js/topic-map-data.js), placed by their titles
   let pubs = [];
-  const show = {proj: true, pap: true, abs: false};
+  const show = {proj: true, pap: true, ds: true, abs: false};
   function loadPubs() {
     const go = () => { pubs = window.topicMap.items.map(it => ({...it, ...placePub(it)})); counts(); if (body) select(body, true); };
     if (window.topicMap) { go(); return; }
@@ -803,7 +821,7 @@ function initWorlds(root) {
   }
   const pubsFor = (k, t) => pubs.filter(p => p.t === t && p.bodies.has(k)).sort((a, b) => b.y - a.y);
   const toggles = root.querySelector('.wd-show');
-  toggles.innerHTML = '<label><input type="checkbox" data-k="proj" checked> <i class="wd-key-proj" aria-hidden="true"></i>Projects</label><label><input type="checkbox" data-k="pap" checked> <i class="wd-key-pap" aria-hidden="true"></i>Papers</label><label><input type="checkbox" data-k="abs"> <i class="wd-key-abs" aria-hidden="true"></i>Conference abstracts</label>';
+  toggles.innerHTML = '<label><input type="checkbox" data-k="proj" checked> <i class="wd-key-proj" aria-hidden="true"></i>Projects</label><label><input type="checkbox" data-k="pap" checked> <i class="wd-key-pap" aria-hidden="true"></i>Papers</label><label><input type="checkbox" data-k="ds" checked> <i class="wd-key-ds" aria-hidden="true"></i>Datasets</label><label><input type="checkbox" data-k="abs"> <i class="wd-key-abs" aria-hidden="true"></i>Conference abstracts</label>';
   toggles.addEventListener('change', e => { show[e.target.dataset.k] = e.target.checked; counts(); if (body) select(body, true); });
 
   // ---- tabs: All (the full project lists), then one per world
@@ -820,7 +838,7 @@ function initWorlds(root) {
   function counts() {      // the number on each world's tab follows the toggles
     [...tabs.children].forEach(b => {
       const k = b.dataset.k;
-      const n = k === 'all' ? projects.length : (show.proj ? forBody(k).length : 0) + (show.pap ? pubsFor(k, 'p').length : 0) + (show.abs ? pubsFor(k, 'a').length : 0);
+      const n = k === 'all' ? projects.length : (show.proj ? forBody(k).length : 0) + (show.pap ? pubsFor(k, 'p').length : 0) + (show.ds ? pubsFor(k, 'd').length : 0) + (show.abs ? pubsFor(k, 'a').length : 0);
       b.querySelector('small').textContent = n;
     });
   }
@@ -853,7 +871,7 @@ function initWorlds(root) {
     list.querySelector('h3').textContent = BODIES[k].name;
     const sc = list.querySelector('.wd-scroll');
     const section = (title, n) => { const h = document.createElement('h4'); h.className = 'wd-h4'; h.textContent = title + ' (' + n + ')'; sc.appendChild(h); const ul = document.createElement('ul'); sc.appendChild(ul); return ul; };
-    const ps = show.proj ? forBody(k) : [], paps = show.pap ? pubsFor(k, 'p') : [], abss = show.abs ? pubsFor(k, 'a') : [];
+    const ps = show.proj ? forBody(k) : [], paps = show.pap ? pubsFor(k, 'p') : [], dss = show.ds ? pubsFor(k, 'd') : [], abss = show.abs ? pubsFor(k, 'a') : [];
     if (ps.length) {
       const ul = section('Projects', ps.length);
       ps.forEach(p => {
@@ -868,7 +886,7 @@ function initWorlds(root) {
         ul.appendChild(li); st.forEach(s => addSite(s, li, 'proj'));
       });
     }
-    [[paps, 'Papers', 'wd-pap'], [abss, 'Conference abstracts', 'wd-abs']].forEach(([arr, title, cls]) => {
+    [[paps, 'Papers', 'wd-pap'], [dss, 'Datasets', 'wd-ds'], [abss, 'Conference abstracts', 'wd-abs']].forEach(([arr, title, cls]) => {
       if (!arr.length) return;
       const ul = section(title, arr.length);
       arr.forEach(p => {
@@ -880,18 +898,19 @@ function initWorlds(root) {
         const m = document.createElement('span'); m.className = 'wd-fund'; m.textContent = p.y + (p.v ? ' · ' + p.v.split(',')[0] : '');
         li.append(a, m);
         if (st.length) { const si = document.createElement('span'); si.className = 'wd-site'; si.textContent = siteLine(st); li.appendChild(si); }
-        ul.appendChild(li); st.forEach(s => addSite(s, li, cls === 'wd-pap' ? 'pap' : 'abs'));
+        ul.appendChild(li); st.forEach(s => addSite(s, li, cls.slice(3)));
       });
     });
-    if (!ps.length && !paps.length && !abss.length) sc.innerHTML = '<p class="wd-empty">Nothing to show. Turn on projects, papers or conference abstracts above the list.</p>';
+    if (!ps.length && !paps.length && !dss.length && !abss.length) sc.innerHTML = '<p class="wd-empty">Nothing to show. Turn on projects, papers, datasets or conference abstracts below the globe.</p>';
     const nSites = new Set(Object.keys(sites).map(k => k.split('|')[0])).size;
     const parts = [];
     if (show.proj) parts.push(plural(ps.length, 'project'));
     if (show.pap) parts.push(plural(paps.length, 'paper'));
+    if (show.ds) parts.push(plural(dss.length, 'dataset'));
     if (show.abs) parts.push(plural(abss.length, 'conference abstract'));
     list.querySelector('.wd-sub').textContent = parts.join(' · ') + (nSites ? ' · ' + plural(nSites, 'study site') + ' on the globe' : '');
     const all = [...sc.querySelectorAll('li')];
-    const TYPE = {proj: ['project', 0, -6], pap: ['paper', 13, 9], abs: ['conference abstract', -13, 9]};   // name, screen offset
+    const TYPE = {proj: ['project', 0, -6], pap: ['paper', 13, 9], abs: ['conference abstract', -13, 9], ds: ['dataset', 0, 20]};   // name, screen offset
     Object.entries(sites).forEach(([key, lis]) => {
       const [s, type] = key.split('|'), [name, lat, lon] = SITES[s];
       const el = document.createElement('button');

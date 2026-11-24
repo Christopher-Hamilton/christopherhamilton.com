@@ -319,7 +319,7 @@
     <div id="pub-chart" class="chart-container"></div>
     <section class="topic-map" id="topic-map" aria-labelledby="topic-map-heading">
       <h2 class="section-divider" id="topic-map-heading">Research Map</h2>
-      <p class="rv-intro">All <span class="tm-counts">papers and conference abstracts</span>, grouped into eight themes by the words in their titles and abstracts. Coloured dots are peer-reviewed papers; small grey dots are conference abstracts. <b>Map</b> places similar work close together, <b>Network</b> links each item to its most similar ones (drag a dot to pull on its links), and <b>3D</b> lets you turn the same space. Hover for a title, select a dot to open it, or choose a theme to list its papers.</p>
+      <p class="rv-intro">All <span class="tm-counts">papers and conference abstracts</span>, grouped into eight themes by the words in their titles and abstracts. Coloured dots are peer-reviewed papers, rings are datasets, and small grey dots are conference abstracts. <b>Map</b> places similar work close together, <b>Network</b> links each item to its most similar ones (drag a dot to pull on its links), and <b>3D</b> lets you turn the same space. Hover for a title, select a dot to open it, or choose a theme to list its papers.</p>
       <div class="tm-views" role="tablist" aria-label="Map views">
         <button type="button" role="tab" data-v="map">Map</button><button type="button" role="tab" data-v="net">Network</button><button type="button" role="tab" data-v="3d">3D</button>
       </div>
@@ -327,7 +327,8 @@
         <label class="tm-find"><span class="sr-only">Find in titles</span><input type="search" class="tm-q" placeholder="Find a word, e.g. Holuhraun" autocomplete="off"></label>
         <span class="tm-qcount" aria-live="polite"></span>
         <label><input type="checkbox" class="tm-toggle" checked> Show conference abstracts</label>
-        <span class="tm-key" aria-hidden="true"><span><i class="tm-key-paper"></i>Paper (coloured by theme)</span><span><i class="tm-key-abs"></i>Conference abstract</span></span>
+        <label><input type="checkbox" class="tm-toggle-ds" checked> Show datasets</label>
+        <span class="tm-key" aria-hidden="true"><span><i class="tm-key-paper"></i>Paper (coloured by theme)</span><span><i class="tm-key-abs"></i>Conference abstract</span><span><i class="tm-key-ds"></i>Dataset (ring)</span></span>
       </div>
       <div class="tm-stage">
         <svg class="tm-map" viewBox="0 0 1240 680" role="group" aria-label="Map of papers and conference abstracts, grouped into eight research themes"></svg>
