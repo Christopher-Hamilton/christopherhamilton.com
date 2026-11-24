@@ -858,4 +858,7 @@ a.wd-ptitle:hover{text-decoration-color:var(--accent)}
 .tm-key input{width:18px;height:18px;margin:0;accent-color:var(--accent)}
 .tm-key i{margin-right:0}
 .tm-onplot .tm-lab .tm-label{stroke:var(--bg-card);paint-order:stroke;stroke-linejoin:round;font-weight:700}
+.tm-nolabels .tm-labs,.tm-nolabels .tm-leads,.tm-nolabels .tm-nlab{display:none}
+.tm-key .tm-lab-toggle{margin-left:auto}
+@media(max-width:700px){.tm-key .tm-lab-toggle{margin-left:0}}
 

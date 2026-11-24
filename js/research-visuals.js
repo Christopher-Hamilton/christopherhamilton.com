@@ -29,7 +29,7 @@ function buildTopicMap(root) {
   const el = (n, a, p) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
   const isP = i => IT[i].t === 'p', isD = i => IT[i].t === 'd';   // paper, dataset (anything else is a conference abstract)
   const TYPE_NAME = {p: 'Paper', a: 'Conference abstract', d: 'Dataset'};
-  const state = {active: null, q: '', year: 9999, abs: true, ds: true, view: 'map', focus: null};
+  const state = {active: null, q: '', year: 9999, abs: true, ds: true, labels: true, view: 'map', focus: null};
   IT.forEach(it => { it.lc = (it.ti + ' ' + (it.v || '')).toLowerCase(); });
   const nbr = IT.map(() => []);
   TM.links.forEach(([a, b]) => { nbr[a].push(b); nbr[b].push(a); });
@@ -342,6 +342,7 @@ function buildTopicMap(root) {
     // theme labels at each theme's 3D centre
     ctx.font = '700 ' + (narrow ? 13 : 15) + 'px "Source Sans 3", sans-serif'; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
     const boxes = [];
+    if (!state.labels) return;
     C.map(c => {
       const pts = proj.filter(p => IT[p.i].c === c.id);
       const med = k => pts.map(p => p[k]).sort((a, b) => a - b)[pts.length >> 1];
@@ -464,6 +465,8 @@ function buildTopicMap(root) {
   });
   $('.tm-toggle').addEventListener('change', e => { state.abs = e.target.checked; paint(); });
   $('.tm-toggle-ds').addEventListener('change', e => { state.ds = e.target.checked; paint(); });
+  // theme labels on or off, in every view
+  $('.tm-toggle-lab').addEventListener('change', e => { state.labels = e.target.checked; root.classList.toggle('tm-nolabels', !state.labels); paint(); });
   const nPap = IT.filter(i => i.t === 'p').length;
   const nDs = IT.filter(i => i.t === 'd').length;
   $('.tm-counts').textContent = nPap + ' papers, ' + (N - nPap - nDs) + ' conference abstracts and ' + nDs + ' datasets';
