@@ -46,6 +46,9 @@ function buildTopicMap(root) {
     return words.length ? 3 : 2;
   }
 
+  // themes with at least one paper on screen: their labels show (owner: labels arrive with a theme's first paper)
+  const litThemes = () => new Set(IT.filter((it, i) => it.t === 'p' && vis(i) >= 2).map(it => it.c));
+
   // ---- tooltip
   function showTip(x, y, i) {
     const it = IT[i];
@@ -171,7 +174,7 @@ function buildTopicMap(root) {
     const dimT = id => state.active !== null && id !== state.active;
     // a label turns white once its theme's first paper is on screen (abstracts alone keep it faint; owner's call);
     // its leader line shows once the paper it points to has appeared
-    const shown = new Set(IT.filter((it, i) => it.t === 'p' && vis(i) >= 2).map(it => it.c));
+    const shown = litThemes();
     anchors.forEach(A => {
       A.g.classList.toggle('tm-dim', dimT(A.c.id) || !shown.has(A.c.id));
       A.lead.classList.toggle('tm-dim', dimT(A.c.id) || IT[A.a].y > state.year);
@@ -266,7 +269,8 @@ function buildTopicMap(root) {
       l.classList.toggle('tm-dim', va === 1 || vb === 1);
       l.classList.toggle('tm-on', state.focus !== null && (l.__a === state.focus || l.__b === state.focus));
     });
-    nLabels.forEach(L => L.g.classList.toggle('tm-dim', state.active !== null && L.c.id !== state.active));
+    const lit = litThemes();
+    nLabels.forEach(L => { L.g.classList.toggle('tm-dim', state.active !== null && L.c.id !== state.active); L.g.style.display = lit.has(L.c.id) ? '' : 'none'; });
   }
   function runNet() {
     if (netRun || state.view !== 'net') return;
@@ -336,12 +340,14 @@ function buildTopicMap(root) {
     ctx.font = '700 ' + (narrow ? 13 : 15) + 'px "Source Sans 3", sans-serif'; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
     const boxes = [];
     if (!state.labels) return;
+    const lit = litThemes();          // a theme's label appears with its first paper (as on the map)
     C.map(c => {
       const pts = proj.filter(p => IT[p.i].c === c.id);
       const med = k => pts.map(p => p[k]).sort((a, b) => a - b)[pts.length >> 1];
       return pts.length ? {c, mx: med('x'), my: med('y'), z: med('z')} : null;
     }).filter(Boolean).sort((a, b) => b.z - a.z).forEach(({c, mx, my}) => {   // nearest themes labelled first
       if (state.active !== null && c.id !== state.active) return;
+      if (!lit.has(c.id)) return;
       const label0 = narrow ? String(c.num) : c.name, w = narrow ? 24 : ctx.measureText(label0).width + 8, h = narrow ? 24 : 20;
       const b = [mx - w / 2, my - h, mx + w / 2, my + 4];
       if (boxes.some(o => b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1])) return;   // skip labels that would overlap
