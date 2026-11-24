@@ -29,7 +29,8 @@ function buildTopicMap(root) {
   const el = (n, a, p) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
   const isP = i => IT[i].t === 'p', isD = i => IT[i].t === 'd';   // paper, dataset (anything else is a conference abstract)
   const TYPE_NAME = {p: 'Paper', a: 'Conference abstract', d: 'Dataset'};
-  const state = {active: null, q: '', year: 9999, abs: true, ds: true, labels: true, view: 'map', focus: null};
+  const state = {active: null, q: '', year: 9999, abs: true, ds: true, labels: false, view: 'map', focus: null};   // theme labels off by default (owner)
+  root.classList.add('tm-nolabels');
   IT.forEach(it => { it.lc = (it.ti + ' ' + (it.v || '')).toLowerCase(); });
   const nbr = IT.map(() => []);
   TM.links.forEach(([a, b]) => { nbr[a].push(b); nbr[b].push(a); });
