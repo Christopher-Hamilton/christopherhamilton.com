@@ -614,7 +614,7 @@ function initWorlds(root) {
     root.classList.add('wd-noglobe');
   }
   const cache = {}, shown = {};
-  let body = null, yaw = 0, pitch = .35, zoom = 1, spin = !REDUCED.matches, markers = [], running = false, onScreen = false;
+  let home = {yaw: 0, pitch: .35}, body = null, yaw = 0, pitch = .35, zoom = 1, spin = !REDUCED.matches, markers = [], running = false, onScreen = false;
   function use(im, key) {
     if (!gl || shown.key === key) return;
     gl.bindTexture(gl.TEXTURE_2D, tex); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, im);
@@ -685,16 +685,18 @@ function initWorlds(root) {
   // ---- zoom (buttons, wheel or trackpad pinch, touch pinch, + and − keys) with a short ease
   const ZMAX = 8;
   let anim = null;
-  function setZoom(z, face) {
+  function setZoom(z, face, to, after) {   // face: {lat, lon} to centre; to: {yaw, pitch} to return to; after: run at the end
     z = Math.max(1, Math.min(ZMAX, z));
     const z0 = zoom, y0 = yaw, p0 = pitch, t0 = performance.now(), D = REDUCED.matches ? 0 : 260;
     let yT = y0, pT = p0;
-    if (face) { yT = -face.lon * Math.PI / 180; pT = face.lat * Math.PI / 180; yT = y0 + Math.atan2(Math.sin(yT - y0), Math.cos(yT - y0)); }
+    if (face) { yT = -face.lon * Math.PI / 180; pT = face.lat * Math.PI / 180; }
+    if (to) { yT = to.yaw; pT = to.pitch; }
+    yT = y0 + Math.atan2(Math.sin(yT - y0), Math.cos(yT - y0));       // turn the short way round
     spin = false;
     anim = t => {
       const k = D ? Math.min(1, (t - t0) / D) : 1, e = 1 - Math.pow(1 - k, 3);
       zoom = z0 * Math.pow(z / z0, e); yaw = y0 + (yT - y0) * e; pitch = p0 + (pT - p0) * e;
-      if (k >= 1) { anim = null; load(body); }
+      if (k >= 1) { anim = null; load(body); if (after) after(); }
     };
     wake();
     if (!running) { anim(performance.now() + D); draw(); }
@@ -705,7 +707,8 @@ function initWorlds(root) {
   const [zoomOut, zoomIn, reset] = ctl.children;
   zoomOut.addEventListener('click', () => { setZoom(zoom / 1.6); resumeSpin(); });
   zoomIn.addEventListener('click', () => setZoom(zoom * 1.6));
-  reset.addEventListener('click', () => { setZoom(1); resumeSpin(); });
+  // Reset: back to the view the world opened with, then spin again
+  reset.addEventListener('click', () => { clearTimeout(idle); setZoom(1, null, home, () => { if (!REDUCED.matches) { spin = true; wake(); } }); });
   zoomOut.disabled = true;
   box.addEventListener('wheel', e => {
     // trackpad pinch arrives as ctrl+wheel; a plain wheel zooms only once the globe has focus (so page scrolling still works)
@@ -896,7 +899,8 @@ function initWorlds(root) {
     });
     if (!sameBody) {
       const first = (Object.keys(sites)[0] || '').split('|')[0];   // face the first study site
-      if (first) { yaw = -SITES[first][2] * Math.PI / 180; pitch = SITES[first][1] * Math.PI / 180 * .8; }
+      if (first) { yaw = -SITES[first][2] * Math.PI / 180; pitch = SITES[first][1] * Math.PI / 180 * .8; } else { yaw = 0; pitch = .35; }
+      home = {yaw, pitch};
     }
     wake(); draw();
   }
