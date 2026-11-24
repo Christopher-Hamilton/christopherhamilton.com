@@ -724,7 +724,16 @@ a.wd-ptitle:hover{text-decoration-color:var(--accent)}
 .wd-show{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 18px;margin:10px 0 0;color:var(--text-body)}
 .wd-show label{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer}
 .wd-show input{width:20px;height:20px;accent-color:var(--accent)}
-.wd-key-pap,.wd-key-abs{display:none}
+.wd-key-proj,.wd-key-pap,.wd-key-abs{display:inline-block;width:12px;height:12px;border-radius:50%;border:2px solid #fff;margin-right:-2px}
+.wd-key-proj{background:var(--accent)}
+.wd-key-pap{background:#5BC0EB}
+.wd-key-abs{background:#a8a09a}
+.wd-mark[hidden]{display:none!important}
+.wd-mark-pap{background:#5BC0EB;box-shadow:0 0 0 3px rgba(91,192,235,.35)}
+.wd-mark-abs{background:#a8a09a;box-shadow:0 0 0 3px rgba(168,160,154,.35)}
+.wd-mark-pap.multi,.wd-mark-abs.multi{color:#0F0D0B}
+.wd-list li.wd-pap{border-left:3px solid #5BC0EB}
+.wd-list li.wd-abs{border-left:3px solid #a8a09a}
 .wd-list li{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;transition:border-color .15s}
 .wd-list li.on{border-color:var(--accent)}
 .wd-list li.flash{animation:wdflash 1.6s ease-out}

@@ -529,9 +529,9 @@ const TAGS = [
 const PUB_SITES = [
   [/holuhraun|dyngjusand/i, 'earth', 'iceland'], [/askja/i, 'earth', 'askja'], [/laki|eldgj/i, 'earth', 'laki'],
   [/kverkfj/i, 'earth', 'kverkfjoll'], [/m[yý]vatn/i, 'earth', 'myvatn'], [/hekla/i, 'earth', 'hekla'],
-  [/fagradalsfjall|reykjanes|geldingadal|sundhn/i, 'earth', 'reykjanes'], [/k[iī]lauea|hawai/i, 'earth', 'hawaii'],
+  [/fagradalsfjall|reykjanes|geldingadal|sundhn/i, 'earth', 'reykjanes'], [/k[iī]lauea|hawai|mauna ulu|mauna loa/i, 'earth', 'hawaii'],
   [/la palma|cumbre vieja/i, 'earth', 'lapalma'], [/el malpais|new mexico/i, 'earth', 'newmexico'], [/seward|alaska/i, 'earth', 'alaska'],
-  [/wildcat hills|utah/i, 'earth', 'utah'], [/death valley/i, 'earth', 'deathvalley'], [/craters of the moon|idaho/i, 'earth', 'idaho'],
+  [/wildcat hills/i, 'earth', 'utah'], [/death valley/i, 'earth', 'deathvalley'], [/craters of the moon|idaho/i, 'earth', 'idaho'],
   [/san francisco volcanic|sp crater/i, 'earth', 'arizona'], [/biosphere 2/i, 'earth', 'biosphere2'],
   [/elysium/i, 'mars', 'elysium'], [/athabasca/i, 'mars', 'athabasca'], [/amazonis/i, 'mars', 'amazonis'], [/hrad/i, 'mars', 'hrad'],
   [/hebrus|hephaestus/i, 'mars', 'hebrus'], [/tharsis|arsia|pavonis|olympus mons/i, 'mars', 'tharsis'], [/cerberus/i, 'mars', 'cerberus'],
@@ -545,7 +545,8 @@ const PUB_BODIES = [
   ['io', /\bio\b|ionian/i], ['europa', /europa/i], ['ceres', /ceres/i]
 ];
 function placePub(it) {
-  const t = it.ti.replace(/craters of the moon/ig, 'Craters of the M00n');   // an Idaho park, not the Moon
+  const t = it.ti.replace(/craters of the moon/ig, 'Craters of the M00n')     // an Idaho park, not the Moon
+    .replace(/muliwai a pele/ig, 'Muliwai a P3le');                          // a Kīlauea lava channel, not Pele on Io
   const sites = PUB_SITES.filter(r => r[0].test(t)).map(r => [r[1], r[2]]);
   const bodies = new Set(sites.map(s => s[0]));
   PUB_BODIES.forEach(([b, rx]) => { if (rx.test(t)) bodies.add(b); });
@@ -652,10 +653,10 @@ function initWorlds(root) {
       let x = Math.cos(la) * Math.sin(lo), y = Math.sin(la), z = Math.cos(la) * Math.cos(lo);
       const cy = Math.cos(yaw), sy = Math.sin(yaw); [x, z] = [cy * x + sy * z, -sy * x + cy * z];
       const cp = Math.cos(pitch), sp = Math.sin(pitch); [y, z] = [cp * y - sp * z, sp * y + cp * z];
-      m.sx = R + x * R * zoom; m.sy = R - y * R * zoom;
+      m.sx = R + x * R * zoom + (m.dx || 0); m.sy = R - y * R * zoom + (m.dy || 0);
       m.vis = !!gl && z > 0.08 && Math.hypot(m.sx - R, m.sy - R) < R - 8;
       if (!m.vis) return;
-      const g = groups.find(g => Math.hypot(g[0].sx - m.sx, g[0].sy - m.sy) < 26);
+      const g = groups.find(g => g[0].type === m.type && Math.hypot(g[0].sx - m.sx, g[0].sy - m.sy) < 26);
       if (g) g.push(m); else groups.push([m]);
     });
     markers.forEach(m => { m.el.hidden = true; m.group = null; });
@@ -666,7 +667,7 @@ function initWorlds(root) {
       const label = idx.length > 1 ? String(idx.length) : '';
       if (m.el.textContent !== label) m.el.textContent = label;
       m.el.classList.toggle('multi', idx.length > 1);
-      m.el.setAttribute('aria-label', g.map(s => s.name).join('; ') + ': ' + idx.length + ' project' + (idx.length > 1 ? 's' : '') +
+      m.el.setAttribute('aria-label', g.map(s => s.name).join('; ') + ': ' + idx.length + ' ' + ({proj: 'project', pap: 'paper', abs: 'conference abstract'})[m.type || 'proj'] + (idx.length > 1 ? 's' : '') +
         (g.length > 1 ? '. Activate to zoom in.' : ''));
     });
   }
@@ -769,7 +770,7 @@ function initWorlds(root) {
   }
   const pubsFor = (k, t) => pubs.filter(p => p.t === t && p.bodies.has(k)).sort((a, b) => b.y - a.y);
   const toggles = root.querySelector('.wd-show');
-  toggles.innerHTML = '<label><input type="checkbox" data-k="proj" checked> Projects</label><label><input type="checkbox" data-k="pap" checked> <i class="wd-key-pap" aria-hidden="true"></i>Papers</label><label><input type="checkbox" data-k="abs"> <i class="wd-key-abs" aria-hidden="true"></i>Conference abstracts</label>';
+  toggles.innerHTML = '<label><input type="checkbox" data-k="proj" checked> <i class="wd-key-proj" aria-hidden="true"></i>Projects</label><label><input type="checkbox" data-k="pap" checked> <i class="wd-key-pap" aria-hidden="true"></i>Papers</label><label><input type="checkbox" data-k="abs"> <i class="wd-key-abs" aria-hidden="true"></i>Conference abstracts</label>';
   toggles.addEventListener('change', e => { show[e.target.dataset.k] = e.target.checked; counts(); if (body) select(body, true); });
 
   // ---- tabs: All (the full project lists), then one per world
@@ -814,7 +815,7 @@ function initWorlds(root) {
     list.setAttribute('aria-labelledby', 'wd-tab-' + k);
     markers.forEach(m => m.el.remove()); markers = [];
     const sites = {};        // site → list items it covers
-    const addSite = (s, li) => (sites[s] = sites[s] || []).push(li);
+    const addSite = (s, li, type) => { const key = s + '|' + type; (sites[key] = sites[key] || []).push(li); };
     list.innerHTML = '<h3></h3><p class="wd-sub"></p><div class="wd-scroll"></div>';
     list.querySelector('h3').textContent = BODIES[k].name;
     const sc = list.querySelector('.wd-scroll');
@@ -831,7 +832,7 @@ function initWorlds(root) {
         li.querySelector('strong').textContent = p.title;
         li.querySelector('.wd-fund').textContent = p.fund;
         if (st.length) li.querySelector('.wd-site').textContent = 'Site: ' + st.map(s => SITES[s][0]).join('; ');
-        ul.appendChild(li); st.forEach(s => addSite(s, li));
+        ul.appendChild(li); st.forEach(s => addSite(s, li, 'proj'));
       });
     }
     [[paps, 'Papers', 'wd-pap'], [abss, 'Conference abstracts', 'wd-abs']].forEach(([arr, title, cls]) => {
@@ -846,22 +847,23 @@ function initWorlds(root) {
         const m = document.createElement('span'); m.className = 'wd-fund'; m.textContent = p.y + (p.v ? ' · ' + p.v.split(',')[0] : '');
         li.append(a, m);
         if (st.length) { const si = document.createElement('span'); si.className = 'wd-site'; si.textContent = 'Site: ' + st.map(s => SITES[s][0]).join('; '); li.appendChild(si); }
-        ul.appendChild(li); st.forEach(s => addSite(s, li));
+        ul.appendChild(li); st.forEach(s => addSite(s, li, cls === 'wd-pap' ? 'pap' : 'abs'));
       });
     });
     if (!ps.length && !paps.length && !abss.length) sc.innerHTML = '<p class="wd-empty">Nothing to show. Turn on projects, papers or conference abstracts above the list.</p>';
-    const nSites = Object.keys(sites).length;
+    const nSites = new Set(Object.keys(sites).map(k => k.split('|')[0])).size;
     const parts = [];
     if (show.proj) parts.push(plural(ps.length, 'project'));
     if (show.pap) parts.push(plural(paps.length, 'paper'));
     if (show.abs) parts.push(plural(abss.length, 'conference abstract'));
     list.querySelector('.wd-sub').textContent = parts.join(' · ') + (nSites ? ' · ' + plural(nSites, 'study site') + ' on the globe' : '');
     const all = [...sc.querySelectorAll('li')];
-    Object.entries(sites).forEach(([s, lis]) => {
-      const [name, lat, lon] = SITES[s];
+    const TYPE = {proj: ['project', 0, -6], pap: ['paper', 13, 9], abs: ['conference abstract', -13, 9]};   // name, screen offset
+    Object.entries(sites).forEach(([key, lis]) => {
+      const [s, type] = key.split('|'), [name, lat, lon] = SITES[s];
       const el = document.createElement('button');
-      el.type = 'button'; el.className = 'wd-mark';
-      const m = {el, lat, lon, idx: lis.map(li => all.indexOf(li)), name};
+      el.type = 'button'; el.className = 'wd-mark wd-mark-' + type;
+      const m = {el, lat, lon, idx: lis.map(li => all.indexOf(li)), name, type, dx: TYPE[type][1], dy: TYPE[type][2]};
       const ids = () => [...new Set((m.group || [m]).flatMap(g => g.idx))];
       const on = v => {
         el.classList.toggle('on', v);
@@ -869,7 +871,7 @@ function initWorlds(root) {
         if (v) ids().forEach(i => all[i].classList.add('on'));
         if (v) {
           const g = m.group || [m], n = ids().length;
-          tip.textContent = g.map(s => s.name).join(' · ') + ' — ' + plural(n, 'item');
+          tip.textContent = g.map(s => s.name).join(' · ') + ' — ' + plural(n, TYPE[m.type][0]);
           const W = box.clientWidth, x = m.sx;
           tip.style.left = (x > W * .55 ? x - 14 - tip.offsetWidth : x + 14) + 'px'; tip.style.top = (m.sy + 14) + 'px';
         }
@@ -893,7 +895,7 @@ function initWorlds(root) {
       box.appendChild(el); markers.push(m);
     });
     if (!sameBody) {
-      const first = Object.keys(sites)[0];             // face the first study site
+      const first = (Object.keys(sites)[0] || '').split('|')[0];   // face the first study site
       if (first) { yaw = -SITES[first][2] * Math.PI / 180; pitch = SITES[first][1] * Math.PI / 180 * .8; }
     }
     wake(); draw();
