@@ -864,7 +864,7 @@ function initWorlds(root) {
   }
   function flyButtons(k) {
     const list = FLY.filter(f => f.body === k);
-    flyBox.hidden = !list.length; flyBox.innerHTML = list.length ? '<span>3D flyover:</span>' : '';
+    flyBox.hidden = !list.length; flyBox.innerHTML = list.length ? '<span>3D flyovers</span>' : '';
     list.forEach(f => { const b = document.createElement('button'); b.type = 'button'; b.className = 'wd-flybtn'; b.textContent = f.label; b.addEventListener('click', () => openFly(f.id)); flyBox.appendChild(b); });
   }
   const toggles = root.querySelector('.wd-show');
