@@ -487,11 +487,11 @@ const TAGS = [
   ['Exploring the origin and eruption of silicic lunar', [['moon', 'gruithuisen'], ['earth', 'utah']]],
   ['Planetary data training', [['earth'], ['mars'], ['moon']]],
   ['Preparatory fieldwork', [['earth', 'lapalma']]],
-  ['RAVEN', [['earth', 'iceland'], ['mars']]],
+  ['RAVEN', [['earth', 'iceland'], ['earth', 'rainbowbasin'], ['mars']]],   // Holuhraun and Rainbow Basin (owner)
   ['Follow the light', [['earth']]],
   ['Infrastructure for planetary analog', [['earth', 'fagradalsfjall']]],
   ['RAPID', [['earth', 'reykjanes']]],
-  ['LIFE', [['earth', 'iceland'], ['earth', 'rainbowbasin']]],   // Holuhraun and Rainbow Basin (owner, Nov 24, 2026)
+  ['LIFE', [['earth', 'iceland']]],   // Holuhraun only (owner, Nov 24, 2026)
   ['Lunar impact melt', [['moon']]],
   ['Volcanism and interior heating processes on Io', [['io']]],
   ['Sinuous channels', [['earth'], ['mars']]],
@@ -504,7 +504,7 @@ const TAGS = [
   ['Volcanic eruptions and climate on Late Amazonian', [['mars', 'athabasca']]],
   ['Exploring biosignature', [['earth', 'iceland'], ['mars']]],
   ['Evaluating the spread of microorganisms', [['earth', 'iceland']]],
-  ['Automating hyperspectral', [['earth', 'nz']]],
+  ['Automating hyperspectral', [['earth', 'nz'], ['earth', 'fagradalsfjall']]],
   ['3-D modeling of a secondary ancient lunar', [['moon']]],
   ['Artemis III', [['moon', 'southpole']]],
   ['Investigating magma-cryosphere', [['mars', 'hebrus']]],
