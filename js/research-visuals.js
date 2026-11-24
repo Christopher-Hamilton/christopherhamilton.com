@@ -313,19 +313,12 @@ function buildTopicMap(root) {
       let [x, y, z] = P3[i]; [x, z] = [cy_ * x + sy * z, -sy * x + cy_ * z]; [y, z] = [cp * y - sp * z, sp * y + cp * z];
       const s = D / (D - z); return {i, x: cw / 2 + x * F * s, y: ch / 2 - y * F * s, s, z};
     }).sort((a, b) => a.z - b.z);
-    // faint reference rings (equator and two meridians) as a depth cue
-    ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(181,173,166,.16)';
-    [[1, 0, 0, 0, 0, 1], [1, 0, 0, 0, 1, 0], [0, 1, 0, 0, 0, 1]].forEach(([ax, ay, az, bx, by, bz]) => {
-      ctx.beginPath();
-      for (let k = 0; k <= 72; k++) {
-        const t = k / 72 * 6.2832, c = Math.cos(t) * 1.05, s_ = Math.sin(t) * 1.05;
-        let x = ax * c + bx * s_, y = ay * c + by * s_, z = az * c + bz * s_;
-        [x, z] = [cy_ * x + sy * z, -sy * x + cy_ * z]; [y, z] = [cp * y - sp * z, sp * y + cp * z];
-        const q = D / (D - z), X = cw / 2 + x * F * q, Y = ch / 2 - y * F * q;
-        k ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y);
-      }
-      ctx.stroke();
-    });
+    // a faint, softly lit sphere behind the points as a depth cue (lit from the upper left, darker at the rim)
+    const R0 = F * 1.08, gx = cw / 2 - R0 * .35, gy = ch / 2 - R0 * .4;
+    const grd = ctx.createRadialGradient(gx, gy, R0 * .05, cw / 2, ch / 2, R0);
+    grd.addColorStop(0, 'rgba(245,240,235,.10)'); grd.addColorStop(.6, 'rgba(245,240,235,.04)'); grd.addColorStop(1, 'rgba(245,240,235,.015)');
+    ctx.beginPath(); ctx.arc(cw / 2, ch / 2, R0, 0, 6.2832); ctx.fillStyle = grd; ctx.fill();
+    ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(245,240,235,.10)'; ctx.stroke();
     const zs = proj.map(p => p.z), z0 = Math.min(...zs), z1 = Math.max(...zs);
     proj.forEach(p => {
       const v = vis(p.i); if (!v) return;
@@ -376,7 +369,13 @@ function buildTopicMap(root) {
     if (best !== null) showTip(e.clientX, e.clientY, best); else hideTip();
     if (!run3) draw3();
   });
-  cv.addEventListener('pointerup', () => { if (d3 && !d3.moved && hov3 !== null) open(hov3); d3 = null; setTimeout(() => { if (!d3 && !REDUCED.matches) { spin3 = true; wake3(); } }, 4000); });
+  cv.addEventListener('pointerup', () => { if (d3 && !d3.moved && hov3 !== null) open(hov3); d3 = null; setTimeout(() => { if (!d3 && !REDUCED.matches && !held3) { spin3 = true; wake3(); } }, 4000); });
+  // pause / resume the rotation
+  let held3 = REDUCED.matches;
+  const spinBtn = $('.tm-spin');
+  const setSpin = on => { held3 = !on; spin3 = on; spinBtn.textContent = on ? 'Pause rotation' : 'Resume rotation'; spinBtn.setAttribute('aria-pressed', String(!on)); if (on) wake3(); };
+  spinBtn.addEventListener('click', () => setSpin(held3));
+  setSpin(!REDUCED.matches);
   cv.addEventListener('pointerleave', () => { hov3 = null; hideTip(); });
   cv.addEventListener('keydown', e => {
     const k = {ArrowLeft: [-.15, 0], ArrowRight: [.15, 0], ArrowUp: [0, -.12], ArrowDown: [0, .12]}[e.key]; if (!k) return;
@@ -392,7 +391,7 @@ function buildTopicMap(root) {
     [...viewTabs.children].forEach(b => { const on = b.dataset.v === v; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
     map.toggleAttribute('hidden', v !== 'map'); net.toggleAttribute('hidden', v !== 'net'); cv.hidden = v !== '3d';   // SVG elements have no .hidden property
     back.hidden = !(v === 'map' && state.active !== null);
-    root.dataset.view = v;
+    root.dataset.view = v; $('.tm-spin').hidden = v !== '3d';
     if (v === 'map') layoutMap();
     if (v === 'net') { sizeNet(); drawNet(); runNet(); }
     if (v === '3d') { size3(); draw3(); wake3(); }
