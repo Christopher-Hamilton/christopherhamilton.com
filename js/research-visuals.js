@@ -470,7 +470,7 @@ const SITES = {
   galena: ['Galena Creek rock glacier, Wyoming', 44.65, -109.79], laki: ['Laki, Iceland', 64.07, -18.23], kverkfjoll: ['Kverkfjöll, Iceland', 64.65, -16.68],
   myvatn: ['Mývatn, Iceland', 65.6, -17.0], idaho: ['Craters of the Moon, Idaho', 43.42, -113.52],
   cerberus: ['Cerberus Fossae', 9.2, 164.3], aristarchus: ['Aristarchus Plateau', 26, -51], marius: ['Marius Hills', 13.4, -55.9],
-  loki: ['Loki Patera', 13, 51], pele: ['Pele', -18.7, 104.9], ahuna: ['Ahuna Mons', -10.5, -43.9], occator: ['Occator crater', 19.8, -120.7]
+  loki: ['Loki Patera', 13, 51], pele: ['Pele', -18.7, 104.9], ahuna: ['Ahuna Mons', -10.5, -43.9], giordanobruno: ['Giordano Bruno crater', 35.9, 102.8], occator: ['Occator crater', 19.8, -120.7]
 };
 // Worlds (and sites) for each project, matched by the start of its title in js/data.js
 const TAGS = [
@@ -538,7 +538,7 @@ const PUB_SITES = [
   [/elysium/i, 'mars', 'elysium'], [/athabasca/i, 'mars', 'athabasca'], [/amazonis/i, 'mars', 'amazonis'], [/hrad/i, 'mars', 'hrad'],
   [/hebrus|hephaestus/i, 'mars', 'hebrus'], [/tharsis|arsia|pavonis|olympus mons/i, 'mars', 'tharsis'], [/cerberus/i, 'mars', 'cerberus'],
   [/copernicus/i, 'moon', 'copernicus'], [/aristarchus/i, 'moon', 'aristarchus'], [/marius/i, 'moon', 'marius'],
-  [/gruithuisen/i, 'moon', 'gruithuisen'], [/lunar south pole|south polar region of the moon/i, 'moon', 'southpole'],
+  [/gruithuisen/i, 'moon', 'gruithuisen'], [/giordano bruno/i, 'moon', 'giordanobruno'], [/lunar south pole|south polar region of the moon/i, 'moon', 'southpole'],
   [/loki/i, 'io', 'loki'], [/\bpele\b/i, 'io', 'pele'], [/ahuna/i, 'ceres', 'ahuna'], [/occator/i, 'ceres', 'occator']
 ];
 const PUB_BODIES = [
@@ -557,7 +557,8 @@ const PUB_EXTRA = {
 };
 function placePub(it) {
   const t = it.ti.replace(/craters of the moon/ig, 'Craters of the M00n')     // an Idaho park, not the Moon
-    .replace(/muliwai a pele/ig, 'Muliwai a P3le');                          // a Kīlauea lava channel, not Pele on Io
+    .replace(/muliwai a pele/ig, 'Muliwai a P3le')                          // a Kīlauea lava channel, not Pele on Io
+    .replace(/(jupiter[’']s|icy|galilean|saturn[’']s) moons?/ig, 'satellite');   // "Jupiter’s moon Io" is not the Moon
   const sites = PUB_SITES.filter(r => r[0].test(t)).map(r => [r[1], r[2]]).concat(PUB_EXTRA[it.u] || []);
   const bodies = new Set(sites.map(s => s[0]));
   PUB_BODIES.forEach(([b, rx]) => { if (rx.test(t)) bodies.add(b); });
