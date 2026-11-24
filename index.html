@@ -318,7 +318,10 @@
     <div id="pub-chart" class="chart-container"></div>
     <section class="topic-map" id="topic-map" aria-labelledby="topic-map-heading">
       <h2 class="section-divider" id="topic-map-heading">Research Map</h2>
-      <p class="rv-intro">All <span class="tm-counts">papers and conference abstracts</span>, arranged so that work on similar topics sits close together. Coloured dots are peer-reviewed papers; small grey dots are conference abstracts. Hover for a title and select a paper to open it. Choose a theme to zoom in and list its papers, search the titles, or press Play to watch the work build up year by year.</p>
+      <p class="rv-intro">All <span class="tm-counts">papers and conference abstracts</span>, grouped into eight themes by the words in their titles and abstracts. Coloured dots are peer-reviewed papers; small grey dots are conference abstracts. <b>Map</b> places similar work close together, <b>Network</b> links each item to its most similar ones (drag a dot to pull on its links), and <b>3D</b> lets you turn the same space. Hover for a title, select a dot to open it, or choose a theme to list its papers.</p>
+      <div class="tm-views" role="tablist" aria-label="Map views">
+        <button type="button" role="tab" data-v="map">Map</button><button type="button" role="tab" data-v="net">Network</button><button type="button" role="tab" data-v="3d">3D</button>
+      </div>
       <div class="tm-controls">
         <label class="tm-find"><span class="sr-only">Find in titles</span><input type="search" class="tm-q" placeholder="Find a word, e.g. Holuhraun" autocomplete="off"></label>
         <span class="tm-qcount" aria-live="polite"></span>
@@ -326,7 +329,9 @@
         <span class="tm-key" aria-hidden="true"><span><i class="tm-key-paper"></i>Paper</span><span><i class="tm-key-abs"></i>Conference abstract</span></span>
       </div>
       <div class="tm-stage">
-        <svg viewBox="0 0 1000 640" role="group" aria-label="Topic map of papers and conference abstracts, grouped into research themes"></svg>
+        <svg class="tm-map" viewBox="0 0 1240 680" role="group" aria-label="Map of papers and conference abstracts, grouped into eight research themes"></svg>
+        <svg class="tm-net" viewBox="0 0 1000 680" hidden aria-label="Network of papers and conference abstracts linked to their most similar items" role="img"></svg>
+        <canvas class="tm-3d" hidden tabindex="0" role="img" aria-label="Three-dimensional view of the same themes. Arrow keys turn it; the Map view lists every item for screen readers."></canvas>
         <div class="tm-tip" role="status"></div>
         <button type="button" class="tm-back" hidden>&larr; All themes</button>
       </div>
@@ -337,7 +342,7 @@
       </div>
       <ul class="tm-legend" aria-label="Research themes (papers · conference abstracts)"></ul>
       <div class="tm-panel" hidden></div>
-      <p class="tm-note">Each item’s title and abstract are compared by their vocabulary, grouped into themes, and laid out in two dimensions. Nearness means similar topics; distances between far-apart groups carry no meaning.</p>
+      <p class="tm-note">Method: each item’s title and abstract are compared by vocabulary (TF-IDF), grouped into themes (k-means), and laid out with t-SNE in two and three dimensions. Nearness means similar topics; distances between far-apart groups carry little meaning.</p>
     </section>
     <h2 class="section-divider">All Publications</h2>
     <label for="pub-search" class="sr-only">Search publications</label>

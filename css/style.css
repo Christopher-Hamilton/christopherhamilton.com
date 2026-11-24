@@ -615,9 +615,10 @@ html{scroll-behavior:auto}
 .tm-stage{position:relative;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
 .tm-stage svg{display:block;width:100%;height:auto}
 .tm-dot{transition:opacity .25s,transform .6s cubic-bezier(.2,.8,.2,1);transform-box:fill-box;transform-origin:center}
-.tm-paper{cursor:pointer;stroke:rgba(15,13,11,.85);stroke-width:1.2}
-.tm-paper:hover,.tm-paper:focus{stroke:#fff;stroke-width:2.2;outline:none}
-.tm-abs{fill:#8a837c;opacity:.55}
+.tm-paper{stroke:#1E1A17}
+.tm-paper{cursor:pointer}
+.tm-paper:hover,.tm-paper:focus{stroke:#fff;outline:none}
+.tm-abs{fill:#8a837c;opacity:.5}
 .tm-abs.linked{cursor:pointer}
 .tm-abs:hover{opacity:1;fill:#cfc8be}
 .tm-label{font:700 16px 'Source Sans 3',sans-serif;fill:var(--text);paint-order:stroke;stroke:var(--bg-card);stroke-width:4px;stroke-linejoin:round;pointer-events:none}
@@ -632,26 +633,40 @@ html{scroll-behavior:auto}
 .tm-legend i{flex:none;width:22px;height:22px;border-radius:50%}
 .tm-legend small{color:var(--muted);margin-left:auto;font-family:var(--mono);font-size:.8125rem;white-space:nowrap}
 .tm-note{color:var(--muted);font-size:.875rem;margin-top:14px;max-width:66ch;line-height:1.5}
-.tm-region{opacity:.11;cursor:pointer;transition:opacity .25s}
-.tm-region:hover,.tm-region.tm-glow{opacity:.22}
-.tm-region.tm-dim{opacity:.03}
-.tm-lab{cursor:pointer;pointer-events:auto;transition:opacity .25s}
-.tm-lab .tm-label{pointer-events:auto}
-.tm-lab.tm-soft{opacity:.35}
-.tm-num{display:none}
-.tm-zoomed .tm-lab.tm-dim{display:none}
-.tm-num text{font:700 13px var(--mono);fill:#0F0D0B}
-.tm-narrow .tm-label{display:none}
-.tm-narrow .tm-num{display:inline}
-.tm-future{opacity:0!important;pointer-events:none;transform:scale(.2)}
-.tm-hit.tm-paper{stroke:#fff;stroke-width:2}
+.tm-glow{opacity:.2;transition:opacity .25s}
+.tm-glow .tm-dim{opacity:.15}
+.tm-leads path{fill:none;stroke:var(--dim);opacity:.55;transition:opacity .25s}
+.tm-leads path.tm-dim{opacity:.1}
+.tm-lab{cursor:pointer;transition:opacity .25s}
+.tm-lab .tm-label{fill:var(--text);font-weight:600;stroke:none}
+.tm-lab:hover .tm-label{fill:#fff;text-decoration:underline}
+.tm-lab.tm-dim,.tm-nlab.tm-dim{opacity:.3}
+.tm-numtxt{font:700 13px var(--mono);fill:#0F0D0B;pointer-events:none}
+.tm-nlab .tm-numtxt,.tm-nlab circle{display:none}
+.tm-narrow .tm-nlab .tm-label{display:none}
+.tm-narrow .tm-nlab .tm-numtxt,.tm-narrow .tm-nlab circle{display:inline}
+.tm-nlab{pointer-events:none}
+.tm-links line{stroke:#b5ada6;transition:opacity .2s}
+.tm-links line.tm-dim{opacity:.03!important}
+.tm-links line.tm-on{stroke:#fff;opacity:.9!important}
+.tm-links line.tm-future{display:none}
+.tm-net .tm-dot{cursor:grab}
+.tm-3d{display:block;width:100%;cursor:grab;touch-action:none}
+.tm-3d:focus-visible,.tm-net:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.tm-stage svg[hidden],.tm-stage canvas[hidden]{display:none}
+.tm-views{display:inline-flex;gap:4px;padding:4px;margin:0 0 14px;border:1px solid var(--border);border-radius:999px;background:var(--bg-card)}
+.tm-views button{all:unset;box-sizing:border-box;cursor:pointer;min-height:40px;min-width:72px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;color:var(--dim);font-weight:700}
+.tm-views button[aria-selected="true"]{background:var(--accent);color:#0F0D0B}
+.tm-views button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tm-future{opacity:0!important;pointer-events:none}
+.tm-hit.tm-paper{stroke:#fff}
 .tm-hit.tm-abs{fill:#e9e2d8;opacity:1}
-.tm-ping{stroke:#fff;stroke-width:3;transform:scale(1.8)}
+.tm-ping{stroke:#fff!important;stroke-width:3px!important}
 .tm-pop{animation:tmpop .7s ease-out}
 @keyframes tmpop{0%{transform:scale(2.6)}100%{transform:scale(1)}}
-.tm-intro .tm-dot{opacity:0;transform:scale(0)}
-.tm-intro.tm-in .tm-dot{opacity:1;transform:none}
-.tm-intro.tm-in .tm-abs{opacity:.55}
+.tm-intro .tm-map .tm-dot{opacity:0;transform:scale(0)}
+.tm-intro.tm-in .tm-map .tm-dot{opacity:1;transform:none}
+.tm-intro.tm-in .tm-map .tm-abs{opacity:.5}
 .tm-back{all:unset;position:absolute;top:10px;left:10px;cursor:pointer;min-height:40px;padding:0 14px;display:inline-flex;align-items:center;border-radius:999px;background:rgba(10,8,7,.88);border:1px solid var(--border);color:var(--text);font-weight:600}
 .tm-back[hidden]{display:none}
 .tm-back:hover{border-color:var(--accent)}

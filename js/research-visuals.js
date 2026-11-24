@@ -20,183 +20,372 @@ function initTopicMap(root) {
 }
 
 function buildTopicMap(root) {
-  const NS = 'http://www.w3.org/2000/svg', W = 1000, H = 640, PAD = 34, TM = window.topicMap;
-  const svg = root.querySelector('svg'), tip = root.querySelector('.tm-tip'), stage = root.querySelector('.tm-stage');
-  const legend = root.querySelector('.tm-legend'), panel = root.querySelector('.tm-panel'), back = root.querySelector('.tm-back');
-  const qIn = root.querySelector('.tm-q'), qOut = root.querySelector('.tm-qcount');
-  const yr = root.querySelector('.tm-year'), yrOut = root.querySelector('.tm-yr'), play = root.querySelector('.tm-play');
-  const C = TM.clusters.slice().sort((a, b) => b.n - a.n), byId = Object.fromEntries(C.map(c => [c.id, c]));
+  const NS = 'http://www.w3.org/2000/svg', TM = window.topicMap, IT = TM.items, N = IT.length;
+  const C = TM.clusters.slice().sort((a, b) => (a.o ?? a.id) - (b.o ?? b.id)), byId = Object.fromEntries(C.map(c => [c.id, c]));
   C.forEach((c, i) => { c.num = i + 1; });
-  const X = v => PAD + v * (W - 2 * PAD), Y = v => PAD + v * (H - 2 * PAD);
-  const el = (n, a) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); return e; };
-  const gH = el('g', {'aria-hidden': 'true'}), gA = el('g', {}), gP = el('g', {}), gL = el('g', {'aria-hidden': 'true'});
-  svg.append(gH, gA, gP, gL);
-  const state = {active: null, q: '', year: 9999, abs: true};
-  let vb = [0, 0, W, H];
+  const $ = s => root.querySelector(s);
+  const stage = $('.tm-stage'), tip = $('.tm-tip'), legend = $('.tm-legend'), panel = $('.tm-panel'), back = $('.tm-back');
+  const qIn = $('.tm-q'), qOut = $('.tm-qcount'), yr = $('.tm-year'), yrOut = $('.tm-yr'), play = $('.tm-play'), viewTabs = $('.tm-views');
+  const el = (n, a, p) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+  const isP = i => IT[i].t === 'p';
+  const state = {active: null, q: '', year: 9999, abs: true, view: 'map', focus: null};
+  IT.forEach(it => { it.lc = (it.ti + ' ' + (it.v || '')).toLowerCase(); });
+  const nbr = IT.map(() => []);
+  TM.links.forEach(([a, b]) => { nbr[a].push(b); nbr[b].push(a); });
+  const wrap = (s, n) => { const w = s.split(' '), out = ['']; w.forEach(x => { const l = out.length - 1; if ((out[l] + ' ' + x).trim().length > n && out[l]) out.push(x); else out[l] = (out[l] + ' ' + x).trim(); }); return out; };
 
-  // ---- dots (papers coloured by theme, abstracts small and grey)
-  const dots = TM.items.map(it => {
-    const paper = it.t === 'p';
-    const d = el('circle', {cx: X(it.x), cy: Y(it.yy), r: paper ? 6.5 : 2.6, class: 'tm-dot ' + (paper ? 'tm-paper' : 'tm-abs' + (it.u ? ' linked' : ''))});
-    if (paper) {
-      d.setAttribute('fill', byId[it.c].color); d.setAttribute('tabindex', '0'); d.setAttribute('role', 'link');
-      d.setAttribute('aria-label', it.ti + ' (' + it.y + '), ' + byId[it.c].name);
-    }
-    d.__it = it; d.__lc = (it.ti + ' ' + (it.v || '')).toLowerCase(); (paper ? gP : gA).appendChild(d); return d;
-  });
+  // ---- one state for every view: 0 hidden (later year / abstracts off), 1 dimmed, 2 normal, 3 search hit
+  let words = [];
+  function vis(i) {
+    const it = IT[i];
+    if (it.y > state.year || (!state.abs && it.t !== 'p')) return 0;
+    const match = !words.length || words.every(w => it.lc.includes(w));
+    if ((state.active !== null && it.c !== state.active) || !match) return 1;
+    if (state.focus !== null && i !== state.focus && !nbr[state.focus].includes(i)) return 1;
+    return words.length ? 3 : 2;
+  }
 
-  // ---- theme regions: a rounded hull around the core of each group (the farthest 15% of strays left out)
-  const hull = P => {
-    P = P.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-    const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]), lo = [], up = [];
-    for (const p of P) { while (lo.length > 1 && cr(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
-    for (const p of P.reverse()) { while (up.length > 1 && cr(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop(); up.push(p); }
-    return lo.slice(0, -1).concat(up.slice(0, -1));
-  };
-  const regions = C.map(c => {
-    const pts = TM.items.filter(i => i.c === c.id).map(i => [X(i.x), Y(i.yy)]);
-    const med = k => pts.map(p => p[k]).sort((a, b) => a - b)[Math.floor(pts.length / 2)];
-    const cx = med(0), cy = med(1);
-    const core = pts.map(p => [p, Math.hypot(p[0] - cx, p[1] - cy)]).sort((a, b) => a[1] - b[1])
-      .slice(0, Math.max(3, Math.ceil(pts.length * .85))).map(a => a[0]);
-    const h = hull(core);
-    const path = el('path', {d: 'M' + h.map(p => p.join(',')).join('L') + 'Z', fill: c.color, stroke: c.color, 'stroke-linejoin': 'round', class: 'tm-region'});
-    path.__c = c.id; gH.appendChild(path);
-    const xs = core.map(p => p[0]), ys = core.map(p => p[1]);
-    return {c, path, cx, cy, box: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)]};
-  });
+  // ---- tooltip
+  function showTip(x, y, i) {
+    const it = IT[i];
+    tip.innerHTML = '<b></b><span></span>';
+    tip.firstChild.textContent = it.ti;
+    tip.lastChild.textContent = (it.t === 'p' ? 'Paper' : 'Conference abstract') + ' · ' + (it.v ? it.v + ', ' : '') + it.y + ' · ' + byId[it.c].name;
+    const r = stage.getBoundingClientRect(), w = Math.min(330, r.width - 20);
+    let tx = x - r.left + 14; if (tx > r.width - w) tx = Math.max(6, x - r.left - w - 14);
+    let ty = y - r.top + 14; if (ty > r.height - 100) ty = Math.max(6, y - r.top - 110);
+    tip.style.left = tx + 'px'; tip.style.top = ty + 'px'; tip.style.opacity = 1;
+  }
+  const hideTip = () => { tip.style.opacity = 0; };
+  const open = i => { if (IT[i].u) window.open(IT[i].u, '_blank', 'noopener'); };
 
-  // ---- labels: theme name (wide screens) or its legend number (narrow screens), nudged apart so none overlap
-  const labels = regions.map(r => {
-    const g = el('g', {class: 'tm-lab'}), t = el('text', {'text-anchor': 'middle', class: 'tm-label'}), n = el('g', {class: 'tm-num'});
-    t.textContent = r.c.name;
-    const nc = el('circle', {r: 11, fill: r.c.color}), nt = el('text', {'text-anchor': 'middle', 'dominant-baseline': 'central'});
-    nt.textContent = r.c.num; n.append(nc, nt); g.append(t, n); g.__c = r.c.id; gL.appendChild(g);
-    return {g, t, n, nc, r};
+  /* ================= 2D MAP: points, soft theme glow, labels in the margins with leader lines ================= */
+  const MW = 1240, MH = 680, DX0 = 300, DX1 = 940, DY0 = 34, DY1 = 646;
+  const map = $('.tm-map');
+  const MX = v => DX0 + v * (DX1 - DX0), MY = v => DY0 + v * (DY1 - DY0);
+  const defs = el('defs', {}, map);
+  el('feGaussianBlur', {stdDeviation: 16}, el('filter', {id: 'tm-blur', x: '-20%', y: '-20%', width: '140%', height: '140%'}, defs));
+  el('rect', {x: DX0 - 26, y: 6, width: DX1 - DX0 + 52, height: MH - 12}, el('clipPath', {id: 'tm-clip'}, defs));
+  const mData = el('g', {'clip-path': 'url(#tm-clip)'}, map), mT = el('g', {}, mData);
+  const gGlow = el('g', {'aria-hidden': 'true', class: 'tm-glow'}, mT), gA = el('g', {}, mT), gP = el('g', {}, mT);
+  const gLead = el('g', {'aria-hidden': 'true', class: 'tm-leads'}, map), gLab = el('g', {class: 'tm-labs'}, map);
+  const glows = C.map(c => { const g = el('g', {filter: 'url(#tm-blur)', fill: c.color}, gGlow); g.__c = c.id; return g; });
+  IT.forEach((it, i) => el('circle', {cx: MX(it.x), cy: MY(it.yy), r: 13}, glows[C.indexOf(byId[it.c])]));
+  const mDots = IT.map((it, i) => {
+    const p = isP(i), d = el('circle', {cx: MX(it.x), cy: MY(it.yy), class: 'tm-dot ' + (p ? 'tm-paper' : 'tm-abs')}, p ? gP : gA);
+    if (p) { d.setAttribute('fill', byId[it.c].color); d.setAttribute('tabindex', '0'); d.setAttribute('role', 'link'); d.setAttribute('aria-label', it.ti + ' (' + it.y + '), ' + byId[it.c].name); }
+    d.__i = i; return d;
   });
-  function placeLabels(k) {
-    const narrow = svg.getBoundingClientRect().width < 640;
-    root.classList.toggle('tm-narrow', narrow);
-    const B = labels.map(L => {
-      L.t.style.fontSize = (16 * k) + 'px'; L.t.style.strokeWidth = (4 * k) + 'px';
-      L.nc.setAttribute('r', 12 * k); L.n.lastChild.style.fontSize = (13 * k) + 'px';
-      const w = narrow ? 26 * k : L.t.getComputedTextLength() + 10 * k, h = narrow ? 26 * k : 22 * k;
-      return {L, x: L.r.cx, y: L.r.box[1] - 4 * k, w, h};
+  // label anchor: the paper nearest the theme's median position
+  const anchors = C.map(c => {
+    const idx = IT.map((_, i) => i).filter(i => IT[i].c === c.id), med = k => idx.map(i => IT[i][k]).sort((a, b) => a - b)[idx.length >> 1];
+    const mx = med('x'), my = med('yy'), cand = idx.filter(isP).length ? idx.filter(isP) : idx;
+    const a = cand.reduce((b, i) => Math.hypot(IT[i].x - mx, IT[i].yy - my) < Math.hypot(IT[b].x - mx, IT[b].yy - my) ? i : b, cand[0]);
+    const g = el('g', {class: 'tm-lab', tabindex: '-1'}, gLab); g.__c = c.id;
+    const sw = el('circle', {r: 7, fill: c.color}, g), num = el('text', {class: 'tm-numtxt', 'text-anchor': 'middle', 'dominant-baseline': 'central'}, g);
+    num.textContent = c.num;
+    const lines = wrap(c.name, 22).map(s => { const t = el('text', {class: 'tm-label'}, g); t.textContent = s; return t; });
+    const lead = el('path', {}, gLead);
+    return {c, a, g, sw, num, lines, lead};
+  });
+  let zoom = {s: 1, tx: 0, ty: 0}, narrow = false;
+  const toScreen = i => [MX(IT[i].x) * zoom.s + zoom.tx, MY(IT[i].yy) * zoom.s + zoom.ty];
+  function layoutMap() {
+    const w = map.getBoundingClientRect().width; if (!w) return;
+    narrow = w < 640; root.classList.toggle('tm-narrow', narrow);
+    map.setAttribute('viewBox', narrow ? (DX0 - 26) + ' 0 ' + (DX1 - DX0 + 52) + ' ' + MH : '0 0 ' + MW + ' ' + MH);
+    const k = (narrow ? DX1 - DX0 + 52 : MW) / w;
+    mDots.forEach(d => d.setAttribute('r', (isP(d.__i) ? 7 : 4) * k / zoom.s));
+    mDots.forEach(d => d.style.strokeWidth = (isP(d.__i) ? 2 : 0) * k / zoom.s);
+    const fs = 16 * k, lh = 19 * k;
+    const sides = {L: [], R: []};
+    anchors.forEach(A => {
+      const [ax, ay] = toScreen(A.a); A.ax = ax; A.ay = ay;
+      A.lines.forEach(t => { t.style.fontSize = fs + 'px'; });
+      A.h = A.lines.length * lh;
+      if (!narrow) sides[ax < (DX0 + DX1) / 2 ? 'L' : 'R'].push(A);
     });
-    for (let it = 0; it < 60; it++) {        // push overlapping labels apart, vertically first
-      let moved = false;
-      for (let i = 0; i < B.length; i++) for (let j = i + 1; j < B.length; j++) {
-        const a = B[i], b = B[j], ox = (a.w + b.w) / 2 - Math.abs(a.x - b.x), oy = (a.h + b.h) / 2 - Math.abs(a.y - b.y);
-        if (ox > 0 && oy > 0) { const s = a.y <= b.y ? 1 : -1; a.y -= s * oy / 2; b.y += s * oy / 2; moved = true; }
-      }
-      B.forEach(b => {
-        b.x = Math.max(vb[0] + b.w / 2 + 4 * k, Math.min(vb[0] + vb[2] - b.w / 2 - 4 * k, b.x));
-        b.y = Math.max(vb[1] + b.h, Math.min(vb[1] + vb[3] - 4 * k, b.y));
+    if (narrow) {      // numbered badges on the points themselves; names are in the legend
+      anchors.forEach(A => {
+        A.g.setAttribute('transform', 'translate(' + A.ax + ',' + (A.ay - 18 * k) + ')');
+        A.sw.setAttribute('r', 12 * k); A.num.style.fontSize = (13 * k) + 'px'; A.lead.setAttribute('d', '');
+        A.lines.forEach(t => t.setAttribute('display', 'none'));
       });
-      if (!moved) break;
+      return;
     }
-    B.forEach(b => {
-      b.L.t.setAttribute('x', b.x); b.L.t.setAttribute('y', b.y);
-      b.L.n.setAttribute('transform', 'translate(' + b.x + ',' + (b.y - b.h / 2) + ')');
+    Object.entries(sides).forEach(([s, L]) => {
+      L.sort((a, b) => a.ay - b.ay);
+      L.forEach(A => { A.y = Math.max(DY0, Math.min(DY1 - A.h, A.ay - A.h / 2)); });
+      for (let it = 0; it < 40; it++) {                     // spread apart, keep inside the frame
+        for (let j = 1; j < L.length; j++) { const o = L[j - 1].y + L[j - 1].h + 14 * k - L[j].y; if (o > 0) L[j].y += o; }
+        const over = L.length ? L[L.length - 1].y + L[L.length - 1].h - (MH - 10) : 0;
+        if (over > 0) L.forEach(A => { A.y -= over; });
+        if (L.length && L[0].y < 10) L.forEach(A => { A.y += 10 - L[0].y; });
+      }
+      L.forEach(A => {
+        const right = s === 'R', tx = right ? DX1 + 44 : DX0 - 44;
+        A.lines.forEach((t, j) => { t.removeAttribute('display'); t.setAttribute('x', right ? tx + 16 * k : tx - 16 * k); t.setAttribute('y', A.y + (j + .8) * lh); t.setAttribute('text-anchor', right ? 'start' : 'end'); });
+        A.sw.setAttribute('cx', tx); A.sw.setAttribute('cy', A.y + .5 * lh); A.sw.setAttribute('r', 6 * k);
+        A.g.removeAttribute('transform'); A.num.style.fontSize = '0';
+        const ly = A.y + .5 * lh, inside = A.ax > DX0 - 20 && A.ax < DX1 + 20 && A.ay > 0 && A.ay < MH;
+        A.lead.setAttribute('d', inside ? 'M' + (right ? tx - 9 * k : tx + 9 * k) + ',' + ly + 'L' + (right ? Math.max(A.ax + 12 * k, DX1 + 12) : Math.min(A.ax - 12 * k, DX0 - 12)) + ',' + ly + 'L' + A.ax + ',' + A.ay : '');
+        A.lead.style.strokeWidth = (1.2 * k) + 'px';
+      });
     });
   }
-  // sizes stay constant on screen whatever the width or zoom: papers 7 px, abstracts 3 px, labels 16 px
-  function fit() {
-    const w = svg.getBoundingClientRect().width;
-    if (!w) return;
-    const k = vb[2] / w;
-    dots.forEach(d => d.setAttribute('r', (d.__it.t === 'p' ? 7 : 3) * k));
-    regions.forEach(r => r.path.setAttribute('stroke-width', 30 * k));
-    placeLabels(k);
+  function paintMap() {
+    mDots.forEach(d => { const v = vis(d.__i); d.classList.toggle('tm-future', v === 0); d.classList.toggle('tm-dim', v === 1); d.classList.toggle('tm-hit', v === 3); });
+    const dimT = id => state.active !== null && id !== state.active;
+    glows.forEach(g => g.classList.toggle('tm-dim', dimT(g.__c) || !!words.length));
+    anchors.forEach(A => { A.g.classList.toggle('tm-dim', dimT(A.c.id)); A.lead.classList.toggle('tm-dim', dimT(A.c.id)); });
   }
-
-  // ---- filtering: theme, search words and year all combine
-  function apply() {
-    const words = state.q.toLowerCase().split(/\s+/).filter(Boolean);
-    let hits = 0;
-    dots.forEach(d => {
-      const it = d.__it, future = it.y > state.year;
-      const match = !words.length || words.every(w => d.__lc.includes(w));
-      if (words.length && match && !future && (it.t === 'p' || state.abs)) hits++;
-      d.classList.toggle('tm-future', future);
-      d.classList.toggle('tm-dim', (state.active !== null && it.c !== state.active) || !match);
-      d.classList.toggle('tm-hit', !!words.length && match);
-    });
-    const dimTheme = id => state.active !== null && id !== state.active;
-    regions.forEach(r => r.path.classList.toggle('tm-dim', dimTheme(r.c.id) || !!words.length));
-    labels.forEach(L => L.g.classList.toggle('tm-dim', dimTheme(L.r.c.id)));
-    legend.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.id === state.active)));
-    qOut.textContent = words.length ? hits + (hits === 1 ? ' match' : ' matches') : '';
-  }
-
-  // ---- zoom to a theme (animated viewBox) and list its papers below the map
   let zAnim = 0;
-  function zoomTo(target) {
-    const from = vb.slice(), t0 = performance.now(), D = REDUCED.matches ? 0 : 520;
+  function zoomMap(target) {
+    const from = {...zoom}, t0 = performance.now(), D = REDUCED.matches ? 0 : 560;
     cancelAnimationFrame(zAnim);
     const step = t => {
-      const k = D ? Math.min(1, (t - t0) / D) : 1, e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-      vb = from.map((v, i) => v + (target[i] - v) * e);
-      svg.setAttribute('viewBox', vb.join(' ')); fit();
-      if (k < 1) zAnim = requestAnimationFrame(step);
+      const q = D ? Math.min(1, (t - t0) / D) : 1, e = q < .5 ? 4 * q * q * q : 1 - Math.pow(-2 * q + 2, 3) / 2;
+      zoom = {s: from.s + (target.s - from.s) * e, tx: from.tx + (target.tx - from.tx) * e, ty: from.ty + (target.ty - from.ty) * e};
+      mT.setAttribute('transform', 'translate(' + zoom.tx + ',' + zoom.ty + ') scale(' + zoom.s + ')'); layoutMap();
+      if (q < 1) zAnim = requestAnimationFrame(step);
     };
     zAnim = requestAnimationFrame(step);
   }
+  function zoomToTheme(id) {
+    if (id === null) { zoomMap({s: 1, tx: 0, ty: 0}); return; }
+    const pts = IT.filter(it => it.c === id).map(it => [MX(it.x), MY(it.yy)]).sort((a, b) => a[0] - b[0]);
+    const cut = a => a.slice(Math.floor(a.length * .05), Math.ceil(a.length * .95));   // ignore the farthest strays
+    const xs = cut(pts.map(p => p[0]).sort((a, b) => a - b)), ys = cut(pts.map(p => p[1]).sort((a, b) => a - b));
+    const bw = xs[xs.length - 1] - xs[0] + 80, bh = ys[ys.length - 1] - ys[0] + 80;
+    const s = Math.max(1, Math.min(4, Math.min((DX1 - DX0) / bw, (DY1 - DY0) / bh)));
+    const cx = (xs[0] + xs[xs.length - 1]) / 2, cy = (ys[0] + ys[ys.length - 1]) / 2;
+    zoomMap({s, tx: (DX0 + DX1) / 2 - cx * s, ty: (DY0 + DY1) / 2 - cy * s});
+  }
+  map.addEventListener('mouseover', e => { const i = e.target.__i; if (i !== undefined) { const b = e.target.getBoundingClientRect(); showTip(b.left + b.width / 2, b.top + b.height / 2, i); } });
+  map.addEventListener('mouseout', e => { if (e.target.__i !== undefined) hideTip(); });
+  map.addEventListener('focusin', e => { const i = e.target.__i; if (i !== undefined) { const b = e.target.getBoundingClientRect(); showTip(b.left, b.top, i); } });
+  map.addEventListener('focusout', hideTip);
+  map.addEventListener('click', e => { if (e.target.__i !== undefined) { open(e.target.__i); return; } const g = e.target.closest('.tm-lab'); if (g) select(g.__c); });
+  map.addEventListener('keydown', e => { if (e.target.__i !== undefined && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); open(e.target.__i); } });
+
+  /* ================= NETWORK: each item linked to its most similar items; a live force layout you can drag ================= */
+  const net = $('.tm-net'), NW = 1000, NH = 680;
+  const nL = el('g', {class: 'tm-links'}, net), nA = el('g', {}, net), nP = el('g', {}, net), nLab = el('g', {'aria-hidden': 'true'}, net);
+  const P = IT.map(it => ({x: 60 + it.x * (NW - 120), y: 40 + it.yy * (NH - 80), vx: 0, vy: 0, hx: 60 + it.x * (NW - 120), hy: 40 + it.yy * (NH - 80), fixed: false}));
+  const nLines = TM.links.map(([a, b, w]) => { const l = el('line', {}, nL); l.style.opacity = (.12 + (w - .25) * .6).toFixed(2); l.__a = a; l.__b = b; return l; });
+  const nDots = IT.map((it, i) => {
+    const p = isP(i), d = el('circle', {class: 'tm-dot ' + (p ? 'tm-paper' : 'tm-abs')}, p ? nP : nA);
+    if (p) d.setAttribute('fill', byId[it.c].color);
+    d.__i = i; return d;
+  });
+  const nLabels = C.map(c => { const g = el('g', {class: 'tm-nlab'}, nLab); const t = el('text', {'text-anchor': 'middle', class: 'tm-label'}, g); t.textContent = c.name; const b = el('circle', {r: 12, fill: c.color}, g), n = el('text', {'text-anchor': 'middle', 'dominant-baseline': 'central', class: 'tm-numtxt'}, g); n.textContent = c.num; g.__c = c.id; return {g, t, b, n, c}; });
+  let alpha = 1, netRun = 0, netK = 1;
+  function tick() {
+    const a = alpha;
+    for (let i = 0; i < N; i++) {                      // repulsion (all pairs; ~300 nodes)
+      const pi = P[i];
+      for (let j = i + 1; j < N; j++) {
+        const pj = P[j]; let dx = pi.x - pj.x, dy = pi.y - pj.y, d2 = dx * dx + dy * dy;
+        if (d2 > 3600) continue; if (d2 < 1) { dx = Math.random() - .5; dy = Math.random() - .5; d2 = 1; }
+        const f = 16 * a / d2; pi.vx += dx * f; pi.vy += dy * f; pj.vx -= dx * f; pj.vy -= dy * f;
+      }
+    }
+    TM.links.forEach(([i, j, w]) => {                  // springs along similarity links
+      const pi = P[i], pj = P[j], dx = pj.x - pi.x, dy = pj.y - pi.y, d = Math.hypot(dx, dy) || 1, f = (d - (16 + 34 * (1 - w))) / d * .05 * a;
+      pi.vx += dx * f; pi.vy += dy * f; pj.vx -= dx * f; pj.vy -= dy * f;
+    });
+    P.forEach(p => {
+      p.vx += (p.hx - p.x) * .03 * a; p.vy += (p.hy - p.y) * .03 * a;   // stay near the map position
+      if (p.fixed) { p.vx = p.vy = 0; return; }
+      p.vx *= .6; p.vy *= .6; p.x = Math.max(12, Math.min(NW - 12, p.x + p.vx)); p.y = Math.max(12, Math.min(NH - 12, p.y + p.vy));
+    });
+    alpha *= .985;
+  }
+  function drawNet() {
+    nLines.forEach(l => { const a = P[l.__a], b = P[l.__b]; l.setAttribute('x1', a.x); l.setAttribute('y1', a.y); l.setAttribute('x2', b.x); l.setAttribute('y2', b.y); });
+    nDots.forEach((d, i) => { d.setAttribute('cx', P[i].x); d.setAttribute('cy', P[i].y); });
+    nLabels.forEach(L => {
+      const idx = IT.map((_, i) => i).filter(i => IT[i].c === L.c.id), xs = idx.map(i => P[i].x).sort((a, b) => a - b), ys = idx.map(i => P[i].y).sort((a, b) => a - b);
+      const x = xs[xs.length >> 1], y = ys[Math.floor(ys.length * .12)] - 10 * netK;
+      const hw = narrow ? 14 * netK : L.t.getComputedTextLength() / 2 + 6 * netK;
+      L.g.setAttribute('transform', 'translate(' + Math.max(hw, Math.min(NW - hw, x)) + ',' + Math.max(20 * netK, y) + ')');
+    });
+  }
+  function sizeNet() {
+    const w = net.getBoundingClientRect().width; if (!w) return;
+    netK = NW / w; narrow = w < 640; root.classList.toggle('tm-narrow', narrow);
+    nDots.forEach(d => { d.setAttribute('r', (isP(d.__i) ? 6.5 : 3.5) * netK); d.style.strokeWidth = (isP(d.__i) ? 2 : 0) * netK; });
+    nLines.forEach(l => { l.style.strokeWidth = netK + 'px'; });
+    nLabels.forEach(L => { L.t.style.fontSize = (15 * netK) + 'px'; L.t.style.strokeWidth = (4 * netK) + 'px'; L.b.setAttribute('r', 11 * netK); L.n.style.fontSize = (12 * netK) + 'px'; });
+  }
+  function paintNet() {
+    const v = IT.map((_, i) => vis(i));
+    nDots.forEach((d, i) => { d.classList.toggle('tm-future', v[i] === 0); d.classList.toggle('tm-dim', v[i] === 1); d.classList.toggle('tm-hit', v[i] === 3); });
+    nLines.forEach(l => {
+      const va = v[l.__a], vb = v[l.__b];
+      l.classList.toggle('tm-future', !va || !vb);
+      l.classList.toggle('tm-dim', va === 1 || vb === 1);
+      l.classList.toggle('tm-on', state.focus !== null && (l.__a === state.focus || l.__b === state.focus));
+    });
+    nLabels.forEach(L => L.g.classList.toggle('tm-dim', state.active !== null && L.c.id !== state.active));
+  }
+  function runNet() {
+    if (netRun || state.view !== 'net') return;
+    const loop = () => {
+      if (state.view !== 'net' || alpha < .01) { netRun = 0; drawNet(); return; }
+      tick(); tick(); drawNet(); netRun = requestAnimationFrame(loop);
+    };
+    if (REDUCED.matches) { for (let t = 0; t < 300 && alpha > .01; t++) tick(); drawNet(); return; }
+    netRun = requestAnimationFrame(loop);
+  }
+  let ndrag = null;
+  const netPt = e => { const r = net.getBoundingClientRect(); return [(e.clientX - r.left) * NW / r.width, (e.clientY - r.top) * NH / r.height]; };
+  net.addEventListener('pointerdown', e => {
+    const i = e.target.__i; if (i === undefined) return;
+    ndrag = {i, moved: false}; P[i].fixed = true; net.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  net.addEventListener('pointermove', e => {
+    if (ndrag) { const [x, y] = netPt(e); P[ndrag.i].x = x; P[ndrag.i].y = y; ndrag.moved = true; alpha = Math.max(alpha, .25); runNet(); hideTip(); return; }
+    const i = e.target.__i;
+    if (i !== undefined) { if (state.focus !== i) { state.focus = i; paintNet(); } showTip(e.clientX, e.clientY, i); }
+    else if (state.focus !== null) { state.focus = null; paintNet(); hideTip(); }
+  });
+  net.addEventListener('pointerup', () => { if (!ndrag) return; const d = ndrag; ndrag = null; P[d.i].fixed = false; if (!d.moved) open(d.i); });
+  net.addEventListener('pointerleave', () => { if (!ndrag && state.focus !== null) { state.focus = null; paintNet(); hideTip(); } });
+
+  /* ================= 3D: the same items laid out in three dimensions; drag to turn, depth shown by size and fade ================= */
+  const cv = $('.tm-3d'), ctx = cv.getContext('2d');
+  let yaw = .6, pitch = .25, spin3 = !REDUCED.matches, run3 = 0, last3 = 0, proj = [], hov3 = null, cw = 0, ch = 0;
+  const colorOf = i => isP(i) ? byId[IT[i].c].color : '#8a837c';
+  // scale the 3D cloud so 95% of items fall inside the unit sphere
+  const R95 = IT.map(it => Math.hypot(...it.p3)).sort((a, b) => a - b)[Math.floor(N * .95)] || 1;
+  const P3 = IT.map(it => it.p3.map(v => v / R95));
+  function size3() {
+    const w = stage.clientWidth; if (!w) return;
+    narrow = w < 640; root.classList.toggle('tm-narrow', narrow);
+    const dpr = Math.min(2, window.devicePixelRatio || 1); cw = w; ch = Math.round(Math.max(340, w * MH / MW));
+    cv.width = cw * dpr; cv.height = ch * dpr; cv.style.height = ch + 'px'; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function draw3() {
+    if (!cw) size3();
+    ctx.clearRect(0, 0, cw, ch);
+    const cy_ = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch), D = 4, F = Math.min(cw, ch) * .44;
+    proj = IT.map((it, i) => {
+      let [x, y, z] = P3[i]; [x, z] = [cy_ * x + sy * z, -sy * x + cy_ * z]; [y, z] = [cp * y - sp * z, sp * y + cp * z];
+      const s = D / (D - z); return {i, x: cw / 2 + x * F * s, y: ch / 2 - y * F * s, s, z};
+    }).sort((a, b) => a.z - b.z);
+    // faint reference rings (equator and two meridians) as a depth cue
+    ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(181,173,166,.16)';
+    [[1, 0, 0, 0, 0, 1], [1, 0, 0, 0, 1, 0], [0, 1, 0, 0, 0, 1]].forEach(([ax, ay, az, bx, by, bz]) => {
+      ctx.beginPath();
+      for (let k = 0; k <= 72; k++) {
+        const t = k / 72 * 6.2832, c = Math.cos(t) * 1.05, s_ = Math.sin(t) * 1.05;
+        let x = ax * c + bx * s_, y = ay * c + by * s_, z = az * c + bz * s_;
+        [x, z] = [cy_ * x + sy * z, -sy * x + cy_ * z]; [y, z] = [cp * y - sp * z, sp * y + cp * z];
+        const q = D / (D - z), X = cw / 2 + x * F * q, Y = ch / 2 - y * F * q;
+        k ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y);
+      }
+      ctx.stroke();
+    });
+    const zs = proj.map(p => p.z), z0 = Math.min(...zs), z1 = Math.max(...zs);
+    proj.forEach(p => {
+      const v = vis(p.i); if (!v) return;
+      const depth = (p.z - z0) / (z1 - z0 || 1), fade = .25 + .75 * depth;      // nearer = larger and brighter
+      const r = (isP(p.i) ? 6.5 : 3.2) * (.7 + .5 * depth) * (p.i === hov3 ? 1.5 : 1);
+      ctx.globalAlpha = (v === 1 ? .1 : isP(p.i) ? fade : fade * .6);
+      ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, 6.2832);
+      ctx.fillStyle = v === 3 && !isP(p.i) ? '#e9e2d8' : colorOf(p.i); ctx.fill();
+      if (isP(p.i)) { ctx.lineWidth = v === 3 || p.i === hov3 ? 2 : 1.5; ctx.strokeStyle = v === 3 || p.i === hov3 ? '#fff' : '#1E1A17'; ctx.stroke(); }
+      p.r = r;
+    });
+    ctx.globalAlpha = 1;
+    // theme labels at each theme's 3D centre
+    ctx.font = '700 ' + (narrow ? 13 : 15) + 'px "Source Sans 3", sans-serif'; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
+    const boxes = [];
+    C.map(c => {
+      const pts = proj.filter(p => IT[p.i].c === c.id);
+      const med = k => pts.map(p => p[k]).sort((a, b) => a - b)[pts.length >> 1];
+      return pts.length ? {c, mx: med('x'), my: med('y'), z: med('z')} : null;
+    }).filter(Boolean).sort((a, b) => b.z - a.z).forEach(({c, mx, my}) => {   // nearest themes labelled first
+      if (state.active !== null && c.id !== state.active) return;
+      const label0 = narrow ? String(c.num) : c.name, w = narrow ? 24 : ctx.measureText(label0).width + 8, h = narrow ? 24 : 20;
+      const b = [mx - w / 2, my - h, mx + w / 2, my + 4];
+      if (boxes.some(o => b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1])) return;   // skip labels that would overlap
+      boxes.push(b);
+      const label = narrow ? String(c.num) : c.name;
+      if (narrow) { ctx.fillStyle = c.color; ctx.beginPath(); ctx.arc(mx, my, 11, 0, 6.2832); ctx.fill(); ctx.fillStyle = '#0F0D0B'; ctx.textBaseline = 'middle'; ctx.fillText(label, mx, my + 1); return; }
+      ctx.textBaseline = 'alphabetic'; ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(30,26,23,.92)'; ctx.strokeText(label, mx, my); ctx.fillStyle = '#F5F0EB'; ctx.fillText(label, mx, my);
+    });
+  }
+  function loop3(t) {
+    if (state.view !== '3d' || !onScreen) { run3 = 0; return; }
+    const dt = last3 ? Math.min(.05, (t - last3) / 1000) : 0; last3 = t;
+    if (spin3) yaw += dt * .25;
+    draw3(); run3 = requestAnimationFrame(loop3);
+  }
+  const wake3 = () => { if (!run3 && state.view === '3d') { last3 = 0; run3 = requestAnimationFrame(loop3); } };
+  let d3 = null;
+  cv.addEventListener('pointerdown', e => { d3 = {x: e.clientX, y: e.clientY, yaw, pitch, moved: false}; spin3 = false; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove', e => {
+    if (d3) { const dx = e.clientX - d3.x, dy = e.clientY - d3.y; if (Math.abs(dx) + Math.abs(dy) > 3) d3.moved = true; yaw = d3.yaw + dx * .008; pitch = Math.max(-1.3, Math.min(1.3, d3.pitch + dy * .008)); hideTip(); if (!run3) draw3(); return; }
+    const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    let best = null, bd = 14;
+    for (let k = proj.length - 1; k >= 0; k--) { const p = proj[k]; if (!vis(p.i) || !p.r) continue; const d = Math.hypot(p.x - x, p.y - y) - p.r; if (d < bd) { bd = d; best = p.i; if (d < 0) break; } }
+    hov3 = best; cv.style.cursor = best !== null ? 'pointer' : 'grab';
+    if (best !== null) showTip(e.clientX, e.clientY, best); else hideTip();
+    if (!run3) draw3();
+  });
+  cv.addEventListener('pointerup', () => { if (d3 && !d3.moved && hov3 !== null) open(hov3); d3 = null; setTimeout(() => { if (!d3 && !REDUCED.matches) { spin3 = true; wake3(); } }, 4000); });
+  cv.addEventListener('pointerleave', () => { hov3 = null; hideTip(); });
+  cv.addEventListener('keydown', e => {
+    const k = {ArrowLeft: [-.15, 0], ArrowRight: [.15, 0], ArrowUp: [0, -.12], ArrowDown: [0, .12]}[e.key]; if (!k) return;
+    e.preventDefault(); spin3 = false; yaw += k[0]; pitch = Math.max(-1.3, Math.min(1.3, pitch + k[1])); draw3();
+  });
+  let onScreen = false;
+  new IntersectionObserver(es => { onScreen = es[0].isIntersecting; if (onScreen) wake3(); }).observe(stage);
+
+  /* ================= shared controls ================= */
+  function paint() { paintMap(); paintNet(); if (state.view === '3d' && !run3) draw3(); }
+  function setView(v) {
+    state.view = v; state.focus = null; hideTip();
+    [...viewTabs.children].forEach(b => { const on = b.dataset.v === v; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
+    map.toggleAttribute('hidden', v !== 'map'); net.toggleAttribute('hidden', v !== 'net'); cv.hidden = v !== '3d';   // SVG elements have no .hidden property
+    back.hidden = !(v === 'map' && state.active !== null);
+    root.dataset.view = v;
+    if (v === 'map') layoutMap();
+    if (v === 'net') { sizeNet(); drawNet(); runNet(); }
+    if (v === '3d') { size3(); draw3(); wake3(); }
+    paint();
+  }
+  viewTabs.addEventListener('click', e => { const b = e.target.closest('button'); if (b) setView(b.dataset.v); });
+  viewTabs.addEventListener('keydown', e => {
+    const bs = [...viewTabs.children], i = bs.indexOf(document.activeElement); if (i < 0 || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+    e.preventDefault(); const n = (i + (e.key === 'ArrowRight' ? 1 : bs.length - 1)) % bs.length; bs[n].focus(); setView(bs[n].dataset.v);
+  });
+
   function select(id) {
     state.active = state.active === id ? null : id;
-    apply();
-    back.hidden = state.active === null;
-    root.classList.toggle('tm-zoomed', state.active !== null);
-    if (state.active === null) { zoomTo([0, 0, W, H]); panel.hidden = true; return; }
-    const r = regions.find(r => r.c.id === id), [x0, y0, x1, y1] = r.box, m = 60;
-    let w = Math.max(x1 - x0 + 2 * m, 300), h = Math.max(y1 - y0 + 2 * m, 300 * H / W);
-    if (w / h > W / H) h = w * H / W; else w = h * W / H;
-    const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
-    zoomTo([Math.max(0, Math.min(W - w, cx - w / 2)), Math.max(0, Math.min(H - h, cy - h / 2)), Math.min(w, W), Math.min(h, H)]);
-    const c = byId[id], items = TM.items.filter(i => i.c === id), papers = items.filter(i => i.t === 'p').sort((a, b) => b.y - a.y);
-    const yrs = items.map(i => i.y);
+    legend.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.id === state.active)));
+    back.hidden = !(state.view === 'map' && state.active !== null);
+    zoomToTheme(state.active);
+    paint();
+    if (state.active === null) { panel.hidden = true; return; }
+    const c = byId[id], items = IT.filter(i => i.c === id), papers = items.filter(i => i.t === 'p').sort((a, b) => b.y - a.y), yrs = items.map(i => i.y);
     panel.innerHTML = '<h3></h3><p class="tm-psub"></p><ol></ol>';
-    panel.querySelector('h3').textContent = c.num + '. ' + c.name;
-    panel.querySelector('.tm-psub').textContent = papers.length + ' paper' + (papers.length === 1 ? '' : 's') + ' and ' +
-      (items.length - papers.length) + ' conference abstracts, ' + Math.min(...yrs) + '–' + Math.max(...yrs) + (papers.length ? ':' : '.');
+    panel.querySelector('h3').textContent = c.name;
+    panel.querySelector('.tm-psub').textContent = papers.length + ' paper' + (papers.length === 1 ? '' : 's') + ' and ' + (items.length - papers.length) + ' conference abstracts, ' + Math.min(...yrs) + '–' + Math.max(...yrs) + (papers.length ? ':' : '.');
     const ol = panel.querySelector('ol');
     papers.forEach(p => {
-      const li = document.createElement('li'), a = document.createElement('a');
-      a.href = p.u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = p.ti;
-      const s = document.createElement('span'); s.textContent = p.y + (p.v ? ' · ' + p.v.split(',')[0] : '');
+      const li = document.createElement('li'), a = document.createElement('a'), s = document.createElement('span');
+      a.href = p.u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = p.ti; s.textContent = p.y + (p.v ? ' · ' + p.v.split(',')[0] : '');
       li.append(a, s); ol.appendChild(li);
-      const d = dots.find(d => d.__it === p);
-      li.addEventListener('mouseenter', () => { d.classList.add('tm-ping'); show(d, p); });
-      li.addEventListener('mouseleave', () => { d.classList.remove('tm-ping'); hide(); });
+      const i = IT.indexOf(p);
+      li.addEventListener('mouseenter', () => { mDots[i].classList.add('tm-ping'); nDots[i].classList.add('tm-ping'); });
+      li.addEventListener('mouseleave', () => { mDots[i].classList.remove('tm-ping'); nDots[i].classList.remove('tm-ping'); });
     });
     panel.hidden = false;
   }
   back.addEventListener('click', () => select(state.active));
-
-  // ---- tooltips and opening items
-  function show(target, it) {
-    tip.innerHTML = '<b></b><span></span>';
-    tip.firstChild.textContent = it.ti;
-    tip.lastChild.textContent = (it.t === 'p' ? 'Paper' : 'Conference abstract') + ' · ' + (it.v ? it.v + ', ' : '') + it.y + ' · ' + byId[it.c].name;
-    const r = stage.getBoundingClientRect(), b = target.getBoundingClientRect(), w = Math.min(330, r.width - 20);
-    let x = b.left - r.left + 14; if (x > r.width - w) x = Math.max(6, b.left - r.left - w);
-    let y = b.top - r.top + 14; if (y > r.height - 90) y = Math.max(6, b.top - r.top - 100);
-    tip.style.left = x + 'px'; tip.style.top = y + 'px'; tip.style.opacity = 1;
-  }
-  const hide = () => { tip.style.opacity = 0; };
-  svg.addEventListener('mouseover', e => { if (e.target.__it) show(e.target, e.target.__it); });
-  svg.addEventListener('mouseout', e => { if (e.target.__it) hide(); });
-  svg.addEventListener('focusin', e => { if (e.target.__it) show(e.target, e.target.__it); });
-  svg.addEventListener('focusout', hide);
-  const open = it => { if (it.u) window.open(it.u, '_blank', 'noopener'); };
-  svg.addEventListener('click', e => {
-    if (e.target.__it) { open(e.target.__it); return; }
-    const reg = e.target.closest('.tm-region, .tm-lab'); if (reg) select(reg.__c ?? reg.parentNode.__c);
-  });
-  gL.addEventListener('click', e => { const g = e.target.closest('.tm-lab'); if (g) select(g.__c); });
-  svg.addEventListener('keydown', e => { if (e.target.__it && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); open(e.target.__it); } });
-
-  // ---- legend (numbered to match the map on narrow screens)
   C.forEach(c => {
     const li = document.createElement('li'), b = document.createElement('button');
     b.type = 'button'; b.dataset.id = c.id; b.setAttribute('aria-pressed', 'false');
@@ -204,50 +393,45 @@ function buildTopicMap(root) {
     const i = b.querySelector('i'); i.style.background = c.color; i.textContent = c.num;
     b.querySelector('span').textContent = c.name;
     b.querySelector('small').textContent = c.papers + ' · ' + (c.n - c.papers);
-    b.setAttribute('aria-label', c.num + '. ' + c.name + ': ' + c.papers + ' papers, ' + (c.n - c.papers) + ' conference abstracts. Zoom to this theme.');
+    b.setAttribute('aria-label', c.name + ': ' + c.papers + ' papers, ' + (c.n - c.papers) + ' conference abstracts. Select to highlight this theme and list its papers.');
     b.addEventListener('click', () => select(c.id));
-    b.addEventListener('mouseenter', () => { if (state.active === null) labels.forEach(L => L.g.classList.toggle('tm-soft', L.r.c.id !== c.id)), regions.forEach(r => r.path.classList.toggle('tm-glow', r.c.id === c.id)); });
-    b.addEventListener('mouseleave', () => { labels.forEach(L => L.g.classList.remove('tm-soft')); regions.forEach(r => r.path.classList.remove('tm-glow')); });
     li.appendChild(b); legend.appendChild(li);
   });
-
-  // ---- search
-  qIn.addEventListener('input', () => { state.q = qIn.value; apply(); });
-
-  // ---- timeline: drag the slider or press Play to watch the work build up year by year
-  const years = TM.items.map(i => i.y), y0 = Math.min(...years), y1 = Math.max(...years);
+  qIn.addEventListener('input', () => {
+    words = qIn.value.toLowerCase().split(/\s+/).filter(Boolean);
+    const hits = IT.filter((it, i) => words.length && vis(i) === 3).length;
+    qOut.textContent = words.length ? hits + (hits === 1 ? ' match' : ' matches') : '';
+    paint();
+  });
+  const years = IT.map(i => i.y), y0 = Math.min(...years), y1 = Math.max(...years);
   yr.min = y0; yr.max = y1; yr.value = y1;
-  const setYear = (v, pop) => {
-    const prev = state.year; state.year = +v; yr.value = v;
-    yrOut.textContent = (+v >= y1 ? y0 + '–' + y1 : y0 + '–' + v);
-    if (pop) dots.forEach(d => { if (d.__it.y > prev && d.__it.y <= state.year) { d.classList.remove('tm-pop'); void d.getBBox(); d.classList.add('tm-pop'); } });
-    apply();
-  };
+  function setYear(v, pop) {
+    const prev = state.year; state.year = +v; yr.value = v; yrOut.textContent = y0 + '–' + Math.min(+v, y1);
+    if (pop) [mDots, nDots].forEach(ds => ds.forEach(d => { const y = IT[d.__i].y; if (y > prev && y <= state.year) { d.classList.remove('tm-pop'); void d.getBBox(); d.classList.add('tm-pop'); } }));
+    paint();
+  }
   yr.addEventListener('input', () => { stopPlay(); setYear(yr.value, true); });
   let timer = 0;
   function stopPlay() { clearInterval(timer); timer = 0; play.textContent = 'Play'; play.setAttribute('aria-pressed', 'false'); }
   play.addEventListener('click', () => {
     if (timer) { stopPlay(); return; }
     play.textContent = 'Pause'; play.setAttribute('aria-pressed', 'true');
-    let y = state.year >= y1 ? y0 - 1 : state.year;
-    setYear(y, false);
+    let y = state.year >= y1 ? y0 - 1 : state.year; setYear(y, false);
     timer = setInterval(() => { y++; setYear(y, !REDUCED.matches); if (y >= y1) stopPlay(); }, 520);
   });
-
-  root.querySelector('.tm-toggle').addEventListener('change', e => { state.abs = e.target.checked; gA.style.display = e.target.checked ? '' : 'none'; apply(); });
-  const nP = TM.items.filter(i => i.t === 'p').length;
-  root.querySelector('.tm-counts').textContent = nP + ' papers and ' + (TM.items.length - nP) + ' conference abstracts';
-  fit(); setYear(y1, false);
-  window.addEventListener('resize', fit);
-
-  // first view: the dots gather into their themes
+  $('.tm-toggle').addEventListener('change', e => { state.abs = e.target.checked; paint(); });
+  const nPap = IT.filter(i => i.t === 'p').length;
+  $('.tm-counts').textContent = nPap + ' papers and ' + (N - nPap) + ' conference abstracts';
+  window.addEventListener('resize', () => { if (state.view === 'map') layoutMap(); if (state.view === 'net') sizeNet(); if (state.view === '3d') { size3(); draw3(); } });
+  setView('map'); setYear(y1, false);
+  // first view: the points fade in from left to right
   if (!REDUCED.matches) {
     root.classList.add('tm-intro');
-    dots.forEach(d => { d.style.transitionDelay = Math.round(d.__it.x * 700 + Math.random() * 250) + 'ms'; });
+    mDots.forEach(d => { d.style.transitionDelay = Math.round(IT[d.__i].x * 700 + Math.random() * 250) + 'ms'; });
     new IntersectionObserver((es, o) => {
       if (!es[0].isIntersecting) return;
       o.disconnect(); requestAnimationFrame(() => root.classList.add('tm-in'));
-      setTimeout(() => { dots.forEach(d => { d.style.transitionDelay = ''; }); root.classList.remove('tm-intro', 'tm-in'); }, 1800);
+      setTimeout(() => { mDots.forEach(d => { d.style.transitionDelay = ''; }); root.classList.remove('tm-intro', 'tm-in'); }, 1800);
     }, {threshold: .25}).observe(stage);
   }
 }
