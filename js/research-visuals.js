@@ -59,18 +59,15 @@ function buildTopicMap(root) {
   const hideTip = () => { tip.style.opacity = 0; };
   const open = i => { if (IT[i].u) window.open(IT[i].u, '_blank', 'noopener'); };
 
-  /* ================= 2D MAP: points, soft theme glow, labels in the margins with leader lines ================= */
+  /* ================= 2D MAP: points, labels in the margins with leader lines ================= */
   const MW = 1240, MH = 680, DX0 = 300, DX1 = 940, DY0 = 34, DY1 = 646;
   const map = $('.tm-map');
   const MX = v => DX0 + v * (DX1 - DX0), MY = v => DY0 + v * (DY1 - DY0);
   const defs = el('defs', {}, map);
-  el('feGaussianBlur', {stdDeviation: 16}, el('filter', {id: 'tm-blur', x: '-20%', y: '-20%', width: '140%', height: '140%'}, defs));
   el('rect', {x: DX0 - 26, y: 6, width: DX1 - DX0 + 52, height: MH - 12}, el('clipPath', {id: 'tm-clip'}, defs));
   const mData = el('g', {'clip-path': 'url(#tm-clip)'}, map), mT = el('g', {}, mData);
-  const gGlow = el('g', {'aria-hidden': 'true', class: 'tm-glow'}, mT), gA = el('g', {}, mT), gP = el('g', {}, mT);
+  const gA = el('g', {}, mT), gP = el('g', {}, mT);
   const gLead = el('g', {'aria-hidden': 'true', class: 'tm-leads'}, map), gLab = el('g', {class: 'tm-labs'}, map);
-  const glows = C.map(c => { const g = el('g', {filter: 'url(#tm-blur)', fill: c.color}, gGlow); g.__c = c.id; return g; });
-  IT.forEach((it, i) => el('circle', {cx: MX(it.x), cy: MY(it.yy), r: 13}, glows[C.indexOf(byId[it.c])]));
   const mDots = IT.map((it, i) => {
     const p = isP(i), d = el('circle', {cx: MX(it.x), cy: MY(it.yy), class: 'tm-dot ' + (p ? 'tm-paper' : 'tm-abs')}, p ? gP : gA);
     if (p) { d.setAttribute('fill', byId[it.c].color); d.setAttribute('tabindex', '0'); d.setAttribute('role', 'link'); d.setAttribute('aria-label', it.ti + ' (' + it.y + '), ' + byId[it.c].name); }
@@ -136,8 +133,10 @@ function buildTopicMap(root) {
   function paintMap() {
     mDots.forEach(d => { const v = vis(d.__i); d.classList.toggle('tm-future', v === 0); d.classList.toggle('tm-dim', v === 1); d.classList.toggle('tm-hit', v === 3); });
     const dimT = id => state.active !== null && id !== state.active;
-    glows.forEach(g => g.classList.toggle('tm-dim', dimT(g.__c) || !!words.length));
-    anchors.forEach(A => { A.g.classList.toggle('tm-dim', dimT(A.c.id)); A.lead.classList.toggle('tm-dim', dimT(A.c.id)); });
+    anchors.forEach(A => {          // a leader line points at its theme's anchor paper; fade it while that paper is hidden
+      const off = dimT(A.c.id) || IT[A.a].y > state.year;
+      A.g.classList.toggle('tm-dim', off); A.lead.classList.toggle('tm-dim', off);
+    });
   }
   let zAnim = 0;
   function zoomMap(target) {

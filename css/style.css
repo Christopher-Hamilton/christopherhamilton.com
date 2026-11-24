@@ -633,8 +633,6 @@ html{scroll-behavior:auto}
 .tm-legend i{flex:none;width:22px;height:22px;border-radius:50%}
 .tm-legend small{color:var(--muted);margin-left:auto;font-family:var(--mono);font-size:.8125rem;white-space:nowrap}
 .tm-note{color:var(--muted);font-size:.875rem;margin-top:14px;max-width:66ch;line-height:1.5}
-.tm-glow{opacity:.2;transition:opacity .25s}
-.tm-glow .tm-dim{opacity:.15}
 .tm-leads path{fill:none;stroke:var(--dim);opacity:.55;transition:opacity .25s}
 .tm-leads path.tm-dim{opacity:.1}
 .tm-lab{cursor:pointer;transition:opacity .25s}
