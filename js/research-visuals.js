@@ -133,9 +133,9 @@ function buildTopicMap(root) {
   function paintMap() {
     mDots.forEach(d => { const v = vis(d.__i); d.classList.toggle('tm-future', v === 0); d.classList.toggle('tm-dim', v === 1); d.classList.toggle('tm-hit', v === 3); });
     const dimT = id => state.active !== null && id !== state.active;
-    // a label is full strength while its theme has anything on screen (and no other theme is selected);
+    // a label turns white once its theme's first paper is on screen (abstracts alone keep it faint; owner's call);
     // its leader line shows once the paper it points to has appeared
-    const shown = new Set(IT.filter((it, i) => vis(i) >= 2).map(it => it.c));
+    const shown = new Set(IT.filter((it, i) => it.t === 'p' && vis(i) >= 2).map(it => it.c));
     anchors.forEach(A => {
       A.g.classList.toggle('tm-dim', dimT(A.c.id) || !shown.has(A.c.id));
       A.lead.classList.toggle('tm-dim', dimT(A.c.id) || IT[A.a].y > state.year);
