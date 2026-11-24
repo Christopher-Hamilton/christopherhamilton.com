@@ -454,7 +454,7 @@ const ORDER = ['earth', 'mars', 'moon', 'venus', 'io', 'europa', 'ceres'];
 const TEX = (k, hi) => 'images/globes/' + k + (hi ? '-8k' : '') + '.jpg';
 // Study sites: name, latitude, longitude (east positive). Approximate centres.
 const SITES = {
-  iceland: ['Holuhraun, Iceland', 64.87, -16.83], reykjanes: ['Reykjanes Peninsula, Iceland', 63.89, -22.27],
+  iceland: ['Holuhraun, Iceland', 64.87, -16.83], reykjanes: ['Reykjanes Peninsula, Iceland', 63.88, -22.45], fagradalsfjall: ['Fagradalsfjall, Iceland', 63.903, -22.267],
   hekla: ['Hekla, Iceland', 63.99, -19.67],
   hawaii: ['Kīlauea, Hawaiʻi', 19.41, -155.28], lapalma: ['La Palma, Canary Islands', 28.61, -17.87],
   arizona: ['San Francisco volcanic field, Arizona', 35.36, -111.5], biosphere2: ['Biosphere 2, Arizona', 32.58, -110.85],
@@ -478,10 +478,10 @@ const TAGS = [
   ['Linking cryovolcanism', [['europa']]],
   ['The role of dynamic topography', [['earth']]],
   ['The magmatic evolution of Elysium', [['mars', 'elysium']]],
-  ['PANTHER', [['earth', 'deathvalley'], ['earth', 'askja'], ['earth', 'iceland'], ['earth', 'langjokull'], ['earth', 'reykjanes']]],
+  ['PANTHER', [['earth', 'deathvalley'], ['earth', 'askja'], ['earth', 'iceland'], ['earth', 'langjokull'], ['earth', 'fagradalsfjall']]],
   ['From olivine to feldspar', [['mars']]],
   ['Rheology and eruptibility of three-phase', [['europa']]],
-  ['VERITAS', [['venus'], ['earth', 'iceland']]],
+  ['VERITAS', [['venus'], ['earth', 'iceland'], ['earth', 'fagradalsfjall']]],
   ['Revealing the geologic history of Amazonis', [['mars', 'amazonis']]],
   ['From Early Earth to Mars', [['earth', 'biosphere2'], ['mars']]],
   ['Exploring the origin and eruption of silicic lunar', [['moon', 'gruithuisen'], ['earth', 'utah']]],
@@ -489,7 +489,7 @@ const TAGS = [
   ['Preparatory fieldwork', [['earth', 'lapalma']]],
   ['RAVEN', [['earth', 'iceland'], ['mars']]],
   ['Follow the light', [['earth']]],
-  ['Infrastructure for planetary analog', [['earth', 'reykjanes']]],
+  ['Infrastructure for planetary analog', [['earth', 'fagradalsfjall']]],
   ['RAPID', [['earth', 'reykjanes']]],
   ['LIFE', [['earth', 'reykjanes']]],
   ['Lunar impact melt', [['moon']]],
@@ -529,7 +529,7 @@ const TAGS = [
 const PUB_SITES = [
   [/holuhraun|dyngjusand/i, 'earth', 'iceland'], [/askja/i, 'earth', 'askja'], [/langj[oö]kull/i, 'earth', 'langjokull'], [/laki|eldgj/i, 'earth', 'laki'],
   [/kverkfj/i, 'earth', 'kverkfjoll'], [/m[yý]vatn/i, 'earth', 'myvatn'], [/hekla/i, 'earth', 'hekla'],
-  [/fagradalsfjall|reykjanes|geldingadal|sundhn/i, 'earth', 'reykjanes'], [/k[iī]lauea|hawai|mauna ulu|mauna loa/i, 'earth', 'hawaii'],
+  [/fagradalsfjall|geldingadal|sundhn/i, 'earth', 'fagradalsfjall'], [/reykjanes/i, 'earth', 'reykjanes'], [/k[iī]lauea|hawai|mauna ulu|mauna loa/i, 'earth', 'hawaii'],
   [/la palma|cumbre vieja/i, 'earth', 'lapalma'], [/el malpais|new mexico/i, 'earth', 'newmexico'], [/seward|alaska/i, 'earth', 'alaska'],
   [/wildcat hills/i, 'earth', 'utah'], [/death valley|dante/i, 'earth', 'deathvalley'], [/craters of the moon|idaho/i, 'earth', 'idaho'],
   [/san francisco volcanic|sp crater/i, 'earth', 'arizona'], [/biosphere 2/i, 'earth', 'biosphere2'],
