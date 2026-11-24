@@ -12,6 +12,13 @@ const FLYOVERS = {
     base: 'images/flyover/hotsprings-2015',
     credit: 'Orthomosaic and digital terrain model from an unoccupied aircraft system (UAS) survey in 2015 by C.W. Hamilton and S.P. Scheidt.',
     exag: 2
+  },
+  vent2016: {
+    title: 'Baugur, the main vent of the 2014–2015 Holuhraun eruption',
+    sub: 'The spatter cone and lava channel a year after the eruption ended',
+    base: 'images/flyover/vent-2016',
+    credit: 'Merged terrestrial LiDAR and UAS point cloud from 2016: Sutton, Richardson, Whelley, Scheidt and Hamilton (2023), doi.org/10.25422/azu.data.19680372 (CC BY-NC-SA 4.0), gridded to 1 m for the web. The point cloud carries no photographic colour, so the surface is shown as shaded relief.',
+    exag: 1
   }
 };
 window.FLYOVERS = FLYOVERS;
@@ -32,7 +39,7 @@ const VS = 'attribute vec2 p;attribute float h;attribute vec2 g;uniform mat4 m;u
   'void main(){vec3 w=vec3(p.x,h*rel*ex,p.y);uv=vec2(p.x,p.y)*vec2(1.)/1.+.5;n=normalize(vec3(-g.x*ex,1.,-g.y*ex));gl_Position=m*vec4(w,1.);d=gl_Position.w;}';
 const FS = 'precision highp float;varying vec2 uv;varying vec3 n;varying float d;uniform sampler2D t;uniform vec3 sun,fog;uniform float far;' +
   'void main(){vec3 c=texture2D(t,uv).rgb;float l=max(dot(normalize(n),sun),0.);float sky=.5+.5*n.y;' +
-  'vec3 col=c*(.30*sky+.95*l)*vec3(1.04,1.,.95);float f=smoothstep(far*.35,far,d);gl_FragColor=vec4(mix(col,fog,f*.75),1.);}';
+  'vec3 col=c*(.55+.25*sky*.5+.55*l);float f=smoothstep(far*.35,far,d);gl_FragColor=vec4(mix(col,fog,f*.75),1.);}';
 
 let dlg = null, state = null;
 
