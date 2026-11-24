@@ -793,4 +793,57 @@ a.wd-ptitle:hover{text-decoration-color:var(--accent)}
 .fly-ex output{font:600 .875rem var(--mono);min-width:3em}
 .fly-credit{color:var(--muted);font-size:.875rem;margin:10px 0 0;line-height:1.5}
 @media print{.wd-fly{display:none!important}}
+/* Scroll-driven story (js/story.js) */
+.story{margin:56px 0 44px}
+.st-wrap{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:36px;align-items:start}
+.st-stage{position:sticky;top:92px;height:min(72vh,640px);border-radius:14px;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#1b2230 0%,#0c0d10 70%);border:1px solid var(--border)}
+.st-stage>canvas,.st-stage>img{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .7s ease}
+.st-stage>img{object-fit:cover}
+.st-stage>.on{opacity:1}
+.st-globe{width:auto!important;aspect-ratio:1;max-width:100%;height:100%!important;margin:auto}
+.st-fly{background:linear-gradient(#2b3440 0%,#59646e 55%,#9aa3a8 100%);cursor:grab;touch-action:pan-y}
+.st-pin{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 3px rgba(232,98,30,.55);opacity:0;transition:opacity .6s 1.6s;pointer-events:none}
+.st-pin.on{opacity:1}
+@media(prefers-reduced-motion:reduce){.st-pin{transition:none}}
+.st-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;margin:0;color:#fff}
+.st-load[hidden]{display:none}
+.st-cap{position:absolute;left:14px;bottom:12px;margin:0;padding:6px 12px;border-radius:999px;background:rgba(10,8,7,.78);color:var(--text);font:600 .875rem var(--mono);letter-spacing:.02em;max-width:calc(100% - 28px)}
+.st-cap:empty{display:none}
+.st-dots{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:4px}
+.st-dots button{all:unset;cursor:pointer;width:28px;height:28px;display:flex;align-items:center;justify-content:center}
+.st-dots button::before{content:"";width:9px;height:9px;border-radius:50%;background:rgba(245,240,235,.35);transition:transform .2s,background .2s}
+.st-dots button[aria-current="step"]::before{background:var(--accent);transform:scale(1.4)}
+.st-dots button:focus-visible{outline:2px solid var(--accent);border-radius:50%}
+.st-steps{padding:20vh 0 30vh}
+.st-step{min-height:62vh;display:flex;flex-direction:column;justify-content:center;opacity:.35;transition:opacity .5s}
+.st-step.on{opacity:1}
+.st-step h3{font-family:'Archivo Expanded','Source Sans 3',sans-serif;font-stretch:112%;font-weight:800;font-size:var(--fs-h3);margin:0 0 10px;color:var(--text)}
+.st-step p{color:var(--text-body);line-height:1.6;margin:0 0 10px;max-width:42ch}
+.st-refs{font-size:.9375rem;color:var(--dim)!important}
+.st-refs a{color:var(--ice)}
+@media(max-width:860px){
+  .st-wrap{display:block}
+  .st-stage{top:64px;height:42vh;z-index:2;box-shadow:0 12px 24px rgba(0,0,0,.6)}
+  .st-steps{padding:4vh 0 30vh;position:relative;z-index:1}
+  .st-step{min-height:62vh;justify-content:flex-end;padding-bottom:4vh}
+  .st-step p{max-width:none}
+}
+@media(prefers-reduced-motion:reduce){.st-stage>canvas,.st-stage>img,.st-step{transition:none}}
+@media print{.st-stage{display:none}.st-step{min-height:0;opacity:1}}
+/* orbit picker above the world tabs */
+.wd-orrery{margin:0 0 6px;border-radius:14px;overflow:hidden;background:radial-gradient(ellipse at 50% 50%,rgba(255,190,90,.10),transparent 30%)}
+.wd-orrery svg{display:block;width:100%;height:auto;max-height:260px}
+.or-sun{fill:#ffcf7a;filter:drop-shadow(0 0 10px rgba(255,190,90,.7))}
+.or-orbit{fill:none;stroke:rgba(181,173,166,.22);stroke-width:1}
+.or-sub{stroke:rgba(181,173,166,.16)}
+.or-world circle{fill:#b5ada6;transition:fill .3s}
+.or-world .or-hit{fill:transparent}
+.or-world:not(.or-static){cursor:pointer}
+.or-world text{font:600 19px 'Source Sans 3',sans-serif;fill:var(--muted);pointer-events:none}
+.or-world:not(.or-static):hover circle:not(.or-hit),.or-world.on circle:not(.or-hit){fill:var(--accent)}
+.or-world:not(.or-static):hover text,.or-world.on text{fill:var(--text)}
+.or-world.on circle:not(.or-hit){stroke:#fff;stroke-width:2}
+.or-static circle{fill:#c9a27a}
+@media(max-width:700px){.or-world text{font-size:26px}}
+@media print{.wd-orrery{display:none}}
 

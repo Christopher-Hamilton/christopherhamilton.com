@@ -847,6 +847,43 @@ function initWorlds(root) {
     b.addEventListener('click', () => select(k));
     tabs.appendChild(b);
   });
+  // ---- orbit picker: the worlds on simple orbits (Io and Europa around Jupiter, the Moon around Earth); click one to go there
+  const orr = root.querySelector('.wd-orrery');
+  const orb = orr ? (() => {
+    const NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 1000 250'); svg.setAttribute('aria-hidden', 'true'); orr.appendChild(svg);
+    const mk = (n, a, p) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); (p || svg).appendChild(e); return e; };
+    const SX = 500, SY = 125, F = .25;                      // the Sun in the middle, and how flat the orbits look
+    mk('circle', {cx: SX, cy: SY, r: 13, class: 'or-sun'});
+    // [key, orbit radius, start angle, period factor, parent]
+    const W = [['venus', 100, 2.4, .62], ['earth', 165, .9, 1], ['mars', 240, 3.9, 1.88], ['ceres', 330, 4.4, 4.6], ['jupiter', 405, 0.25, 11.9],
+      ['moon', 30, .4, .08, 'earth'], ['io', 36, 1.2, .05, 'jupiter'], ['europa', 56, 4.1, .1, 'jupiter']];
+    const pos = {}, items = {};
+    W.forEach(([k, r, a0, per, par]) => {
+      const ring = mk('ellipse', {rx: r, ry: r * F, class: 'or-orbit' + (par ? ' or-sub' : '')});
+      if (!par) { ring.setAttribute('cx', SX); ring.setAttribute('cy', SY); }
+      const g = mk('g', {class: 'or-world' + (BODIES[k] ? '' : ' or-static'), 'data-k': k});
+      mk('circle', {r: k === 'jupiter' ? 11 : k === 'moon' || k === 'io' || k === 'europa' || k === 'ceres' ? 5.5 : 8}, g);
+      if (BODIES[k]) { mk('circle', {r: 16, class: 'or-hit'}, g); g.addEventListener('click', () => { const b = tabs.querySelector('[data-k="' + k + '"]'); if (b) b.click(); }); }
+      const t = mk('text', {y: k === 'moon' || k === 'jupiter' ? -16 : 28, 'text-anchor': 'middle'}, g); t.textContent = k === 'jupiter' ? 'Jupiter' : (BODIES[k] ? BODIES[k].name : k);
+      items[k] = {ring, g, r, a0, per, par};
+    });
+    let run = 0, t0 = 0, vis = false;
+    const place = t => {
+      Object.entries(items).forEach(([k, it]) => {
+        const a = it.a0 + (REDUCED.matches ? 0 : t / 1000 * .05 / it.per);
+        const cx = it.par ? pos[it.par][0] : SX, cy = it.par ? pos[it.par][1] : SY;
+        const x = cx + it.r * Math.cos(a), y = cy + it.r * F * Math.sin(a);
+        pos[k] = [x, y]; it.g.setAttribute('transform', 'translate(' + x.toFixed(1) + ',' + y.toFixed(1) + ')');
+        if (it.par) { it.ring.setAttribute('cx', cx.toFixed(1)); it.ring.setAttribute('cy', cy.toFixed(1)); }
+      });
+    };
+    const loop = t => { if (!vis) { run = 0; return; } place(t - t0); run = requestAnimationFrame(loop); };
+    place(0);
+    new IntersectionObserver(es => { vis = es[0].isIntersecting; if (vis && !run && !REDUCED.matches) { run = requestAnimationFrame(loop); } }).observe(orr);
+    return {mark: k => Object.entries(items).forEach(([kk, it]) => it.g.classList.toggle('on', kk === k))};
+  })() : null;
+
   function counts() {      // the number on each world's tab follows the toggles
     [...tabs.children].forEach(b => {
       const k = b.dataset.k;
@@ -866,6 +903,7 @@ function initWorlds(root) {
   function select(k, keepView) {
     [...tabs.children].forEach(b => { const on = b.dataset.k === k; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
     root.classList.toggle('wd-show-all', k === 'all');
+    if (orb) orb.mark(k);
     allPanel.hidden = k !== 'all';
     if (k === 'all') { body = null; return; }
     const sameBody = keepView && body === k;
@@ -972,5 +1010,16 @@ function initWorlds(root) {
 window.initResearchVisuals = function (page) {
   if (page === 'publications') { const r = document.getElementById('topic-map'); if (r) initTopicMap(r); }
   if (page === 'research') { const r = document.getElementById('research-worlds'); if (r) initWorlds(r); }
+  if (page === 'research') {           // the story's code loads only as the reader scrolls near it
+    const st = document.getElementById('story-holuhraun');
+    if (st && !st.dataset.watch) {
+      st.dataset.watch = '1';
+      new IntersectionObserver((es, o) => {
+        if (!es[0].isIntersecting) return; o.disconnect();
+        const go = () => window.initStory(st);
+        if (window.initStory) go(); else { const sc = document.createElement('script'); sc.src = 'js/story.js'; sc.onload = go; document.head.appendChild(sc); }
+      }, {rootMargin: '800px 0px'}).observe(st);
+    }
+  }
 };
 })();

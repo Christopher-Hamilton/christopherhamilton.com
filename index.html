@@ -280,6 +280,7 @@
     <section class="research-worlds" id="research-worlds" aria-labelledby="worlds-heading">
       <h2 class="section-divider" id="worlds-heading">Projects</h2>
       <p class="rv-intro">All lists every project. Choose a world to see its projects, and optionally its papers and conference abstracts, on a globe: drag or use the arrow keys to turn it, and zoom with the buttons, a pinch, or + and −. Numbered markers group nearby study sites; select one to zoom in.</p>
+      <div class="wd-orrery"></div>
       <div class="wd-tabs" role="tablist" aria-label="Projects by world"></div>
       <div class="wd-all" id="wd-all-panel" role="tabpanel" aria-labelledby="wd-tab-all">
         <h3 class="wd-all-h">Active Projects</h3>
@@ -295,6 +296,56 @@
           <div class="wd-fly" hidden></div>
         </div>
         <div class="wd-list" id="wd-panel" role="tabpanel" aria-live="polite"></div>
+      </div>
+    </section>
+    <section class="story" id="story-holuhraun" aria-labelledby="story-h">
+      <h2 class="section-divider" id="story-h">Story: Holuhraun, from eruption to Mars analog</h2>
+      <p class="rv-intro">Scroll through one field site, from the eruption to what it teaches us about Mars. The 3D scenes are built from our own surveys.</p>
+      <div class="st-wrap">
+        <div class="st-stage">
+          <canvas class="st-globe" aria-hidden="true"></canvas>
+          <canvas class="st-fly" tabindex="-1" aria-label="3D terrain. Drag to look around."></canvas>
+          <img class="st-img" alt="" decoding="async">
+          <span class="st-pin" aria-hidden="true"></span>
+          <p class="st-load" hidden>Loading…</p>
+          <p class="st-cap" aria-live="polite"></p>
+          <div class="st-dots" role="group" aria-label="Story steps"></div>
+        </div>
+        <div class="st-steps">
+          <article class="st-step" data-kind="globe" data-tex="earth" data-lat="64.9" data-lon="-16.8" data-zoom="0.92" data-cap="Iceland, North Atlantic">
+            <h3>An eruption in the Highlands</h3>
+            <p>From August 2014 to February 2015, a fissure eruption at Holuhraun, north of the Vatnajökull ice cap, built the largest lava flow-field in Iceland in more than two centuries: about 85 square kilometres of new ground.</p>
+          </article>
+          <article class="st-step" data-kind="img" data-src="images/gallery-1200/gallery-holuhraun-vent.webp" data-alt="Aerial view of the erupting vent: a glowing lava pond inside a dark cone, with steam and an orange lava channel" data-cap="The main vent during the eruption">
+            <h3>Lava from the main vent</h3>
+            <p>Lava ponded in the main vent, Baugur, and poured away through channels that fed the growing flow-field.</p>
+          </article>
+          <article class="st-step" data-kind="fly" data-id="vent2016" data-cap="Baugur in 3D, 2016 (drag to look around)">
+            <h3>The vent, a year later</h3>
+            <p>We surveyed Baugur again and again with laser scanning and drones, from 2015 to 2019, to measure how a fresh volcanic cone settles and erodes.</p>
+            <p class="st-refs"><a href="https://doi.org/10.1007/s00445-024-01709-9" target="_blank" rel="noopener">Sutton et al. (2024), Bulletin of Volcanology</a> · <a href="https://doi.org/10.25422/azu.data.19680372.v1" target="_blank" rel="noopener">the point clouds</a></p>
+          </article>
+          <article class="st-step" data-kind="img" data-src="images/gallery-1200/gallery-holuhraun-steam.webp" data-alt="Aerial view of the dark lava flow-field covered in billowing steam" data-cap="The flow-field steaming after the eruption">
+            <h3>Reading the flow-field</h3>
+            <p>Drone images and terrain models let us map the kinds of lava surface across the whole flow-field, and measure their roughness from centimetres to kilometres.</p>
+            <p class="st-refs"><a href="https://doi.org/10.1016/j.jvolgeores.2021.107278" target="_blank" rel="noopener">Voigt et al. (2021a)</a> · <a href="https://doi.org/10.1007/s00445-021-01499-4" target="_blank" rel="noopener">Voigt et al. (2021b)</a> · <a href="https://doi.org/10.1016/j.jvolgeores.2019.07.019" target="_blank" rel="noopener">Bonnefoy et al. (2019)</a></p>
+          </article>
+          <article class="st-step" data-kind="fly" data-id="hotsprings2015" data-cap="The lava margin and hot springs in 3D, 2015 (height ×2)">
+            <h3>Where lava met water</h3>
+            <p>Where the lava flowed into the braided channels of the Jökulsá á Fjöllum, river water met hot rock and made steam vents and warm springs: a new hydrothermal system.</p>
+            <p class="st-refs"><a href="https://doi.org/10.1016/j.jvolgeores.2020.107100" target="_blank" rel="noopener">Dundas et al. (2020)</a></p>
+          </article>
+          <article class="st-step" data-kind="img" data-src="images/pub-md/pub-sampling.webp" data-alt="Field sampling on fresh lava" data-cap="Sampling microbes on new lava">
+            <h3>Life arrives</h3>
+            <p>New lava starts out sterile. Sampling Holuhraun and other recent eruptions shows how quickly microbes arrive, where they settle, and how the warm ground shapes them.</p>
+            <p class="st-refs"><a href="https://doi.org/10.1038/s43247-024-01280-3" target="_blank" rel="noopener">Hadland et al. (2024)</a> · <a href="https://doi.org/10.1089/ast.2021.0124" target="_blank" rel="noopener">Duhamel et al. (2022)</a> · <a href="https://doi.org/10.1016/j.scitotenv.2026.181659" target="_blank" rel="noopener">Hadland et al. (2026)</a></p>
+          </article>
+          <article class="st-step" data-kind="globe" data-tex="mars" data-lat="5" data-lon="155" data-zoom="0.92" data-cap="Elysium Planitia, Mars">
+            <h3>A window to Mars</h3>
+            <p>The youngest lava plains on Mars, in Elysium Planitia, look strikingly like Holuhraun. The flow-field is where we learn to read those surfaces, and where we rehearse how rovers and helicopters could explore them.</p>
+            <p class="st-refs"><a href="https://doi.org/10.3847/PSJ/adb5f1" target="_blank" rel="noopener">Voigt et al. (2025)</a> · <a href="https://doi.org/10.3847/PSJ/ad55f4" target="_blank" rel="noopener">Gwizd et al. (2024)</a></p>
+          </article>
+        </div>
       </div>
     </section>
   </div>

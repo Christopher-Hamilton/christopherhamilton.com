@@ -41,7 +41,7 @@ const FS = 'precision highp float;varying vec2 uv;varying vec3 n;varying float d
   'void main(){vec3 c=texture2D(t,uv).rgb;float l=max(dot(normalize(n),sun),0.);float sky=.5+.5*n.y;' +
   'vec3 col=c*(.55+.25*sky*.5+.55*l);float f=smoothstep(far*.35,far,d);gl_FragColor=vec4(mix(col,fog,f*.75),1.);}';
 
-let dlg = null, state = null;
+let dlg = null;
 
 function build() {
   dlg = document.createElement('dialog');
@@ -55,7 +55,7 @@ function build() {
     '<p class="fly-credit"></p>';
   document.body.appendChild(dlg);
   dlg.querySelector('.fly-close').addEventListener('click', () => dlg.close());
-  dlg.addEventListener('close', () => { if (state) { state.open = false; cancelAnimationFrame(state.raf); } });
+  dlg.addEventListener('close', () => stop(dlg.querySelector('canvas')));
 }
 
 window.openFlyover = function (id) {
@@ -65,12 +65,18 @@ window.openFlyover = function (id) {
   dlg.querySelector('.fly-sub').textContent = F.sub;
   dlg.querySelector('.fly-credit').textContent = F.credit;
   dlg.showModal();
-  start(F);
+  start(F, dlg.querySelector('canvas'), dlg.querySelector('.fly-load'),
+    {play: dlg.querySelector('.fly-play'), ex: dlg.querySelector('.fly-ex input'), out: dlg.querySelector('.fly-ex output')});
 };
+// for the story: draw a flyover into any canvas (no zoom on wheel, so the page still scrolls)
+window.mountFlyover = (id, cv, load) => FLYOVERS[id] && start(FLYOVERS[id], cv, load, null);
+window.stopFlyover = cv => stop(cv);
+function stop(cv) { const s = cv && cv.__fly; if (s) { s.open = false; cancelAnimationFrame(s.raf); } }
 
-async function start(F) {
-  const cv = dlg.querySelector('canvas'), load = dlg.querySelector('.fly-load');
-  if (state && state.id === F.base) { state.open = true; loop(); return; }
+async function start(F, cv, load, ui) {
+  const prev = cv.__fly;
+  if (prev && prev.id === F.base) { if (!prev.open) { prev.open = true; prev.last = 0; loop(prev); } return prev; }
+  if (prev) stop(cv);
   load.hidden = false;
   const gl = cv.getContext('webgl', {antialias: true}) ;
   if (!gl || !gl.getExtension('OES_element_index_uint')) { load.textContent = 'Your browser cannot show this 3D view.'; return; }
@@ -115,18 +121,22 @@ async function start(F) {
   const sun = [-.55, .5, -.4], sl = Math.hypot(...sun); gl.uniform3fv(U('sun'), sun.map(v => v / sl));
   gl.uniform3fv(U('fog'), [.62, .66, .70]); gl.uniform1f(U('rel'), rel);
   load.hidden = true;
-  state = {id: F.base, gl, U, n: idx.length, cv, open: true, raf: 0, ex: F.exag || 2, yaw: .7, pitch: .5, dist: .95, fly: !REDUCED.matches, t: 0, last: 0, rel};
-  controls();
-  loop();
+  const st = {id: F.base, gl, U, n: idx.length, cv, open: true, raf: 0, ex: F.exag || 2, yaw: .7, pitch: .5, dist: .95, fly: !REDUCED.matches, t: 0, last: 0, rel};
+  cv.__fly = st;
+  controls(st, ui);
+  loop(st);
+  return st;
 }
 
-function controls() {
-  const s = state, cv = s.cv, play = dlg.querySelector('.fly-play'), ex = dlg.querySelector('.fly-ex input'), out = dlg.querySelector('.fly-ex output');
-  const setPlay = v => { s.fly = v; play.textContent = v ? 'Pause flyover' : 'Play flyover'; play.setAttribute('aria-pressed', String(v)); };
+function controls(s, ui) {
+  const cv = s.cv;
+  const setPlay = v => { s.fly = v; if (ui) { ui.play.textContent = v ? 'Pause flyover' : 'Play flyover'; ui.play.setAttribute('aria-pressed', String(v)); } };
   setPlay(s.fly);
-  play.onclick = () => setPlay(!s.fly);
-  ex.value = s.ex; out.textContent = '×' + s.ex;
-  ex.oninput = () => { s.ex = +ex.value; out.textContent = '×' + s.ex; };
+  if (ui) {
+    ui.play.onclick = () => setPlay(!s.fly);
+    ui.ex.value = s.ex; ui.out.textContent = '×' + s.ex;
+    ui.ex.oninput = () => { s.ex = +ui.ex.value; ui.out.textContent = '×' + s.ex; };
+  }
   let drag = null; const ptr = new Map(); let pinch = null;
   cv.onpointerdown = e => { cv.setPointerCapture(e.pointerId); ptr.set(e.pointerId, [e.clientX, e.clientY]); setPlay(false);
     if (ptr.size === 2) { const [a, b] = [...ptr.values()]; pinch = {d: Math.hypot(a[0] - b[0], a[1] - b[1]), dist: s.dist}; drag = null; } else drag = {x: e.clientX, y: e.clientY, yaw: s.yaw, pitch: s.pitch}; };
@@ -134,14 +144,14 @@ function controls() {
     if (pinch && ptr.size === 2) { const [a, b] = [...ptr.values()]; s.dist = Math.max(.25, Math.min(2.5, pinch.dist * pinch.d / Math.hypot(a[0] - b[0], a[1] - b[1]))); return; }
     if (drag) { s.yaw = drag.yaw - (e.clientX - drag.x) * .006; s.pitch = Math.max(.08, Math.min(1.45, drag.pitch + (e.clientY - drag.y) * .005)); } };
   cv.onpointerup = cv.onpointercancel = e => { ptr.delete(e.pointerId); pinch = null; drag = null; };
-  cv.onwheel = e => { e.preventDefault(); setPlay(false); s.dist = Math.max(.25, Math.min(2.5, s.dist * Math.exp(e.deltaY * .0012))); };
+  cv.onwheel = ui ? e => { e.preventDefault(); setPlay(false); s.dist = Math.max(.25, Math.min(2.5, s.dist * Math.exp(e.deltaY * .0012))); } : null;
   cv.onkeydown = e => { const k = {ArrowLeft: [-.1, 0], ArrowRight: [.1, 0], ArrowUp: [0, .06], ArrowDown: [0, -.06]}[e.key];
     if (k) { e.preventDefault(); setPlay(false); s.yaw += k[0]; s.pitch = Math.max(.08, Math.min(1.45, s.pitch + k[1])); }
     if (e.key === '+' || e.key === '=') s.dist = Math.max(.25, s.dist / 1.2); if (e.key === '-') s.dist = Math.min(2.5, s.dist * 1.2); };
 }
 
-function loop() {
-  const s = state; if (!s || !s.open) return;
+function loop(s) {
+  if (!s || !s.open) return;
   s.raf = requestAnimationFrame(t => {
     const dt = s.last ? Math.min(.05, (t - s.last) / 1000) : 0; s.last = t;
     if (s.fly) {                                     // a slow circuit: swing round, dip low over the margin, rise again
@@ -156,7 +166,7 @@ function loop() {
     const m = mul(persp(.85, w / h, .01, 10), lookAt(eye, tgt, [0, 1, 0]));
     gl.uniformMatrix4fv(s.U('m'), false, new Float32Array(m)); gl.uniform1f(s.U('ex'), s.ex); gl.uniform1f(s.U('far'), s.dist + 1.2);
     gl.drawElements(gl.TRIANGLES, s.n, gl.UNSIGNED_INT, 0);
-    loop();
+    loop(s);
   });
 }
 })();
