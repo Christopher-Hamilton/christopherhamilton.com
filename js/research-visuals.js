@@ -455,7 +455,7 @@ const ORDER = ['earth', 'mars', 'moon', 'venus', 'io', 'europa', 'ceres'];
 const TEX = (k, hi) => 'images/globes/' + k + (hi ? '-8k' : '') + '.jpg';
 // Study sites: name, latitude, longitude (east positive). Approximate centres.
 const SITES = {
-  iceland: ['Holuhraun, Iceland', 64.87, -16.83], fagradalsfjall: ['Fagradalsfjall, Reykjanes Peninsula, Iceland', 63.903, -22.267],   // one site for all Reykjanes work (owner: be consistent)
+  iceland: ['Holuhraun, Iceland', 64.87, -16.83], fagradalsfjall: ['Reykjanes Peninsula, Iceland', 63.903, -22.267],   // one site for all Reykjanes work (owner: be consistent)
   hekla: ['Hekla, Iceland', 63.99, -19.67],
   hawaii: ['Kīlauea, Hawaiʻi', 19.41, -155.28], lapalma: ['La Palma, Canary Islands', 28.61, -17.87],
   arizona: ['San Francisco volcanic field, Arizona', 35.36, -111.5], biosphere2: ['Biosphere 2, Arizona', 32.58, -110.85],
@@ -558,6 +558,18 @@ const PUB_EXTRA = {
   'https://doi.org/10.1061/9780784485736.030': [['earth', 'iceland'], ['earth', 'askja'], ['earth', 'galena'], ['earth', 'obsidiandome'], ['earth', 'poleta']],
   'https://doi.org/10.3847/PSJ/adcfa1': [['earth', 'iceland'], ['earth', 'askja'], ['earth', 'galena'], ['earth', 'obsidiandome'], ['earth', 'poleta']]
 };
+// "Site: Holuhraun, Iceland" or "Sites: Death Valley, California; Askja, Holuhraun, Reykjanes Peninsula, Iceland":
+// places in the same country or state share one list; features with no region (Elysium Planitia) stand alone
+function siteLine(keys) {
+  const groups = [];
+  [...new Set(keys)].forEach(k => {
+    const n = SITES[k][0], i = n.lastIndexOf(', '), place = i < 0 ? n : n.slice(0, i), region = i < 0 ? '' : n.slice(i + 2);
+    const g = region && groups.find(g => g.region === region);
+    if (g) { if (!g.places.includes(place)) g.places.push(place); } else groups.push({region, places: [place]});
+  });
+  const n = groups.reduce((a, g) => a + g.places.length, 0);
+  return (n > 1 ? 'Sites: ' : 'Site: ') + groups.map(g => g.places.join(', ') + (g.region ? ', ' + g.region : '')).join('; ');
+}
 function placePub(it) {
   const t = it.ti.replace(/craters of the moon/ig, 'Craters of the M00n')     // an Idaho park, not the Moon
     .replace(/muliwai a pele/ig, 'Muliwai a P3le')                          // a Kīlauea lava channel, not Pele on Io
@@ -849,7 +861,7 @@ function initWorlds(root) {
         li.querySelector('.wd-state').textContent = p.active ? 'Active' : 'Completed';
         li.querySelector('strong').textContent = p.title;
         li.querySelector('.wd-fund').textContent = p.fund;
-        if (st.length) li.querySelector('.wd-site').textContent = 'Site: ' + st.map(s => SITES[s][0]).join('; ');
+        if (st.length) li.querySelector('.wd-site').textContent = siteLine(st);
         ul.appendChild(li); st.forEach(s => addSite(s, li, 'proj'));
       });
     }
@@ -864,7 +876,7 @@ function initWorlds(root) {
         a.className = 'wd-ptitle'; a.textContent = p.ti;
         const m = document.createElement('span'); m.className = 'wd-fund'; m.textContent = p.y + (p.v ? ' · ' + p.v.split(',')[0] : '');
         li.append(a, m);
-        if (st.length) { const si = document.createElement('span'); si.className = 'wd-site'; si.textContent = 'Site: ' + st.map(s => SITES[s][0]).join('; '); li.appendChild(si); }
+        if (st.length) { const si = document.createElement('span'); si.className = 'wd-site'; si.textContent = siteLine(st); li.appendChild(si); }
         ul.appendChild(li); st.forEach(s => addSite(s, li, cls === 'wd-pap' ? 'pap' : 'abs'));
       });
     });
