@@ -710,8 +710,21 @@ html{scroll-behavior:auto}
 .wd-tip{position:absolute;pointer-events:none;background:rgba(10,8,7,.95);border:1px solid var(--border);border-radius:8px;padding:6px 10px;line-height:1.35;white-space:nowrap;opacity:0;transition:opacity .12s;z-index:2}
 .wd-list h3{font-family:'Archivo Expanded','Source Sans 3',sans-serif;font-stretch:112%;font-weight:800;font-size:var(--fs-h3);margin:0 0 2px}
 .wd-sub{color:var(--dim);margin:0 0 14px}
-.wd-list ul{position:relative;list-style:none;margin:0;padding:0 6px 0 0;display:grid;gap:8px;max-height:min(440px,70vh);overflow-y:auto;overscroll-behavior:contain;scrollbar-color:var(--border) transparent}
-@media(max-width:860px){.wd-list ul{max-height:none}}
+.wd-scroll{position:relative;padding:0 6px 0 0;max-height:min(560px,75vh);overflow-y:auto;overscroll-behavior:contain;scrollbar-color:var(--border) transparent}
+@media(max-width:860px){.wd-scroll{max-height:none}}
+.wd-list ul{list-style:none;margin:0 0 6px;padding:0;display:grid;gap:8px}
+.wd-h4{font:700 .875rem var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--dim);margin:16px 0 8px}
+.wd-h4:first-child{margin-top:0}
+.wd-ptitle{display:block;font-weight:600;line-height:1.35;margin:0 0 4px;color:var(--text)}
+a.wd-ptitle{text-decoration:underline;text-decoration-color:rgba(245,240,235,.3);text-underline-offset:3px}
+a.wd-ptitle:hover{text-decoration-color:var(--accent)}
+.wd-list li.wd-abs{padding:9px 14px}
+.wd-list li.wd-abs .wd-ptitle{font-weight:500}
+.wd-empty{color:var(--dim)}
+.wd-show{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 18px;margin:10px 0 0;color:var(--text-body)}
+.wd-show label{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer}
+.wd-show input{width:20px;height:20px;accent-color:var(--accent)}
+.wd-key-pap,.wd-key-abs{display:none}
 .wd-list li{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;transition:border-color .15s}
 .wd-list li.on{border-color:var(--accent)}
 .wd-list li.flash{animation:wdflash 1.6s ease-out}

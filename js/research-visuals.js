@@ -133,9 +133,12 @@ function buildTopicMap(root) {
   function paintMap() {
     mDots.forEach(d => { const v = vis(d.__i); d.classList.toggle('tm-future', v === 0); d.classList.toggle('tm-dim', v === 1); d.classList.toggle('tm-hit', v === 3); });
     const dimT = id => state.active !== null && id !== state.active;
-    anchors.forEach(A => {          // a leader line points at its theme's anchor paper; fade it while that paper is hidden
-      const off = dimT(A.c.id) || IT[A.a].y > state.year;
-      A.g.classList.toggle('tm-dim', off); A.lead.classList.toggle('tm-dim', off);
+    // a label is full strength while its theme has anything on screen (and no other theme is selected);
+    // its leader line shows once the paper it points to has appeared
+    const shown = new Set(IT.filter((it, i) => vis(i) >= 2).map(it => it.c));
+    anchors.forEach(A => {
+      A.g.classList.toggle('tm-dim', dimT(A.c.id) || !shown.has(A.c.id));
+      A.lead.classList.toggle('tm-dim', dimT(A.c.id) || IT[A.a].y > state.year);
     });
   }
   let zAnim = 0;
@@ -444,9 +447,10 @@ const BODIES = {
   moon:   {name: 'Moon',   tone: [1, 1, 1],       contrast: 1.15, hi: 0},
   venus:  {name: 'Venus',  tone: [1, 1, 1],       contrast: 1.05, hi: 0},
   io:     {name: 'Io',     tone: [1, 1, 1],       contrast: 1.1,  hi: 1},
-  europa: {name: 'Europa', tone: [1, .96, .9],    contrast: 1.25, hi: 1}
+  europa: {name: 'Europa', tone: [1, .96, .9],    contrast: 1.25, hi: 1},
+  ceres:  {name: 'Ceres',  tone: [1, .98, .95],   contrast: 1.1,  hi: 0}
 };
-const ORDER = ['earth', 'mars', 'moon', 'venus', 'io', 'europa'];
+const ORDER = ['earth', 'mars', 'moon', 'venus', 'io', 'europa', 'ceres'];
 const TEX = (k, hi) => 'images/globes/' + k + (hi ? '-8k' : '') + '.jpg';
 // Study sites: name, latitude, longitude (east positive). Approximate centres.
 const SITES = {
@@ -459,7 +463,12 @@ const SITES = {
   nz: ['New Zealand', -36.85, 174.76],
   elysium: ['Elysium Planitia', 3, 154.7], amazonis: ['Amazonis Planitia', 24.8, -164], athabasca: ['Athabasca Valles', 8.6, 155],
   hebrus: ['Hebrus Valles', 20, 126.6], hrad: ['Hrad Vallis', 34, 141], tharsis: ['Tharsis', 2, -112],
-  copernicus: ['Copernicus crater', 9.6, -20.1], southpole: ['Lunar south pole', -89, 0], gruithuisen: ['Gruithuisen domes', 36.3, -40.5]
+  copernicus: ['Copernicus crater', 9.6, -20.1], southpole: ['Lunar south pole', -89, 0], gruithuisen: ['Gruithuisen domes', 36.3, -40.5],
+  // used by publications only
+  askja: ['Askja, Iceland', 65.03, -16.75], laki: ['Laki, Iceland', 64.07, -18.23], kverkfjoll: ['Kverkfjöll, Iceland', 64.65, -16.68],
+  myvatn: ['Mývatn, Iceland', 65.6, -17.0], idaho: ['Craters of the Moon, Idaho', 43.42, -113.52],
+  cerberus: ['Cerberus Fossae', 9.2, 164.3], aristarchus: ['Aristarchus Plateau', 26, -51], marius: ['Marius Hills', 13.4, -55.9],
+  loki: ['Loki Patera', 13, 51], pele: ['Pele', -18.7, 104.9], ahuna: ['Ahuna Mons', -10.5, -43.9], occator: ['Occator crater', 19.8, -120.7]
 };
 // Worlds (and sites) for each project, matched by the start of its title in js/data.js
 const TAGS = [
@@ -514,6 +523,34 @@ const TAGS = [
   ['Stereo-derived topography', [['earth', 'alaska'], ['mars']]],
   ['Melt decompaction', [['mars']]]
 ];
+
+// Papers and conference abstracts on the globes: worlds and sites are read from the title (js/topic-map-data.js).
+// A title can name several worlds (an Iceland analog for Mars is listed on both); it is plotted only where it names a site.
+const PUB_SITES = [
+  [/holuhraun|dyngjusand/i, 'earth', 'iceland'], [/askja/i, 'earth', 'askja'], [/laki|eldgj/i, 'earth', 'laki'],
+  [/kverkfj/i, 'earth', 'kverkfjoll'], [/m[yý]vatn/i, 'earth', 'myvatn'], [/hekla/i, 'earth', 'hekla'],
+  [/fagradalsfjall|reykjanes|geldingadal|sundhn/i, 'earth', 'reykjanes'], [/k[iī]lauea|hawai/i, 'earth', 'hawaii'],
+  [/la palma|cumbre vieja/i, 'earth', 'lapalma'], [/el malpais|new mexico/i, 'earth', 'newmexico'], [/seward|alaska/i, 'earth', 'alaska'],
+  [/wildcat hills|utah/i, 'earth', 'utah'], [/death valley/i, 'earth', 'deathvalley'], [/craters of the moon|idaho/i, 'earth', 'idaho'],
+  [/san francisco volcanic|sp crater/i, 'earth', 'arizona'], [/biosphere 2/i, 'earth', 'biosphere2'],
+  [/elysium/i, 'mars', 'elysium'], [/athabasca/i, 'mars', 'athabasca'], [/amazonis/i, 'mars', 'amazonis'], [/hrad/i, 'mars', 'hrad'],
+  [/hebrus|hephaestus/i, 'mars', 'hebrus'], [/tharsis|arsia|pavonis|olympus mons/i, 'mars', 'tharsis'], [/cerberus/i, 'mars', 'cerberus'],
+  [/copernicus/i, 'moon', 'copernicus'], [/aristarchus/i, 'moon', 'aristarchus'], [/marius/i, 'moon', 'marius'],
+  [/gruithuisen/i, 'moon', 'gruithuisen'], [/lunar south pole|south polar region of the moon/i, 'moon', 'southpole'],
+  [/loki/i, 'io', 'loki'], [/\bpele\b/i, 'io', 'pele'], [/ahuna/i, 'ceres', 'ahuna'], [/occator/i, 'ceres', 'occator']
+];
+const PUB_BODIES = [
+  ['earth', /iceland|icelandic|earth|terrestrial|arizona|hawai|alaska|antarctic|volcano(es)? in|lava lake/i],
+  ['mars', /\bmars\b|martian|hirise/i], ['moon', /\blunar\b|\bmoon\b|apollo/i], ['venus', /venus|veritas/i],
+  ['io', /\bio\b|ionian/i], ['europa', /europa/i], ['ceres', /ceres/i]
+];
+function placePub(it) {
+  const t = it.ti.replace(/craters of the moon/ig, 'Craters of the M00n');   // an Idaho park, not the Moon
+  const sites = PUB_SITES.filter(r => r[0].test(t)).map(r => [r[1], r[2]]);
+  const bodies = new Set(sites.map(s => s[0]));
+  PUB_BODIES.forEach(([b, rx]) => { if (rx.test(t)) bodies.add(b); });
+  return {bodies, sites};
+}
 
 const VS1 = 'attribute vec2 p;varying vec2 v;void main(){v=p;gl_Position=vec4(p,0.,1.);}';
 const VS2 = '#version 300 es\nin vec2 p;out vec2 v;void main(){v=p;gl_Position=vec4(p,0.,1.);}';
@@ -722,6 +759,19 @@ function initWorlds(root) {
   });
   window.addEventListener('resize', () => { size(); draw(); });
 
+  // ---- papers and conference abstracts (js/topic-map-data.js), placed by their titles
+  let pubs = [];
+  const show = {proj: true, pap: true, abs: false};
+  function loadPubs() {
+    const go = () => { pubs = window.topicMap.items.map(it => ({...it, ...placePub(it)})); counts(); if (body) select(body, true); };
+    if (window.topicMap) { go(); return; }
+    const sc = document.createElement('script'); sc.src = 'js/topic-map-data.js'; sc.onload = go; document.head.appendChild(sc);
+  }
+  const pubsFor = (k, t) => pubs.filter(p => p.t === t && p.bodies.has(k)).sort((a, b) => b.y - a.y);
+  const toggles = root.querySelector('.wd-show');
+  toggles.innerHTML = '<label><input type="checkbox" data-k="proj" checked> Projects</label><label><input type="checkbox" data-k="pap" checked> <i class="wd-key-pap" aria-hidden="true"></i>Papers</label><label><input type="checkbox" data-k="abs"> <i class="wd-key-abs" aria-hidden="true"></i>Conference abstracts</label>';
+  toggles.addEventListener('change', e => { show[e.target.dataset.k] = e.target.checked; counts(); if (body) select(body, true); });
+
   // ---- tabs: All (the full project lists), then one per world
   ['all', ...ORDER].forEach(k => {
     const b = document.createElement('button');
@@ -730,10 +780,17 @@ function initWorlds(root) {
     b.innerHTML = (k === 'all' ? '' : '<span class="wd-swatch" aria-hidden="true"></span>') + '<span></span><small></small>';
     if (k !== 'all') b.querySelector('.wd-swatch').style.backgroundImage = 'url(images/globes/sm/' + k + '.jpg)';
     b.querySelector('span:not(.wd-swatch)').textContent = k === 'all' ? 'All' : BODIES[k].name;
-    b.querySelector('small').textContent = k === 'all' ? projects.length : forBody(k).length;
     b.addEventListener('click', () => select(k));
     tabs.appendChild(b);
   });
+  function counts() {      // the number on each world's tab follows the toggles
+    [...tabs.children].forEach(b => {
+      const k = b.dataset.k;
+      const n = k === 'all' ? projects.length : (show.proj ? forBody(k).length : 0) + (show.pap ? pubsFor(k, 'p').length : 0) + (show.abs ? pubsFor(k, 'a').length : 0);
+      b.querySelector('small').textContent = n;
+    });
+  }
+  counts();
   tabs.addEventListener('keydown', e => {
     const bs = [...tabs.children], i = bs.indexOf(document.activeElement);
     if (i < 0 || !['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(e.key)) return;
@@ -741,48 +798,78 @@ function initWorlds(root) {
     const n = e.key === 'Home' ? 0 : e.key === 'End' ? bs.length - 1 : (i + (e.key === 'ArrowRight' ? 1 : bs.length - 1)) % bs.length;
     bs[n].focus(); select(bs[n].dataset.k);
   });
-  function select(k) {
+  const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+  function select(k, keepView) {
     [...tabs.children].forEach(b => { const on = b.dataset.k === k; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
     root.classList.toggle('wd-show-all', k === 'all');
     allPanel.hidden = k !== 'all';
     if (k === 'all') { body = null; return; }
-    body = k; zoom = 1; anim = null; spin = !REDUCED.matches; zoomOut.disabled = true; zoomIn.disabled = false; shown.key = null;
-    if (gl) { gl.bindTexture(gl.TEXTURE_2D, tex); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([40, 34, 30, 255])); }
-    size(); load(k);
+    const sameBody = keepView && body === k;
+    body = k;
+    if (!sameBody) {
+      zoom = 1; anim = null; spin = !REDUCED.matches; zoomOut.disabled = true; zoomIn.disabled = false; shown.key = null;
+      if (gl) { gl.bindTexture(gl.TEXTURE_2D, tex); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([40, 34, 30, 255])); }
+      size(); load(k);
+    }
     list.setAttribute('aria-labelledby', 'wd-tab-' + k);
     markers.forEach(m => m.el.remove()); markers = [];
-    const ps = forBody(k), sites = {};
-    ps.forEach((p, i) => p.tags.filter(t => t[0] === k && t[1]).forEach(t => (sites[t[1]] = sites[t[1]] || []).push(i)));
-    list.innerHTML = '<h3></h3><p class="wd-sub"></p><ul></ul>';
+    const sites = {};        // site → list items it covers
+    const addSite = (s, li) => (sites[s] = sites[s] || []).push(li);
+    list.innerHTML = '<h3></h3><p class="wd-sub"></p><div class="wd-scroll"></div>';
     list.querySelector('h3').textContent = BODIES[k].name;
-    const nSites = Object.keys(sites).length;
-    list.querySelector('.wd-sub').textContent = ps.length + ' project' + (ps.length === 1 ? '' : 's') +
-      (nSites ? ' · ' + nSites + ' study site' + (nSites === 1 ? '' : 's') + ' on the globe' : ' · no single study site');
-    const ul = list.querySelector('ul');
-    const lis = ps.map(p => {
-      const li = document.createElement('li');
-      const site = p.tags.filter(t => t[0] === k && t[1]).map(t => SITES[t[1]][0]).join('; ');
-      li.innerHTML = '<span class="wd-role"></span><span class="wd-state"></span><strong></strong><span class="wd-fund"></span>' + (site ? '<span class="wd-site"></span>' : '');
-      li.querySelector('.wd-role').textContent = p.role;
-      li.querySelector('.wd-state').textContent = p.active ? 'Active' : 'Completed';
-      li.querySelector('strong').textContent = p.title;
-      li.querySelector('.wd-fund').textContent = p.fund;
-      if (site) li.querySelector('.wd-site').textContent = 'Site: ' + site;
-      ul.appendChild(li); return li;
+    const sc = list.querySelector('.wd-scroll');
+    const section = (title, n) => { const h = document.createElement('h4'); h.className = 'wd-h4'; h.textContent = title + ' (' + n + ')'; sc.appendChild(h); const ul = document.createElement('ul'); sc.appendChild(ul); return ul; };
+    const ps = show.proj ? forBody(k) : [], paps = show.pap ? pubsFor(k, 'p') : [], abss = show.abs ? pubsFor(k, 'a') : [];
+    if (ps.length) {
+      const ul = section('Projects', ps.length);
+      ps.forEach(p => {
+        const li = document.createElement('li');
+        const st = p.tags.filter(t => t[0] === k && t[1]).map(t => t[1]);
+        li.innerHTML = '<span class="wd-role"></span><span class="wd-state"></span><strong></strong><span class="wd-fund"></span>' + (st.length ? '<span class="wd-site"></span>' : '');
+        li.querySelector('.wd-role').textContent = p.role;
+        li.querySelector('.wd-state').textContent = p.active ? 'Active' : 'Completed';
+        li.querySelector('strong').textContent = p.title;
+        li.querySelector('.wd-fund').textContent = p.fund;
+        if (st.length) li.querySelector('.wd-site').textContent = 'Site: ' + st.map(s => SITES[s][0]).join('; ');
+        ul.appendChild(li); st.forEach(s => addSite(s, li));
+      });
+    }
+    [[paps, 'Papers', 'wd-pap'], [abss, 'Conference abstracts', 'wd-abs']].forEach(([arr, title, cls]) => {
+      if (!arr.length) return;
+      const ul = section(title, arr.length);
+      arr.forEach(p => {
+        const li = document.createElement('li'); li.className = cls;
+        const st = p.sites.filter(s => s[0] === k).map(s => s[1]);
+        const a = document.createElement(p.u ? 'a' : 'strong');
+        if (p.u) { a.href = p.u; a.target = '_blank'; a.rel = 'noopener'; }
+        a.className = 'wd-ptitle'; a.textContent = p.ti;
+        const m = document.createElement('span'); m.className = 'wd-fund'; m.textContent = p.y + (p.v ? ' · ' + p.v.split(',')[0] : '');
+        li.append(a, m);
+        if (st.length) { const si = document.createElement('span'); si.className = 'wd-site'; si.textContent = 'Site: ' + st.map(s => SITES[s][0]).join('; '); li.appendChild(si); }
+        ul.appendChild(li); st.forEach(s => addSite(s, li));
+      });
     });
-    Object.entries(sites).forEach(([s, idx]) => {
+    if (!ps.length && !paps.length && !abss.length) sc.innerHTML = '<p class="wd-empty">Nothing to show. Turn on projects, papers or conference abstracts above the list.</p>';
+    const nSites = Object.keys(sites).length;
+    const parts = [];
+    if (show.proj) parts.push(plural(ps.length, 'project'));
+    if (show.pap) parts.push(plural(paps.length, 'paper'));
+    if (show.abs) parts.push(plural(abss.length, 'conference abstract'));
+    list.querySelector('.wd-sub').textContent = parts.join(' · ') + (nSites ? ' · ' + plural(nSites, 'study site') + ' on the globe' : '');
+    const all = [...sc.querySelectorAll('li')];
+    Object.entries(sites).forEach(([s, lis]) => {
       const [name, lat, lon] = SITES[s];
       const el = document.createElement('button');
       el.type = 'button'; el.className = 'wd-mark';
-      const m = {el, lat, lon, idx, name};
+      const m = {el, lat, lon, idx: lis.map(li => all.indexOf(li)), name};
       const ids = () => [...new Set((m.group || [m]).flatMap(g => g.idx))];
       const on = v => {
         el.classList.toggle('on', v);
-        lis.forEach(li => li.classList.remove('on'));
-        if (v) ids().forEach(i => lis[i].classList.add('on'));
+        all.forEach(li => li.classList.remove('on'));
+        if (v) ids().forEach(i => all[i].classList.add('on'));
         if (v) {
           const g = m.group || [m], n = ids().length;
-          tip.textContent = g.map(s => s.name).join(' · ') + ' — ' + n + ' project' + (n > 1 ? 's' : '');
+          tip.textContent = g.map(s => s.name).join(' · ') + ' — ' + plural(n, 'item');
           const W = box.clientWidth, x = m.sx;
           tip.style.left = (x > W * .55 ? x - 14 - tip.offsetWidth : x + 14) + 'px'; tip.style.top = (m.sy + 14) + 'px';
         }
@@ -798,18 +885,20 @@ function initWorlds(root) {
           setZoom(Math.max(zoom * 1.8, Math.min(ZMAX, 18 / sep)), {lat, lon});
           on(false); return;
         }
-        const first = lis[ids()[0]];
-        ids().forEach(i => { lis[i].classList.remove('flash'); void lis[i].offsetWidth; lis[i].classList.add('flash'); });
-        ul.scrollTo({top: first.offsetTop - 6, behavior: smooth()});
+        const first = all[ids()[0]];
+        ids().forEach(i => { all[i].classList.remove('flash'); void all[i].offsetWidth; all[i].classList.add('flash'); });
+        sc.scrollTo({top: first.offsetTop - 6, behavior: smooth()});
         if (window.matchMedia('(max-width: 860px)').matches) first.scrollIntoView({behavior: smooth(), block: 'center'});
       });
       box.appendChild(el); markers.push(m);
     });
-    const first = Object.keys(sites)[0];               // face the first study site
-    if (first) { yaw = -SITES[first][2] * Math.PI / 180; pitch = SITES[first][1] * Math.PI / 180 * .8; }
+    if (!sameBody) {
+      const first = Object.keys(sites)[0];             // face the first study site
+      if (first) { yaw = -SITES[first][2] * Math.PI / 180; pitch = SITES[first][1] * Math.PI / 180 * .8; }
+    }
     wake(); draw();
   }
-  size(); select('all');
+  size(); select('all'); loadPubs();
 }
 
 window.initResearchVisuals = function (page) {
