@@ -496,7 +496,7 @@ const TAGS = [
   ['LIFE', [['earth', 'iceland']]],   // Holuhraun only (owner, Nov 24, 2026)
   ['Lunar impact melt', [['moon']]],
   ['Volcanism and interior heating processes on Io', [['io']]],
-  ['Sinuous channels', [['earth'], ['mars']]],
+  ['Sinuous channels', [['earth'], ['mars', 'elysium'], ['mars', 'tharsis']]],
   ['Volcanic plains on Mars', [['mars', 'elysium'], ['mars', 'tharsis']]],
   ['Precision geodetic', [['earth', 'iceland']]],
   ['Thermal infrared remote sensing', [['earth', 'hawaii']]],
