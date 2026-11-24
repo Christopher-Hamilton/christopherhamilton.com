@@ -544,10 +544,14 @@ const PUB_BODIES = [
   ['mars', /\bmars\b|martian|hirise/i], ['moon', /\blunar\b|\bmoon\b|apollo/i], ['venus', /venus|veritas/i],
   ['io', /\bio\b|ionian/i], ['europa', /europa/i], ['ceres', /ceres/i]
 ];
+// Sites the owner gave for items whose titles name no site (keyed by link)
+const PUB_EXTRA = {
+  'https://doi.org/10.1016/j.scitotenv.2026.181659': [['earth', 'iceland']]   // sandsheet microbial dispersal: Holuhraun
+};
 function placePub(it) {
   const t = it.ti.replace(/craters of the moon/ig, 'Craters of the M00n')     // an Idaho park, not the Moon
     .replace(/muliwai a pele/ig, 'Muliwai a P3le');                          // a Kīlauea lava channel, not Pele on Io
-  const sites = PUB_SITES.filter(r => r[0].test(t)).map(r => [r[1], r[2]]);
+  const sites = PUB_SITES.filter(r => r[0].test(t)).map(r => [r[1], r[2]]).concat(PUB_EXTRA[it.u] || []);
   const bodies = new Set(sites.map(s => s[0]));
   PUB_BODIES.forEach(([b, rx]) => { if (rx.test(t)) bodies.add(b); });
   return {bodies, sites};
