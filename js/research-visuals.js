@@ -559,7 +559,7 @@ const PUB_EXTRA = {
   'https://doi.org/10.3847/PSJ/adcfa1': [['earth', 'iceland'], ['earth', 'askja'], ['earth', 'galena'], ['earth', 'obsidiandome'], ['earth', 'poleta']]
 };
 // "Site: Holuhraun, Iceland" or "Sites: Death Valley, California; Askja, Holuhraun, Reykjanes Peninsula, Iceland":
-// places in the same country or state share one list; features with no region (Elysium Planitia) stand alone
+// places in the same country or state share one alphabetical list; features with no region (Elysium Planitia) stand alone
 function siteLine(keys) {
   const groups = [];
   [...new Set(keys)].forEach(k => {
@@ -568,6 +568,9 @@ function siteLine(keys) {
     if (g) { if (!g.places.includes(place)) g.places.push(place); } else groups.push({region, places: [place]});
   });
   const n = groups.reduce((a, g) => a + g.places.length, 0);
+  const cmp = (x, y) => x.localeCompare(y, 'en', {sensitivity: 'base'});
+  groups.forEach(g => g.places.sort(cmp));                                   // alphabetical within a country or state
+  groups.sort((a, b) => cmp(a.region || a.places[0], b.region || b.places[0]));   // and the groups alphabetical too
   return (n > 1 ? 'Sites: ' : 'Site: ') + groups.map(g => g.places.join(', ') + (g.region ? ', ' + g.region : '')).join('; ');
 }
 function placePub(it) {
