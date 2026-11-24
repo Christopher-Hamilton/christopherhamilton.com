@@ -491,7 +491,7 @@ const TAGS = [
   ['Follow the light', [['earth']]],
   ['Infrastructure for planetary analog', [['earth', 'fagradalsfjall']]],
   ['RAPID', [['earth', 'reykjanes']]],
-  ['LIFE', [['earth', 'reykjanes']]],
+  ['LIFE', [['earth', 'iceland']]],   // Holuhraun (owner, Nov 24, 2026)
   ['Lunar impact melt', [['moon']]],
   ['Volcanism and interior heating processes on Io', [['io']]],
   ['Sinuous channels', [['earth'], ['mars']]],
