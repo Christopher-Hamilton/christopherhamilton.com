@@ -820,6 +820,18 @@ function initWorlds(root) {
     const sc = document.createElement('script'); sc.src = 'js/topic-map-data.js'; sc.onload = go; document.head.appendChild(sc);
   }
   const pubsFor = (k, t) => pubs.filter(p => p.t === t && p.bodies.has(k)).sort((a, b) => b.y - a.y);
+  // 3D flyovers from the group's own UAS surveys (js/flyover.js, loaded on first use)
+  const FLY = [{id: 'hotsprings2015', body: 'earth', label: 'Holuhraun lava margin, Iceland'}];
+  const flyBox = root.querySelector('.wd-fly');
+  function openFly(id) {
+    if (window.openFlyover) { window.openFlyover(id); return; }
+    const sc = document.createElement('script'); sc.src = 'js/flyover.js'; sc.onload = () => window.openFlyover(id); document.head.appendChild(sc);
+  }
+  function flyButtons(k) {
+    const list = FLY.filter(f => f.body === k);
+    flyBox.hidden = !list.length; flyBox.innerHTML = list.length ? '<span>3D flyover:</span>' : '';
+    list.forEach(f => { const b = document.createElement('button'); b.type = 'button'; b.className = 'wd-flybtn'; b.textContent = f.label; b.addEventListener('click', () => openFly(f.id)); flyBox.appendChild(b); });
+  }
   const toggles = root.querySelector('.wd-show');
   toggles.innerHTML = '<label><input type="checkbox" data-k="proj" checked> <i class="wd-key-proj" aria-hidden="true"></i>Projects</label><label><input type="checkbox" data-k="pap" checked> <i class="wd-key-pap" aria-hidden="true"></i>Papers</label><label><input type="checkbox" data-k="ds" checked> <i class="wd-key-ds" aria-hidden="true"></i>Datasets</label><label><input type="checkbox" data-k="abs"> <i class="wd-key-abs" aria-hidden="true"></i>Conference abstracts</label>';
   toggles.addEventListener('change', e => { show[e.target.dataset.k] = e.target.checked; counts(); if (body) select(body, true); });
@@ -864,6 +876,7 @@ function initWorlds(root) {
       size(); load(k);
     }
     list.setAttribute('aria-labelledby', 'wd-tab-' + k);
+    flyButtons(k);
     markers.forEach(m => m.el.remove()); markers = [];
     const sites = {};        // site → list items it covers
     const addSite = (s, li, type) => { const key = s + '|' + type; (sites[key] = sites[key] || []).push(li); };
