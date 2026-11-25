@@ -875,4 +875,14 @@ a.wd-ptitle:hover{text-decoration-color:var(--accent)}
 .wd-globe canvas{transition:opacity .35s ease}
 .wd-swap canvas{opacity:.15}
 @media(prefers-reduced-motion:reduce){.wd-globe canvas{transition:none}}
+/* the selected item, shown under the figure on touch screens instead of a tooltip over it */
+.tm-info{position:relative;margin:10px 0 0;padding:12px 44px 12px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px}
+.tm-info[hidden]{display:none}
+.tm-info p{margin:0}
+.tm-info-type{font:600 .8125rem var(--mono);color:var(--muted);letter-spacing:.02em}
+.tm-info-title{font-weight:600;color:var(--text);line-height:1.35;margin:4px 0!important}
+.tm-info-meta{color:var(--dim);font-size:.9375rem}
+.tm-info-open{display:inline-flex;align-items:center;min-height:44px;margin-top:4px;font-weight:700;color:var(--accent)}
+.tm-info-close{all:unset;position:absolute;top:4px;right:4px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--dim);cursor:pointer}
+.tm-info-close:focus-visible{outline:2px solid var(--accent);border-radius:50%}
 

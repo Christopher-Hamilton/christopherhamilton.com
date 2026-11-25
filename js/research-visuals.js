@@ -54,7 +54,23 @@ function buildTopicMap(root) {
     const r = new Set(IT.filter((it, i) => it.t === 'p' && vis(i) >= 2).map(it => it.c)); state.focus = f; return r; };
 
   // ---- tooltip
+  // On touch screens a tap selects an item and shows it in the panel under the figure; nothing opens by itself (owner)
+  const TOUCH = window.matchMedia('(hover: none)').matches;
+  const info = $('.tm-info');
+  function pick(i) {
+    if (i === null || i === undefined) { info.hidden = true; return; }
+    const it = IT[i];
+    info.innerHTML = '<p class="tm-info-type"></p><p class="tm-info-title"></p><p class="tm-info-meta"></p>';
+    info.querySelector('.tm-info-type').textContent = TYPE_NAME[it.t] + ' · ' + byId[it.c].name;
+    info.querySelector('.tm-info-title').textContent = it.ti;
+    info.querySelector('.tm-info-meta').textContent = (it.v ? it.v + ', ' : '') + it.y;
+    if (it.u) { const a = document.createElement('a'); a.href = it.u; a.target = '_blank'; a.rel = 'noopener'; a.className = 'tm-info-open'; a.textContent = 'Open ' + (it.t === 'd' ? 'dataset' : it.t === 'p' ? 'paper' : 'abstract') + ' ↗'; info.appendChild(a); }
+    const x = document.createElement('button'); x.type = 'button'; x.className = 'tm-info-close'; x.setAttribute('aria-label', 'Clear selection'); x.textContent = '×';
+    x.addEventListener('click', () => { pick(null); if (state.view === 'map') linkFocus(null); else { state.focus = null; paint(); } }); info.appendChild(x);
+    info.hidden = false;
+  }
   function showTip(x, y, i) {
+    if (TOUCH) return;
     const it = IT[i];
     tip.innerHTML = '<b></b><span></span>';
     tip.firstChild.textContent = it.ti;
@@ -65,7 +81,10 @@ function buildTopicMap(root) {
     tip.style.left = tx + 'px'; tip.style.top = ty + 'px'; tip.style.opacity = 1;
   }
   const hideTip = () => { tip.style.opacity = 0; };
-  const open = i => { if (IT[i].u) window.open(IT[i].u, '_blank', 'noopener'); };
+  const open = i => {
+    if (TOUCH) { pick(i); if (state.view === 'map') linkFocus(i); else { state.focus = i; paint(); } return; }
+    if (IT[i].u) window.open(IT[i].u, '_blank', 'noopener');
+  };
 
   /* ================= 2D MAP: points, labels in the margins with leader lines ================= */
   const MW = 1240, MH = 640, DY0 = 30, DY1 = 610;
@@ -227,7 +246,7 @@ function buildTopicMap(root) {
     paintMap();
   }
   map.addEventListener('mouseover', e => { const i = e.target.__i; if (i !== undefined) { const b = e.target.getBoundingClientRect(); showTip(b.left + b.width / 2, b.top + b.height / 2, i); linkFocus(i); } });
-  map.addEventListener('mouseout', e => { if (e.target.__i !== undefined) { hideTip(); linkFocus(null); } });
+  map.addEventListener('mouseout', e => { if (e.target.__i !== undefined && !TOUCH) { hideTip(); linkFocus(null); } });
   map.addEventListener('focusin', e => { const i = e.target.__i; if (i !== undefined) { const b = e.target.getBoundingClientRect(); showTip(b.left, b.top, i); linkFocus(i); } });
   map.addEventListener('focusout', () => { hideTip(); linkFocus(null); });
   map.addEventListener('click', e => { if (e.target.__i !== undefined) { open(e.target.__i); return; } const g = e.target.closest('.tm-lab'); if (g) select(g.__c); });
@@ -318,7 +337,7 @@ function buildTopicMap(root) {
     else if (state.focus !== null) { state.focus = null; paintNet(); hideTip(); }
   });
   net.addEventListener('pointerup', () => { if (!ndrag) return; const d = ndrag; ndrag = null; P[d.i].fixed = false; if (!d.moved) open(d.i); });
-  net.addEventListener('pointerleave', () => { if (!ndrag && state.focus !== null) { state.focus = null; paintNet(); hideTip(); } });
+  net.addEventListener('pointerleave', () => { if (!ndrag && !TOUCH && state.focus !== null) { state.focus = null; paintNet(); hideTip(); } });
 
   /* ================= 3D: the same items laid out in three dimensions; drag to turn, depth shown by size and fade ================= */
   const cv = $('.tm-3d'), ctx = cv.getContext('2d');
@@ -399,7 +418,13 @@ function buildTopicMap(root) {
     if (best !== null) showTip(e.clientX, e.clientY, best); else hideTip();
     if (!run3) draw3();
   });
-  cv.addEventListener('pointerup', () => { if (d3 && !d3.moved && hov3 !== null) open(hov3); d3 = null; setTimeout(() => { if (!d3 && !REDUCED.matches && !held3) { spin3 = true; wake3(); } }, 4000); });
+  cv.addEventListener('pointerup', e => {
+    if (d3 && !d3.moved && TOUCH) {
+      const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top; let bd = 22; hov3 = null;
+      for (let k = proj.length - 1; k >= 0; k--) { const p = proj[k]; if (!vis(p.i) || !p.r) continue; const d = Math.hypot(p.x - x, p.y - y) - p.r; if (d < bd) { bd = d; hov3 = p.i; } }
+      if (hov3 === null) pick(null);
+    }
+    if (d3 && !d3.moved && hov3 !== null) open(hov3); d3 = null; setTimeout(() => { if (!d3 && !REDUCED.matches && !held3) { spin3 = true; wake3(); } }, 4000); });
   // pause / resume the rotation
   let held3 = REDUCED.matches;
   const spinBtn = $('.tm-spin');
@@ -417,7 +442,7 @@ function buildTopicMap(root) {
   /* ================= shared controls ================= */
   function paint() { paintMap(); paintNet(); if (state.view === '3d' && !run3) draw3(); }
   function setView(v) {
-    state.view = v; state.focus = null; hideTip();
+    state.view = v; state.focus = null; hideTip(); pick(null);
     [...viewTabs.children].forEach(b => { const on = b.dataset.v === v; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
     map.toggleAttribute('hidden', v !== 'map'); net.toggleAttribute('hidden', v !== 'net'); cv.hidden = v !== '3d';   // SVG elements have no .hidden property
     back.hidden = !(v === 'map' && state.active !== null);

@@ -51,8 +51,8 @@
   </script>
 
   <!-- Stylesheet -->
-  <script>window.SITE_V = '20261124a';  /* bump on every publish (.claude/tools/bump_version.py) so browsers fetch new CSS/JS at once */</script>
-  <link rel="stylesheet" href="css/style.css?v=20261124a">
+  <script>window.SITE_V = '20261125a';  /* bump on every publish (.claude/tools/bump_version.py) so browsers fetch new CSS/JS at once */</script>
+  <link rel="stylesheet" href="css/style.css?v=20261125a">
   <!-- Without JavaScript, show content that would otherwise fade in -->
   <noscript><style>.reveal,.stagger-item,.fade-in{opacity:1!important;transform:none!important;animation:none!important}</style></noscript>
 
@@ -123,7 +123,7 @@
   }
   </script>
 
-  <script src="js/data.js?v=20261124a" defer></script>
+  <script src="js/data.js?v=20261125a" defer></script>
 </head>
 <body>
 
@@ -323,7 +323,7 @@
     <div id="pub-chart" class="chart-container"></div>
     <section class="topic-map" id="topic-map" aria-labelledby="topic-map-heading">
       <h2 class="section-divider" id="topic-map-heading">Research Map</h2>
-      <p class="rv-intro">All <span class="tm-counts">papers and conference abstracts</span>, grouped into nine themes by the words in their titles and abstracts. Coloured dots are peer-reviewed papers, rings are datasets, and small grey dots are conference abstracts. <b>Map</b> places similar work close together, <b>Network</b> links each item to its most similar ones (drag a dot to pull on its links), and <b>3D</b> lets you turn the same space. Hover for a title, select a dot to open it, or choose a theme to list its papers.</p>
+      <p class="rv-intro">All <span class="tm-counts">papers and conference abstracts</span>, grouped into nine themes by the words in their titles and abstracts. Coloured dots are peer-reviewed papers, rings are datasets, and small grey dots are conference abstracts. <b>Map</b> places similar work close together, <b>Network</b> links each item to its most similar ones (drag a dot to pull on its links), and <b>3D</b> lets you turn the same space. Hover (or tap) for a title, select a dot to open it (on a phone, tap it and use the Open link below the figure), or choose a theme to list its papers.</p>
       <div class="tm-bar">
         <div class="tm-views" role="tablist" aria-label="Map views">
           <button type="button" role="tab" data-v="map">Map</button><button type="button" role="tab" data-v="net">Network</button><button type="button" role="tab" data-v="3d">3D</button>
@@ -345,6 +345,7 @@
         <button type="button" class="tm-back" hidden>&larr; All themes</button>
         <button type="button" class="tm-spin" aria-pressed="false" hidden>Pause rotation</button>
       </div>
+      <div class="tm-info" aria-live="polite" hidden></div>
       <div class="tm-time">
         <button type="button" class="tm-play" aria-pressed="false">Play</button>
         <label class="tm-range"><span class="sr-only">Show work up to year</span><input type="range" class="tm-year" step="1"></label>
