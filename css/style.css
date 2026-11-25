@@ -868,4 +868,11 @@ a.wd-ptitle:hover{text-decoration-color:var(--accent)}
 .tm-mlinks{filter:drop-shadow(0 0 2px rgba(0,0,0,.8))}
 /* the map panel may grow wider than the text column (up to 1200 px) so theme names fit in its margins */
 @media(min-width:62em){.tm-stage{left:50%;width:min(1200px,calc(100vw - 64px));margin-left:calc(min(1200px,calc(100vw - 64px)) / -2)}}
+/* below-the-fold backgrounds wait until near the screen (index.html lazyBackgrounds); print shows them all */
+.bg-lazy:not(.bg-in){background-image:none!important}
+@media print{.bg-lazy{background-image:revert}}
+/* globe: crossfade between worlds instead of flashing dark while the next map loads */
+.wd-globe canvas{transition:opacity .35s ease}
+.wd-swap canvas{opacity:.15}
+@media(prefers-reduced-motion:reduce){.wd-globe canvas{transition:none}}
 

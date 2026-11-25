@@ -51,7 +51,8 @@
   </script>
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="css/style.css">
+  <script>window.SITE_V = '20261124a';  /* bump on every publish (.claude/tools/bump_version.py) so browsers fetch new CSS/JS at once */</script>
+  <link rel="stylesheet" href="css/style.css?v=20261124a">
   <!-- Without JavaScript, show content that would otherwise fade in -->
   <noscript><style>.reveal,.stagger-item,.fade-in{opacity:1!important;transform:none!important;animation:none!important}</style></noscript>
 
@@ -122,7 +123,7 @@
   }
   </script>
 
-  <script src="js/data.js" defer></script>
+  <script src="js/data.js?v=20261124a" defer></script>
 </head>
 <body>
 
@@ -197,7 +198,7 @@
 
   <div class="section reveal" style="padding-top:0">
     <div class="raven-banner">
-      <div class="raven-banner-bg bg-raven"></div>
+      <div class="raven-banner-bg bg-raven bg-lazy"></div>
       <div class="raven-banner-overlay"></div>
       <div class="raven-banner-content">
         <div class="raven-figure-text">
@@ -768,7 +769,7 @@ function navigate(page) {
     if (window.initResearchVisuals) window.initResearchVisuals(page);
     else if (!document.getElementById('rv-script')) {
       const s = document.createElement('script');
-      s.id = 'rv-script'; s.src = 'js/research-visuals.js';
+      s.id = 'rv-script'; s.src = 'js/research-visuals.js?v=' + window.SITE_V;
       s.onload = () => window.initResearchVisuals(currentPage ? currentPage.id.replace('page-', '') : page);
       document.head.appendChild(s);
     }
@@ -1026,7 +1027,7 @@ function renderHighlights() {
     const topic = chip ? chip.textContent.trim() : '';
     const viewMore = h.filter ? '<a class="view-more-link" href="#publications" onclick="event.preventDefault();event.stopPropagation();showPubFilter(\''+h.filter+'\')">View more '+topic+' publications <span aria-hidden="true">&#8594;</span></a>' : '';
     // The title is the toggle button; the rest of the card still opens it on click (links excepted)
-    return '<div class="card research-card stagger-item"><div class="card-img-wrap"><div class="card-img" style="background-image:url(\''+h.img+'\');'+imgStyle+'"></div></div><div class="card-body"><h3 class="card-title"><button type="button" class="card-toggle" aria-expanded="false" aria-controls="hl-detail-'+i+'">'+h.title+'</button></h3><p class="card-desc">'+h.desc+'</p><div class="card-tags">'+h.tags.map(t=>'<span class="card-tag">'+t+'</span>').join('')+'</div><div class="expand-indicator" aria-hidden="true"><span class="arrow expand-arrow">&#9656;</span> Learn more</div></div><div class="card-detail" id="hl-detail-'+i+'" inert><div class="cd-clip"><div class="cd-body"><p>'+h.detail+'</p>'+(pubsHtml?'<p class="card-detail-heading">Related Publications</p>'+pubsHtml+viewMore:'')+'</div></div></div></div>';
+    return '<div class="card research-card stagger-item"><div class="card-img-wrap"><div class="card-img bg-lazy" style="background-image:url(\''+h.img+'\');'+imgStyle+'"></div></div><div class="card-body"><h3 class="card-title"><button type="button" class="card-toggle" aria-expanded="false" aria-controls="hl-detail-'+i+'">'+h.title+'</button></h3><p class="card-desc">'+h.desc+'</p><div class="card-tags">'+h.tags.map(t=>'<span class="card-tag">'+t+'</span>').join('')+'</div><div class="expand-indicator" aria-hidden="true"><span class="arrow expand-arrow">&#9656;</span> Learn more</div></div><div class="card-detail" id="hl-detail-'+i+'" inert><div class="cd-clip"><div class="cd-body"><p>'+h.detail+'</p>'+(pubsHtml?'<p class="card-detail-heading">Related Publications</p>'+pubsHtml+viewMore:'')+'</div></div></div></div>';
   }).join('');
 }
 
@@ -1064,6 +1065,17 @@ function getRoleClass(role) {
 function getBadgeClass(role) {
   return {PI:'badge-pi','Co-PI':'badge-copi','Co-I':'badge-coi',Collaborator:'badge-collab'}[role]||'badge-collab';
 }
+
+// Background images below the fold load only as they come near the screen (.bg-lazy; CSS holds them back until .bg-in)
+function lazyBackgrounds(root) {
+  const els = (root || document).querySelectorAll('.bg-lazy:not(.bg-in)');
+  if (!('IntersectionObserver' in window)) { els.forEach(e => e.classList.add('bg-in')); return; }
+  const io = lazyBackgrounds.io || (lazyBackgrounds.io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('bg-in'); io.unobserve(e.target); }
+  }), {rootMargin: '600px 0px'}));
+  els.forEach(e => io.observe(e));
+}
+document.addEventListener('DOMContentLoaded', () => setTimeout(lazyBackgrounds, 0));
 
 function renderProjects() {
   // Compact cards with role rail; the title is the toggle button, the funding source is the panel
@@ -1510,6 +1522,7 @@ function initFooterDates() {
 document.addEventListener('DOMContentLoaded', () => {
   initFooterDates();
   renderLatest(); renderHighlights(); renderProjects(); renderPubChart(); renderPubs('');
+  lazyBackgrounds();
   document.getElementById('pub-total').textContent = pubs.length;
   renderDataPage(); initFilterChips(); initTabs(); handleHash();
   initReveal(); initStagger(); initBackToTop(); initScrollEffects();

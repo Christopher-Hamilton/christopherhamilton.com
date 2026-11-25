@@ -14,7 +14,7 @@ function initTopicMap(root) {
   const go = () => buildTopicMap(root);
   if (window.topicMap) { go(); return; }
   const s = document.createElement('script');
-  s.src = 'js/topic-map-data.js';
+  s.src = 'js/topic-map-data.js?v=' + (window.SITE_V || '');
   s.onload = go;
   document.head.appendChild(s);
 }
@@ -726,14 +726,17 @@ function initWorlds(root) {
     if (!gl || shown.key === key) return;
     gl.bindTexture(gl.TEXTURE_2D, tex); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, im);
     if (gl2) gl.generateMipmap(gl.TEXTURE_2D);
-    shown.key = key; draw();
+    shown.key = key; draw(); box.classList.remove('wd-swap');
   }
+  const waiting = {};
   function fetchTex(key, src, then) {
     if (cache[key]) { then(cache[key]); return; }
+    (waiting[key] = waiting[key] || []).push(then);   // everyone who asked gets the image when it arrives
     if (cache[key] === null) return;                 // already loading
     cache[key] = null;
     const im = new Image(); im.decoding = 'async';
-    im.onload = () => { cache[key] = im; then(im); }; im.onerror = () => { delete cache[key]; };
+    im.onload = () => { cache[key] = im; (waiting[key] || []).forEach(f => f(im)); delete waiting[key]; };
+    im.onerror = () => { delete cache[key]; delete waiting[key]; };
     im.src = src;
   }
   function load(k) {
@@ -876,7 +879,7 @@ function initWorlds(root) {
   function loadPubs() {
     const go = () => { pubs = window.topicMap.items.map(it => ({...it, ...placePub(it)})); counts(); if (body) select(body, true); };
     if (window.topicMap) { go(); return; }
-    const sc = document.createElement('script'); sc.src = 'js/topic-map-data.js'; sc.onload = go; document.head.appendChild(sc);
+    const sc = document.createElement('script'); sc.src = 'js/topic-map-data.js?v=' + (window.SITE_V || ''); sc.onload = go; document.head.appendChild(sc);
   }
   const pubsFor = (k, t) => pubs.filter(p => p.t === t && p.bodies.has(k)).sort((a, b) => b.y - a.y);
   // 3D flyovers from the group's own UAS surveys (js/flyover.js, loaded on first use)
@@ -884,7 +887,7 @@ function initWorlds(root) {
   const flyBox = root.querySelector('.wd-fly');
   function openFly(id) {
     if (window.openFlyover) { window.openFlyover(id); return; }
-    const sc = document.createElement('script'); sc.src = 'js/flyover.js'; sc.onload = () => window.openFlyover(id); document.head.appendChild(sc);
+    const sc = document.createElement('script'); sc.src = 'js/flyover.js?v=' + (window.SITE_V || ''); sc.onload = () => window.openFlyover(id); document.head.appendChild(sc);
   }
   function flyButtons(k) {
     const list = FLY.filter(f => f.body === k);
@@ -904,6 +907,9 @@ function initWorlds(root) {
     if (k !== 'all') b.querySelector('.wd-swatch').style.backgroundImage = 'url(images/globes/sm/' + k + '.jpg)';
     b.querySelector('span:not(.wd-swatch)').textContent = k === 'all' ? 'All' : BODIES[k].name;
     b.addEventListener('click', () => select(k));
+    // start fetching a world's map as soon as the pointer or focus reaches its button
+    const warm = () => { if (k !== 'all' && gl) fetchTex(k, TEX(k), () => {}); };
+    b.addEventListener('pointerenter', warm); b.addEventListener('focus', warm);
     tabs.appendChild(b);
   });
   // ---- orbit picker: the worlds on simple orbits (Io and Europa around Jupiter, the Moon around Earth); click one to go there
@@ -969,7 +975,7 @@ function initWorlds(root) {
     body = k;
     if (!sameBody) {
       zoom = 1; anim = null; spin = !REDUCED.matches; zoomOut.disabled = true; zoomIn.disabled = false; shown.key = null;
-      if (gl) { gl.bindTexture(gl.TEXTURE_2D, tex); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([40, 34, 30, 255])); }
+      box.classList.add('wd-swap');          // fade the old world out; use() fades the new one in once its map is ready
       size(); load(k);
     }
     list.setAttribute('aria-labelledby', 'wd-tab-' + k);
@@ -1076,7 +1082,7 @@ window.initResearchVisuals = function (page) {
       new IntersectionObserver((es, o) => {
         if (!es[0].isIntersecting) return; o.disconnect();
         const go = () => window.initStory(st);
-        if (window.initStory) go(); else { const sc = document.createElement('script'); sc.src = 'js/story.js'; sc.onload = go; document.head.appendChild(sc); }
+        if (window.initStory) go(); else { const sc = document.createElement('script'); sc.src = 'js/story.js?v=' + (window.SITE_V || ''); sc.onload = go; document.head.appendChild(sc); }
       }, {rootMargin: '800px 0px'}).observe(st);
     }
   }

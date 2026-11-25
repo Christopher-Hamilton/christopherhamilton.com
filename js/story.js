@@ -55,6 +55,7 @@ function globe(cv) {
 }
 
 function loadScript(src) {
+  src += '?v=' + (window.SITE_V || '');
   return new Promise(ok => { if (document.querySelector('script[src="' + src + '"]')) { const t = setInterval(() => { if (window.mountFlyover) { clearInterval(t); ok(); } }, 50); return; }
     const s = document.createElement('script'); s.src = src; s.onload = ok; document.head.appendChild(s); });
 }
