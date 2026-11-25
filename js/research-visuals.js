@@ -31,6 +31,7 @@ function buildTopicMap(root) {
   const TYPE_NAME = {p: 'Paper', a: 'Conference abstract', d: 'Dataset'};
   const state = {active: null, q: '', year: 9999, abs: true, ds: true, labels: false, view: 'map', focus: null};   // theme labels off by default (owner)
   root.classList.add('tm-nolabels');
+  let labelsChosen = false;
   const unesc = t => t && t.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');   // some venues arrive HTML-escaped
   IT.forEach(it => { it.ti = unesc(it.ti); it.v = unesc(it.v); it.lc = (it.ti + ' ' + (it.v || '')).toLowerCase(); });
   const nbr = IT.map(() => []);
@@ -110,6 +111,11 @@ function buildTopicMap(root) {
       mDots.forEach(d => { d.setAttribute('cx', MX(IT[d.__i].x)); d.setAttribute('cy', MY(IT[d.__i].yy)); });
     }
     narrow = mode === 'num';
+    // default: labels on only when they fit in the margins (wide screens); the reader's own choice always wins
+    if (!labelsChosen && state.labels !== (mode === 'margin')) {
+      state.labels = mode === 'margin'; root.classList.toggle('tm-nolabels', !state.labels);
+      const cb = root.querySelector('.tm-toggle-lab'); if (cb) cb.checked = state.labels;
+    }
     root.classList.toggle('tm-narrow', narrow); root.classList.toggle('tm-onplot', mode === 'onplot');
     map.setAttribute('viewBox', '0 0 ' + MW + ' ' + MH);
     mDots.forEach(d => d.setAttribute('r', (isP(d.__i) ? 7 : isD(d.__i) ? 5.5 : 4) * k / zoom.s));
@@ -489,7 +495,7 @@ function buildTopicMap(root) {
   $('.tm-toggle').addEventListener('change', e => { state.abs = e.target.checked; paint(); });
   $('.tm-toggle-ds').addEventListener('change', e => { state.ds = e.target.checked; paint(); });
   // theme labels on or off, in every view
-  $('.tm-toggle-lab').addEventListener('change', e => { state.labels = e.target.checked; root.classList.toggle('tm-nolabels', !state.labels); paint(); });
+  $('.tm-toggle-lab').addEventListener('change', e => { labelsChosen = true; state.labels = e.target.checked; root.classList.toggle('tm-nolabels', !state.labels); paint(); });
   const nPap = IT.filter(i => i.t === 'p').length;
   const nDs = IT.filter(i => i.t === 'd').length;
   $('.tm-counts').textContent = nPap + ' papers, ' + (N - nPap - nDs) + ' conference abstracts and ' + nDs + ' datasets';
