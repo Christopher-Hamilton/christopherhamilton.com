@@ -160,7 +160,7 @@ const whitepapers = [
 {y:"2020",a:"Whelley, P.L. et al., including C.W. Hamilton",t:"The importance of field studies for closing key knowledge gaps in planetary science.",j:"Decadal Survey White Paper",d:"10.3847/25c2cfeb.0a087f9f"},
 {y:"2020",a:"Keane, J.T. et al., including C.W. Hamilton",t:"Recommendations for addressing priority Io science in the next decade.",j:"Decadal Survey White Paper",d:"10.3847/25c2cfeb.3de45b59"},
 {y:"2020",a:"Keane, J.T. et al., including C.W. Hamilton",t:"The science case for Io exploration.",j:"Decadal Survey White Paper",d:"10.3847/25c2cfeb.f844ca0e"},
-{y:"2020",a:"Steinbruegge, G. et al., including C.W. Hamilton",t:"PRIME: A passive radar sounding concept for Io.",j:"Decadal Survey White Paper",d:"10.3847/25c2cfeb.49659984"},
+{y:"2020",a:"Steinbruegge, G. et al., including C.W. Hamilton",t:"PRIME — A passive radar sounding concept for Io.",j:"Decadal Survey White Paper",d:"10.3847/25c2cfeb.49659984"},
 {y:"2020",a:"Bapst, J. et al., including C.W. Hamilton",t:"Mars science helicopter: Compelling science enabled by an aerial platform.",j:"Decadal Survey White Paper",d:"10.3847/25c2cfeb.a126aea0"},
 {y:"2019",a:"de Kleer, K. et al., including C.W. Hamilton",t:"Tidal heating: Lessons from Io and the Jovian System.",j:"Keck Institute for Space Studies",d:"kiss",h:"https://www.kiss.caltech.edu/final_reports/tidal_heating_final_report.pdf"},
 {y:"2018",a:"Henning, W.G. et al., including C.W. Hamilton",t:"Highly volcanic exoplanets, lava worlds, and magma ocean worlds.",j:"NAS Exoplanet Science Strategy White Paper",d:"arxiv",h:"https://arxiv.org/abs/1804.05110"},
